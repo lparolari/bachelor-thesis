@@ -19,7 +19,11 @@
 
 ### others latex
 *.run.xml
-
+*.bak
+*.mtc
+*.mtc0
+*.mtc1
+*.maf
 
 ### emacs backups
 *~
