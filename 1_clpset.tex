@@ -1,0 +1,40 @@
+\input{util/subdoc.begin.tex}
+
+% ************************
+%%% begin chapter
+
+%\chapter{CLP(SET)}
+\chapter{Linguaggi a vincoli basati su insiemi e relazioni binarie}
+
+In questo capitolo vengono presentati ed inquadrati nel loro contesto i linguaggi $\clpset$ e $\lbr$.
+
+$\clpset$ è un linguaggio a vincoli, notevolmente espressivo, basato su insiemi; $\lbr$ è invece un linguaggio che estende ed include $\clpset$, interamente basato su vincoli su relazioni binarie.
+
+
+
+
+
+\section{CSP}
+Un problema di soddisfacimento di vincoli è composto da tre componenti:
+\begin{itemize}
+\item un insieme $X$ di variabili ${X_1, \ldots, X_n}$;
+\item un insieme $D$ di domini ${D_1, \ldots, D_n}$, uno per variabile;
+\item un insieme $C$ di vincoli che specificano le combinazioni di valori possibili per le variabili.
+\end{itemize}
+
+Ogni dominio $D_i$ specifica un insieme di valori possibili per la variabile $X_i$.
+
+
+\section{$\clpset$}
+La nozione di \emph{set} è una componente comune nella progettazione di programmi, ma sono pochi i linguaggi che forniscono gli insiemi come struttura dati elementare.
+In [2000-CLP(SET)] vengono menzionate alcune eccezioni di linguaggi che si basano su insiemi come SETL, B ed il linguaggio Z, utilizzato per descrivere la specifica formale di programmi. Qualche eccezione esiste anche nel campo dei \emph{database deduttivi} e, più recentemente, anche come general purpose programming language. Ad ogni modo, questi linguaggi impongono dei limiti sul tipo di insiemi espressibili o sulle capacità computazionali degli stessi. Ad esempio, in molti ambiti, si richiede che gli insiemi siano totalmente specificati: non sono ammesse \emph{variabili} libere.
+
+
+ Può essere incluso nella famiglia CLP (Constraint Logic Programming), che a sua volta può essere inquadrata nella categoria dei CSP (Constraint Satisfaction Problem), ovvero problemi di soddisfacimento di vincoli. 
+
+Il linguaggio $\clpset$ è stato successivamente esteso ed incluso nel linguaggio $\lbr$, basato su relazioni binarie.
+
+% ************************
+%%% end chapter
+
+\input{util/subdoc.end.tex}

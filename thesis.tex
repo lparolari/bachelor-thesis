@@ -1,51 +1,11 @@
 \documentclass[12pt,a4paper,openright]{book} % oneside
 
-\usepackage{lmodern}         % font package.
-\usepackage[T1]{fontenc}     % define T1 charset for out files.
-\usepackage[italian]{babel}  % italian latex typo conventions.
-\usepackage[utf8]{inputenc}  % italian symbols.
-\usepackage{amsmath}         % math features.
-\usepackage{amsthm}          % math theorems.
-\usepackage{amssymb}         % math symbols.
-\usepackage{listings}        % embed programming language in latex.
-\usepackage{stmaryrd}        % symbols for theoretical computer science.
-\usepackage{hhline}          % better horizontal lines in tabulars and arrays.
-%%\usepackage{vmargin}         % various page dimensions.
-\usepackage{hyperref}        % hypertext support.
-\usepackage{makeidx}         % for creating indexes.
-\usepackage{nicefrac}        % inline fractions.
-\usepackage{marginnote}      % notes in the margin, even where \marginpar fails.
-\usepackage{xr}              % references to other latex documents.
-\usepackage{subfiles}        % multifile support.
-\usepackage{geometry}        % interface for document dimension.
-\usepackage{graphicx}        % enhanced support for graphics.
-\usepackage{fancyhdr}        % extensive control of page headers and footers.
-\usepackage{lipsum}          % generate dummy text.
-\usepackage[backend=biber,style=numeric]{biblatex}  % bib management. %bibtex
+\def\COMPLETE{}
 
-%\usepackage{showframe}      % shows page frames.
-
-
-%   CONFIGS
-% ***********************************************************
-\hypersetup{colorlinks=true, urlcolor=blue, linkcolor=blue}
-
-
-%   RESOURCES
-% ***********************************************************
-\subfile{prooftree}
-\input{macros.tex}
-\addbibresource{biblio.bib}
-
-
-% ***********************************************************
-% ***********************************************************
-% *                      DOCUMENT BEGIN
-% ***********************************************************
-% ***********************************************************
+\input{packages.tex}
+\input{setup.tex}
 
 \begin{document}
-
 
 
 % TITLE
@@ -124,20 +84,13 @@
 
 %\lhead[\fancyplain{}{}]{\fancyplain{}{\leftmark}} \chead{}
 %\rhead{\thepage} \lfoot{} \cfoot{} \rfoot{}
-%\input{prelim.tex}
-\subfile{chapters/1-intro}
-\subfile{chapters/2-test}
-%\input{bigstep.tex}
-%\input{smallstep.tex}
-%\input{denot.tex}
-%\input{axiom.tex}
-%\input{relaz.tex}
-%\input{esten.tex}
-%\input{ai.tex}
+
+\input{0_intro.tex}
+\input{1_clpset.tex}
+%\input{TODO.tex}
 
 \cite{BurrisS81}
 
 \printbibliography
-
 
 \end{document}
