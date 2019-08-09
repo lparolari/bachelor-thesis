@@ -1,15 +1,51 @@
 \documentclass[12pt,a4paper,openright]{book} % oneside
 
-\def\COMPLETE{}
+%   PACKAGES
+\usepackage{lmodern}         % font package.
+\usepackage[T1]{fontenc}     % define T1 charset for out files.
+\usepackage[italian]{babel}  % italian latex typo conventions.
+\usepackage[utf8]{inputenc}  % italian symbols.
+\usepackage{amsmath}         % math features.
+\usepackage{amsthm}          % math theorems.
+\usepackage{amssymb}         % math symbols.
+\usepackage{listings}        % embed programming language in latex.
+\usepackage{stmaryrd}        % symbols for theoretical computer science.
+\usepackage{hhline}          % better horizontal lines in tabulars and arrays.
+%%\usepackage{vmargin}         % various page dimensions.
+\usepackage{hyperref}        % hypertext support.
+\usepackage{makeidx}         % for creating indexes.
+\usepackage{nicefrac}        % inline fractions.
+\usepackage{marginnote}      % notes in the margin, even where \marginpar fails.
+\usepackage{xr}              % references to other latex documents.
+\usepackage{subfiles}        % multifile support.
+\usepackage{geometry}        % interface for document dimension.
+\usepackage{graphicx}        % enhanced support for graphics.
+\usepackage{fancyhdr}        % extensive control of page headers and footers.
+\usepackage{lipsum}          % generate dummy text.
+\usepackage[backend=biber,style=numeric]{biblatex}  % bib management. %bibtex
+\usepackage{minitoc}         % table of contents per chapter.
+\usepackage{listings}        % code sections, http://ctan.org/pkg/listings
+%\usepackage{showframe}      % shows page frames.
 
-\input{packages.tex}
-\input{setup.tex}
+%   CONFIGS
+\hypersetup{colorlinks=true, urlcolor=blue, linkcolor=blue}
+\dominitoc
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
 
+%   RESOURCES
+\subfile{prooftree}
+\input{macros.tex}
+\addbibresource{biblio.bib}
+
+
+% **********************************************
+% **********************************************
 \begin{document}
 
-
-% TITLE
-% -----------------------------------------------------------
+%%% First page
 \begin{titlepage}
     \begin{center}       
         \includegraphics[width=0.4\textwidth]{img/logo_unipr.png}
@@ -68,28 +104,82 @@
     \end{center}
 \end{titlepage}
 
-
-
-% DEDICATION
-% -----------------------------------------------------------
-
+%%% Dedication
 %\begin{dedication}
-%Test
+%test
 %\end{dedication}
 
-
-% TOC
-% -----------------------------------------------------------
+%%% TOC
 \tableofcontents
-
-
-% CHAPTERS
-% -----------------------------------------------------------
 
 %\lhead[\fancyplain{}{}]{\fancyplain{}{\leftmark}} \chead{}
 %\rhead{\thepage} \lfoot{} \cfoot{} \rfoot{}
 
-\input{intro.tex}
+
+%%% *******************************************************
+%%% Introduzione
+\chapter*{Introduzione}
+
+\lipsum[1-4]
+
+
+%%% *******************************************************
+% Linguaggi a vincoli basati su insiemi e relazioni bianrie
+\chapter{Linguaggi a vincoli basati su insiemi e relazioni binarie}
+\label{ch:sets-binrel-based-constraint-languages}
+
+\minitoc
+
+In questo capitolo vengono presentati e contestualizzati due linguaggi orientati alla risoluzione di formule insiemistiche: $\clpset$ e $\lbr$. Entrambi i linguaggi seguono il paradigma della Logic Programming e, più precisamente essendo basati su vincoli, della Constraint Logic Programming. Nelle sezioni \ref{sec:lp} e \ref{sec:clp} sono descritti rispettivamente i due paradigmi in forma molto discorsiva ed introduttiva.
+
+Nella sezione\ref{sec:clpset} si da una definizione di $\clpset$, un linguaggio a vincoli basato su insiemi. 
+Nel capitolo XXX è descritta l'implementazione di questo linguaggio in Picat, obiettivo di questo lavoro di tesi.
+
+Nella sezione \ref{sec:lbr} è invece definito $\lbr$, un linguaggio che estende ed include $\clpset$, interamente basato su vincoli su relazioni binarie.
+
+\section{Logic Programming}
+\label{sec:lp}
+
+La programmazione logica (o Logic Programming, abbreviato \emph{LP}) è un paradigma di programmazione dove gli \emph{statements} del programma rappresentano fatti o regole, espressi tramite qualche logica formale, di un problema. La logica viene utilizzata come meccanismo formale per analizzare le inferenze in termini di operazioni su espressioni simboliche, dedurre conseguenze da un insieme di premesse, studiare la verità (o falsità) di un insieme di proposizioni, data la verità (o falsità) di altre proposizioni e dimostrare la validità di una teoria.
+
+Nel campo dell'informatica la logica trova molteplici applicazioni in ambiti per lo più di intelligenza artificiale. La logica, sotto opportune ipotesi, può diventare un vero e proprio linguaggio di programmazione, prendendo il nome di Logic Programming (per approfondire i concetti di programmazione logica si veda \cite{ConsoleL97}).
+
+Spesso i linguaggi di programmazione di questo tipo adottano un approccio dichiarativo, descrivendo solamente la forma della soluzione e non come ottenerla. \`E il caso di linguaggi come il Datalog. Per i linguaggi come il Prolog invece l'approccio può essere ibrido, intersecando il paradigma dichiarativo, imperativo e tal volta anche procedurale.
+
+La logica classica si può suddividere in due classi principali: la \emph{logica proposizionale} e la \emph{logica dei predicati}. Entrambe permettono di esprimere proposizioni (frasi) e relazioni tra posizioni. La principale differenza tra le due è l'espressività. Ciò che può essere espresso nella logica dei predicati può essere espresso nella logica proposizionale, ma non viceversa. La logica dei predicati consente di utilizzare \textbf{variabili} e quantificazioni su di esse, mentre nella logica proposizionale non è possibile.
+
+\paragraph{Logica dei predicati}
+Volendo dare una definizione un po' più formale per la logica dei predicati 
+
+\section{Constraint Logic Programming}
+\label{sec:clp}
+aaa
+
+\subsection{Constraint Satisfaction Problem}
+\label{sec:csp}
+Un problema di soddisfacimento di vincoli è composto da tre componenti:
+\begin{itemize}
+\item un insieme $X$ di variabili ${X_1, \ldots, X_n}$;
+\item un insieme $D$ di domini ${D_1, \ldots, D_n}$, uno per variabile;
+\item un insieme $C$ di vincoli che specificano le combinazioni di valori possibili per le variabili.
+\end{itemize}
+
+Ogni dominio $D_i$ specifica un insieme di valori possibili per la variabile $X_i$.
+
+\section{Il linguaggio $\clpset$}
+\label{sec:clpset}
+$\clpset$, definito in \cite{clpset2000} è un linguaggio logico per la gestione di vincoli su insiemi. Da un punto di vista più generale $\clpset$ è un istanza dei CLP sopra descritti, dove il dominio di applicazione dei vincoli è quello insiemistico. In questo contesto gli insiemi sono visti come un tipo di dato primitivo del linguaggio, detti termini della logica del primo ordine. I predicati predefiniti invece sono visti come vincoli predefiniti del linguaggio, gestiti con procedure di risoluzione di vincoli. 
+
+La classe di insiemi considerata vuole essere molto generale: gli insiemi possono essere annidati e/o parzialmente specificati. Gli insiemi parzialmente specificati possono contenere variabili e altri elementi "nonground".
+
+Uno degli obiettivi primari di $\clpset$ è di essere molto flessibile e fornire forme generali per la manipolazione di insiemi e relative operazioni, in quanto la nozione di \emph{set} è una componente comune nella progettazione di programmi, ma sono pochi i linguaggi che forniscono gli insiemi come struttura dati elementare.
+Sempre in \cite{clpset2000} vengono menzionate alcune eccezioni di linguaggi che si basano su insiemi: SETL, B ed il linguaggio Z, utilizzato per descrivere la specifica formale di programmi. Qualche eccezione esiste anche nel campo dei \emph{database deduttivi} e, più recentemente, anche come \emph{general purpose programming language}. Ad ogni modo, questi linguaggi impongono dei limiti sul tipo di insiemi espressibili o sulle capacità computazionali degli stessi. Ad esempio, in molti ambiti, si richiede che gli insiemi siano totalmente specificati: non sono ammesse \emph{variabili} libere.
+
+Si noti che in $\clpset$ il costo computazione non è un requisito necessario. Molte operazioni possono risultare anche molto costose, ma dal punto di vista implementativo si preferisce implementare la risoluzione al problema in modo dichiarativo e più intuitivo possibile.
+
+\section{Il linguaggio $\lbr$}
+\label{sec:lbr}
+
 \input{clpset.tex}
 %\input{TODO.tex}
 
