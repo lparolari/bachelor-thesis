@@ -21,9 +21,9 @@
 *.run.xml
 *.bak
 *.mtc
-*.mtc0
-*.mtc1
+*.mtc*
 *.maf
+*.listing
 
 ### emacs backups
 *~
