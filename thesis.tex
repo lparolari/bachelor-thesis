@@ -774,6 +774,327 @@ Inoltre, l'operazione di pattern-matching sulle regole è molto più leggera ris
 \end{description}
 
 
+%%% *******************************************************
+%%% Solver CLP(SET) in Picat
+\chapter{CLP(SET) in Picat}
+
+\minitoc
+
+INTRO\fixme{aggiungere intro con ref a sezioni sotto}
+
+L'obiettivo principale del solver \clpset{} è risolvere formule insiemistiche del linguaggio \clpset{}. Il risultato può avere zero, una o più soluzioni ed il solver deve essere in grado di mostrarle tutte, se queste sono finite.
+
+Il funzionamento del solver è quello descritto dallo pseudocodice in  \ref{subsec:lang_clpset_solver}. Per ricapitolare, il solver svolge queste tre azioni:
+\begin{itemize}
+\item rimpiazza i vincoli derivati con le corrispondenti formule \clpset{};
+\item riduce la complessità sintattica dei vincoli primitivi applicando le regole di riscrittura corrette;
+\item elimina gli insiemi che coinvolgono disuguaglianze.
+\end{itemize} 
+La formula finale ottenuta è semplificata e irriducibile, il che la rende equivalente alla formula originale.
+
+\section{Notazione}
+
+ \todo{da spostare in appendice}
+
+Per semplificare l'implementazione si è deciso di adottare alcuni espedienti notazionali descritti dalla sezioni sottostanti.\footnote{La notazione impiegata in \clpset{} è descritta in \ref{sec:lang_clpset}.}. Ciò si è reso necessario per evitare di affrontare problemi non direttamente legati e potersi concentrare solamente sul solver.
+
+\subsection{Formule}
+
+La notazione adottata per la rappresentazione delle formule è la seguente:
+
+\begin{table}[H]
+\center
+\begin{tabular}{ll}
+\textbf{Linguaggio} & \textbf{Notazione} \\
+\clpset{} & $T_1 \land T_2 \land \ldots \land T_n$ \\
+Picat & \verb|[| $T_1, T_2, \ldots, T_n$\verb|]| \\
+\end{tabular}
+\end{table}
+
+\subsection{Operazioni primitive}
+
+Le operazioni primitive di \clpset{} sono spesso espresse tramite simboli (e.g., $=, \neq, \ldots$). La notazione adottata è la seguente:
+
+\begin{table}[H]
+\center
+\begin{tabular}{l l}
+\textbf{Linguaggio} & \textbf{Notazione} \\
+\clpset{} & $T_1 = T_2$ \\
+Picat & \verb|[eq(| $T_1, T_2$ \verb|)]| \\
+\end{tabular}
+\end{table}
+
+\subsection{Insiemi}
+
+Gli insiemi in \clpset{} sono rappresentati tramite la funzione $\{ \cdot \mid \cdot \}$.
+
+\begin{table}[H]
+\center
+\begin{tabular}{l l}
+\textbf{Linguaggio} & \textbf{Notazione} \\
+\clpset{} & $\{ T_1, T_2, \ldots, T_n \mid X \}$ \\
+Picat & \verb|[| $T_1, T_2, \ldots, T_n \mid X$ \verb|]| \\
+\end{tabular}
+\end{table}
+
+\section{Il sistema}
+
+\subsection{Moduli}
+
+Il progetto di implementazione di \clpset{} in Picat si articola in diversi moduli: alcuni realizzano funzioni di utilità molto vicine al solver, altri sono moduli di corredo, atti a gestire aspetti non legati direttamente alla risoluzione di formule insiemistiche.
+
+I moduli identificati e realizzati sono:
+\begin{itemize}
+\item \verb|solver|: il modulo principale che realizza la risoluzione delle formule;
+\item \verb|lset|: il modulo contenente l'interfaccia e l'implementazione degli insiemi nei termini di \clpset{};
+\item \verb|commands|: il modulo di gestione dell'interfaccia utente;
+\item \verb|global|: il modulo per la gestione delle variabili globali;
+\item \verb|log_h|: il modulo per la gestione dei log;
+\item \verb|prompt|: il modulo di gestione I/O;
+\item \verb|assert|: il modulo di utilità l'implementazione di \emph{unit tests}.
+\end{itemize}
+
+\subsection{Tests}
+ \todo{Aggiungere test}
+
+\section{Il solver}
+
+\subsection{Predicato solve/2}
+
+Il predicato \verb|solve/2| riceve in input una formula, e restituisce in output la formula risolta. Questo predicato scandisce ogni termine della formula congiuntiva data in input e cerca di ridurla generando una nuova formula (possibilmente nulla) e un insieme di vincoli (possibilmente vuoto).
+
+\paragraph{Implementazione} Il predicato \verb|solve/2| risolve la formula congiuntiva in input $C$ e riscrive ogni termine in forma più semplice, creando un nuovo constraint store $CN$. Se le riscritture applicate rendono il constraint store uguale alla formula in input allora si è raggiunto un \textbf{punto fisso} e si termina l'esecuzione con risultato $CC = CN$, altrimenti si prosegue cercando di risolvere il nuovo constraint store $solve(CN, CC)$.
+\begin{verbatim}
+%% solve(C, CC) is det
+
+solve(C, CC) =>
+    CN = [],
+    foreach (T in C)
+        sat(T, C1), 
+        CN := CN ++ C1,
+    end,
+    CN := CN.flatten(),
+   
+    if C == CN 
+    then CC = CN 
+    else solve(CN, CC)
+    end.
+\end{verbatim}
+
+\paragraph{Utilizzo} Il predicato \verb|solve/2| può essere usato come un API, esposta dal modulo \emph{solver}. Il modulo \emph{commands} di fatto usa questo predicato per risolvere una formula.
+\begin{verbatim}
+%% doSolve(+FormulaString) is semidet
+
+doSolve(FormulaString) ?=>
+    parse_term(FormulaString, Term, Vars),
+    solve(Term, Res),
+    println("Vars: " ++ Vars.to_string),
+    println("Constraints: " ++ Res.to_string).
+    nl,
+    A = confirm("Another solution?"),
+    if A == 1 then fail end.
+doSolve(_) => println("no!").
+\end{verbatim}
+
+Il predicato \verb|solve/2| visto come API è utile anche nell'effetuare gli \emph{unit tests}. L'esempio riportato, seppur poco interessante dal punto di vista della formula, mostra l'utilizzo di \verb|solve/2| per verificare la correttezza della risoluzione.
+\begin{verbatim}
+setlog_eq1_1_test ?=>
+    A = new_assert("setlog_eq1_1_test"),
+    F = [$eq(1, 1)],
+    solve(F, FF),
+    A.assert_equal([], FF).
+setlog_eq1_1_test => A = new_assert("setlog_eq1_1_test"), A.fail().
+\end{verbatim}
+
+\subsection{Predicato sat/2}
+Il predicato \verb|sat/2| combinato con \verb|rule/2| seleziona la regola da applicare in base al termine dato, distinguendo se l'operazione che si vuole compiere è $=, \neq, \in, \ldots$, e applicando le giuste regole di riscrittura. 
+
+\paragraph{Implementazione} \verb|sat/2| gestisce l'input, mentre \verb|rule/2| effettua il dispatching della regola giusta. Notare come il predicato \verb|rule/2| sia pensato per essere estendibile.
+\begin{verbatim}
+%% sat(F, FF) is det
+
+sat(F, FF), F == [] => FR = [].
+sat(F, FF) => rule(F, FF).
+
+
+%% rule(F, R) is det
+
+rule(eq(T1, T2), R)  => eq(T1, T2, R).
+rule(neq(T1, T2), R) => neq(T1, T2, R).
+rule(or(T1, T2), R)  => or(T1, T2, R).
+rule(or(T), R)       => or(T, R).
+rule(insl(X, S), R)  => insl(X, S, R).
+rule(nin(X, S), R)   => nin(X, S, R).
+rule(contains(S, X), R)    => contains(S, X, R).
+rule(union(S1, S2, S3), R) => union(S1, S2, S3, R).
+rule(disj(S1, S2), R)      => disj(S1, S2, R).
+rule(subset(S1, S2), R)    => subset(S1, S2, R).
+\end{verbatim}
+
+Le regole implementate sono un sottoinsieme di quelle descritte in \cite{Rossi18}.
+
+\subsection{Regole di riscrittura}
+
+Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e a qualche predicato ausiliario, sono presenti i predicati che implementano le regole di riscrittura:
+\begin{itemize}
+\item \verb|eq/3| ($=$);
+\item \verb|neq/3| ($\neq$);
+\item \verb|insl/3| ($\in$);
+\item \verb|contains/3| ($contains$);
+\item \verb|union/3| ($\cup$);
+\item \verb|disj/3| ($||$);
+\item \verb|subset/3| ($\subset$);
+\item \verb|inters/3| ($\cap$);
+\item \verb|diff/3| ($\setminus$);
+\end{itemize}
+
+Nelle sezioni successive sono riportate le implementazioni delle regole di riscrittura. Si può notare che la descrizione matematica in \cite{Rossi18} è molto vicina all'implementazione.
+
+\subsubsection{eq/3}
+
+\begin{verbatim}
+eq(T1, T2, R),  T1 == T2 =>                                        % 1
+    log_d_vv("eq :: eq_1"),
+    R = [].
+
+eq(T1, T2, R), nonvar(T1), var(T2) =>                              % 2
+    log_d_vv("eq :: eq_2"),
+    R = [ $eq(T2, T1) ].
+
+eq(T1, T2, R), 
+        var(T1), T2.is_lset(),
+	    not occur_check(T1, T2.lset_head()),
+        T1 == T2.lset_rest() =>                                    % 3
+    log_d_vv("eq :: eq_3"),
+    YSetNew = new_lset(T2.lset_head(),_N),
+    R = [ $eq(T1, YSetNew) ].
+
+eq(T1, T2, _R), 
+        var(T1),
+        occur_check(T1, T2) =>                                     % 4
+    log_d_vv("eq :: eq_4"),
+    fail.  % sic.
+
+eq(T1, T2, R), 
+        var(T1) =>                                                 % 5
+    log_d_vv("eq :: eq_5"),
+    R = [], T1 = T2.
+
+eq(T1, T2, _R), 
+        struct(T1), struct(T2), 
+        T1.name() !== T2.name() =>                                 % 6
+    log_d_vv("eq :: eq_6"),
+    fail.  % sic.
+
+eq(T1@[X|Xs], T2, R), 
+        T1.is_lset(), T2.is_lset(),
+        T1.lset_rest() == T2.lset_rest() ?=>                       % 7a
+    log_d_vv("eq :: eq_7a"),
+
+    YH = T2.lset_head(),                   % head of T2.
+    foreachnd_slice(YH, YElem, YSlice),    % get the j-th element nondet.
+    YRest = T2.lset_rest(),                % rest of T2.
+    YSetSliced = new_lset(YSlice, YRest),  % build T2 without j-th elem.
+
+    R1 = [ $eq(X, YElem) ],
+    R2 = [ $eq(Xs, YSetSliced) ],
+
+    R = R1 ++ R2.
+
+eq(T1@[X|_], T2, R), 
+        T1.is_lset(), T2.is_lset(),
+        T1.lset_rest() == T2.lset_rest() ?=>                       % 7b
+    log_d_vv("eq :: eq_7b"),
+
+    YH = T2.lset_head(),                   % head of T2.
+    foreachnd_slice(YH, YElem, YSlice),    % get the j-th element nondet.
+    YRest = T2.lset_rest(),                % rest of T2.
+    YSetSliced = new_lset(YSlice, YRest),  % build T2 without j-th elem.
+
+    R1 = [ $eq(X, YElem) ],
+    R2 = [ $eq(T1, YSetSliced) ],
+
+    R = R1 ++ R2.
+
+eq(T1@[X|Xs], T2, R),
+        T1.is_lset(), T2.is_lset(),
+        T1.lset_rest() == T2.lset_rest() ?=>                       % 7c
+    log_d_vv("eq :: eq_7c"),
+
+    % no slice for T2, only Y elem.
+    YH = lset_head(T2),              % head of T2.
+    foreachnd_slice(YH, YElem, _),   % get the j-th element nondet.
+
+    R1 = [ $eq(X, YElem) ],
+    R2 = [ $eq(Xs, T2) ],
+
+    R = R1 ++ R2.
+
+eq(T1@[X|Xs], T2, R),
+        T1.is_lset(), T2.is_lset(),
+        T1.lset_rest() == T2.lset_rest() =>                        % 7d
+    log_d_vv("eq :: eq_7d"),
+
+    XRest = lset_rest(T1),
+
+    XHeadSlice = lset_head(Xs),
+    XSetNew = new_lset(XHeadSlice, N),
+
+    YHead = T2.lset_head(),
+    YSetNew = new_lset(YHead, N),
+
+    R1 = [ $eq(XRest, [X|N]) ],
+    R2 = [ $eq(XSetNew, YSetNew) ],
+
+    R = R1 ++ R2.
+
+eq(T1@[X|Xs], T2@[Y|Ys], R),
+        T1.is_lset(), T2.is_lset() ?=>                             % 8a
+    log_d_vv("eq :: eq_8a"),
+    R = [ $eq(X,Y), $eq(Xs, Ys) ].
+
+eq(T1@[X|_], T2@[Y|Ys], R),
+        T1.is_lset(), T2.is_lset() ?=>                             % 8b
+    log_d_vv("eq :: eq_8b"),
+    R = [ $eq(X,Y), $eq(T1, Ys) ].
+
+eq(T1@[X|Xs], T2@[Y|_], R),
+        T1.is_lset(), T2.is_lset() ?=>                             % 8c
+    log_d_vv("eq :: eq_8c"),
+    R = [ $eq(X,Y), $eq(Xs, T2) ].
+
+eq(T1@[X|Xs], T2@[Y|Ys], R),
+        T1.is_lset(), T2.is_lset() =>                              % 8d
+    log_d_vv("eq :: eq_8d"),
+    R = [  
+        $eq( Xs,  [Y|N] ),  
+        $eq( [X|N],  Ys ) 
+    ].
+
+eq(T1, T2, R),
+        T1.struct(), T2.struct(),
+        T1.name() == T2.name(),
+        T1.arity() == T2.arity() =>                                % 9
+    log_d_vv("eq :: eq_9"),
+    RR = [],
+    foreach(I in 1..T1.arity())
+        RR := RR ++ [  $eq( T1[I], T2[I] )  ]
+    end,
+    R = RR.
+\end{verbatim}
+
+\chapter{Dettagli implementativi}
+TODO
+
+\chapter{Uso del solver \clpset{} da Picat}
+In questa sezione viene dato un esempio di caso d'uso del solver \clpset{} da Picat.
+
+\chapter{Esensioni al solver di base}
+TODO
+
+\chapter{Conclusione e lavori futuri}
+TODO
+
 \printbibliography
 
 \end{document}
