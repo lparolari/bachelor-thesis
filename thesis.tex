@@ -27,6 +27,9 @@
 \usepackage{listings}        % code sections, http://ctan.org/pkg/listings
 %\usepackage{showframe}      % shows page frames.
 \usepackage{titlesec}        % change titles size.
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{float}
 
 %   CONFIGS
 \hypersetup{colorlinks=true, urlcolor=blue, linkcolor=blue}
@@ -68,12 +71,12 @@
  
  		% *** title
         \Huge
-        \textbf{Lorem ipsum dolor sit amet, consectetur adipiscing elit}
+        \textbf{Progettazione ed implementazione in Picat di un risolutore per vincoli insiemistici}
  
  		% *** subtitle
         \vspace{1cm}
         \LARGE
-        Morbi volutpat magna sed nisl eleifend facilisis. Nam non condimentum augue.
+        % may have subtitle.
  
         \vspace{1.5cm}
  
@@ -125,6 +128,16 @@
 \lipsum[1-4]
 
 
+% TODO da definire
+%%% *******************************************************
+% Panoramica e background
+%\chapter{Panormaica e background}
+%
+%\minitoc
+%
+%In questo capitolo si vuole dare un'infarinatura sull'ambito dei linguaggi trattati in questo lavoro di tesi.
+
+
 %%% *******************************************************
 % Linguaggi a vincoli basati su insiemi e relazioni bianrie
 \chapter{Linguaggi a vincoli basati su insiemi e relazioni binarie}
@@ -132,34 +145,51 @@
 
 \minitoc
 
-In questo capitolo vengono presentati e contestualizzati due linguaggi orientati alla risoluzione di formule insiemistiche: $\clpset$ e $\lbr$. Entrambi i linguaggi seguono il paradigma della Logic Programming e, più precisamente essendo basati su vincoli, della Constraint Logic Programming. Nelle sezioni \ref{sec:lp} e \ref{sec:clp} sono descritti rispettivamente i due paradigmi in forma molto discorsiva ed introduttiva.
+In questo capitolo vengono presentati e contestualizzati due linguaggi orientati alla risoluzione di formule insiemistiche: \clpset{} e \lbr{}. Entrambi i linguaggi seguono il paradigma della programmazione logica e, più precisamente essendo basati su vincoli, della programmazione logica con vincoli (o \textit{Constraint Logic Programming}). Nelle sezioni \ref{sec:logic_programming} e \ref{sec:constraint_logic_programming} sono descritti rispettivamente i due paradigmi in forma molto discorsiva ed introduttiva.
 
-Nella sezione\ref{sec:clpset} si da una definizione di $\clpset$, un linguaggio a vincoli basato su insiemi. 
+Nella sezione \ref{sec:lang_clpset} si da una definizione di \clpset{}, un linguaggio a vincoli basato su insiemi. 
 Nel capitolo XXX è descritta l'implementazione di questo linguaggio in Picat, obiettivo di questo lavoro di tesi.
 
-Nella sezione \ref{sec:lbr} è invece definito $\lbr$, un linguaggio che estende ed include $\clpset$, interamente basato su vincoli su relazioni binarie.
+Nella sezione \ref{sec:lang_lbr} è invece definito \lbr{}, un linguaggio che estende ed include \clpset{}, interamente basato su vincoli su relazioni binarie.
 
 \section{Logic Programming}
-\label{sec:lp}
+\label{sec:logic_programming}
 
-La programmazione logica (o Logic Programming, abbreviato \emph{LP}) è un paradigma di programmazione dove gli \emph{statements} del programma rappresentano fatti o regole, espressi tramite qualche logica formale, di un problema. La logica viene utilizzata come meccanismo formale per analizzare le inferenze in termini di operazioni su espressioni simboliche, dedurre conseguenze da un insieme di premesse, studiare la verità (o falsità) di un insieme di proposizioni, data la verità (o falsità) di altre proposizioni e dimostrare la validità di una teoria.
+La programmazione logica (o \emph{logic programming}, spesso abbreviato in \emph{LP}) è un paradigma di programmazione dove gli \emph{statements} del programma rappresentano fatti o regole, espressi tramite qualche logica formale, di un problema. La logica viene utilizzata come meccanismo formale per analizzare le inferenze in termini di operazioni su espressioni simboliche, dedurre conseguenze da un insieme di premesse, studiare la verità (o falsità) di un insieme di proposizioni, data la verità (o falsità) di altre proposizioni e dimostrare la validità di una teoria. Questi concetti possono essere approfonditi in \cite{Console97}.
 
-Nel campo dell'informatica la logica trova molteplici applicazioni in ambiti per lo più di intelligenza artificiale. La logica, sotto opportune ipotesi, può diventare un vero e proprio linguaggio di programmazione, prendendo il nome di Logic Programming (per approfondire i concetti di programmazione logica si veda \cite{ConsoleL97}).
+\paragraph{Esempio}
+Programma logico in Prolog.
+\begin{verbatim}
+% Giovanni è padre di Antonio.
+padre(giovanni, antonio).
+padre(giovanni, riccardo).
+padre(mario, giovanni).
 
-Spesso i linguaggi di programmazione di questo tipo adottano un approccio dichiarativo, descrivendo solamente la forma della soluzione e non come ottenerla. \`E il caso di linguaggi come il Datalog. Per i linguaggi come il Prolog invece l'approccio può essere ibrido, intersecando il paradigma dichiarativo, imperativo e tal volta anche procedurale.
+% X è nonno di Y se X è padre di Z e Z è padre di Y.
+nonno(X, Y) :- padre(X, Z), padre(Z, Y).
 
-La logica classica si può suddividere in due classi principali: la \emph{logica proposizionale} e la \emph{logica dei predicati}. Entrambe permettono di esprimere proposizioni (frasi) e relazioni tra posizioni. La principale differenza tra le due è l'espressività. Ciò che può essere espresso nella logica dei predicati può essere espresso nella logica proposizionale, ma non viceversa. La logica dei predicati consente di utilizzare \textbf{variabili} e quantificazioni su di esse, mentre nella logica proposizionale non è possibile.
+?- nonno(X, antonio).
+X = mario.
+\end{verbatim}
 
-\paragraph{Logica dei predicati}
-Volendo dare una definizione un po' più formale per la logica dei predicati 
+Nel campo dell'informatica la logica trova molteplici applicazioni in ambiti per lo più di intelligenza artificiale. La logica, sotto opportune ipotesi, può diventare un vero e proprio linguaggio di programmazione, prendendo appunto il nome di Logic Programming. Spesso i linguaggi di programmazione di questo tipo adottano un approccio dichiarativo, descrivendo solamente la forma della soluzione e non la procedura per ottenerla (e.g., il Datalog). Per i linguaggi come il Prolog o Picat invece l'approccio può essere ibrido: il paradigma dichiarativo, imperativo e procedurale si intersecano lasciando al programmatore la scelta del paradigma da usare.
+
+La logica classica si può suddividere in due classi principali: la \emph{logica proposizionale} e la \emph{logica dei predicati}.  I più comuni linguaggi logici sono basati su un sottoinsieme della logica dei predicati del primo ordine, che permette di garantire la correttezza delle soluzioni ma non la terminazione del programma. Entrambe, comunque, permettono di esprimere proposizioni (frasi) e
+relazioni tra posizioni. La principale differenza tra le due è l'espressività. Ciò che può essere espresso nella logica dei predicati può essere espresso nella logica proposizionale, ma non viceversa. La logica dei predicati consente di utilizzare \textbf{variabili} e quantificazioni su di esse, mentre nella logica proposizionale non è possibile.
+
+I programmi logici vengono risolte mediante sistemi di deduzione. Il più famoso ed usato è il \emph{Principio di Risoluzione}, che adotta un'unica regola di infereza. Questo metodo di risoluzione è applicabile a teorie del primo ordine in forma di clausole, ed è notevolmente efficiente.
 
 \section{Constraint Logic Programming}
-\label{sec:clp}
-aaa
+\label{sec:constraint_logic_programming}
+La programmazione logica basata su vincoli estende la programmazione logica introducendo il concetto di \emph{vincolo}. Un programma CLP contiene fatti e regole come un programma LP, con la differenza che nel programma CLP il corpo delle clausole può presentare vincoli.
+
+Per i CLP il risultato di una dimostrazione è quindi un insieme di vincoli (contraint store) e/o un valore letterale valido in quell'insieme di vincoli.
+
+La programmazione logica basata su vincoli è utilizzata per risolvere \emph{Contraint Satisfaction Problem} (spesso abbreviato in \emph{CSP}). Un problema di soddisfacimento di vincoli è intrinsicamente legato al dominio dei suoi vincoli, ciò rende il CSP parametrico rispetto al diminio dei suoi vincoli. Per questo motivo, il nome \clpset{} esprime il linguaggio basato su vincoli  dove il dominio del vincolo è l'insieme.
 
 \subsection{Constraint Satisfaction Problem}
-\label{sec:csp}
-Un problema di soddisfacimento di vincoli è composto da tre componenti:
+\label{sec:constraint_satisfaction_problem}
+Un problema di soddisfacimento di vincoli è una tripla composta da
 \begin{itemize}
 \item un insieme $X$ di variabili ${X_1, \ldots, X_n}$;
 \item un insieme $D$ di domini ${D_1, \ldots, D_n}$, uno per variabile;
@@ -169,18 +199,284 @@ Un problema di soddisfacimento di vincoli è composto da tre componenti:
 Ogni dominio $D_i$ specifica un insieme di valori possibili per la variabile $X_i$.
 
 \section{Il linguaggio $\clpset$}
-\label{sec:clpset}
-$\clpset$, definito in \cite{clpset2000} è un linguaggio logico per la gestione di vincoli su insiemi. Da un punto di vista più generale $\clpset$ è un istanza dei CLP sopra descritti, dove il dominio di applicazione dei vincoli è quello insiemistico. In questo contesto gli insiemi sono visti come un tipo di dato primitivo del linguaggio, detti termini della logica del primo ordine. I predicati predefiniti invece sono visti come vincoli predefiniti del linguaggio, gestiti con procedure di risoluzione di vincoli. 
+\label{sec:lang_clpset}
+\clpset{}, definito in \cite{Dovier00} è un linguaggio logico per la gestione di vincoli su insiemi. Da un punto di vista più generale \clpset{} è un istanza dei CLP sopra descritti, dove il dominio di applicazione dei vincoli è quello insiemistico. In questo contesto gli insiemi sono visti come un tipo di dato primitivo del linguaggio, detti termini della logica del primo ordine. I predicati predefiniti invece sono visti come vincoli predefiniti del linguaggio, gestiti con procedure di risoluzione di vincoli. 
 
-La classe di insiemi considerata vuole essere molto generale: gli insiemi possono essere annidati e/o parzialmente specificati. Gli insiemi parzialmente specificati possono contenere variabili e altri elementi "nonground".
+La classe di insiemi considerata vuole essere molto generale: gli insiemi possono essere annidati e/o parzialmente specificati. Gli insiemi parzialmente specificati possono contenere variabili e altri elementi \emph{non-ground}.
 
-Uno degli obiettivi primari di $\clpset$ è di essere molto flessibile e fornire forme generali per la manipolazione di insiemi e relative operazioni, in quanto la nozione di \emph{set} è una componente comune nella progettazione di programmi, ma sono pochi i linguaggi che forniscono gli insiemi come struttura dati elementare.
-Sempre in \cite{clpset2000} vengono menzionate alcune eccezioni di linguaggi che si basano su insiemi: SETL, B ed il linguaggio Z, utilizzato per descrivere la specifica formale di programmi. Qualche eccezione esiste anche nel campo dei \emph{database deduttivi} e, più recentemente, anche come \emph{general purpose programming language}. Ad ogni modo, questi linguaggi impongono dei limiti sul tipo di insiemi espressibili o sulle capacità computazionali degli stessi. Ad esempio, in molti ambiti, si richiede che gli insiemi siano totalmente specificati: non sono ammesse \emph{variabili} libere.
+Uno degli obiettivi primari di \clpset{} è di essere molto flessibile e fornire forme generali per la manipolazione di insiemi e relative operazioni, in quanto la nozione di \emph{set} è una componente comune nella progettazione di programmi, ma sono pochi i linguaggi che forniscono gli insiemi come struttura dati elementare.
+Sempre in \cite{Dovier00} vengono menzionate alcune eccezioni di linguaggi che si basano su insiemi: SETL, B ed il linguaggio Z, utilizzato per descrivere la specifica formale di programmi. Qualche eccezione esiste anche nel campo dei \emph{database deduttivi} e, più recentemente, anche come \emph{general purpose programming language}. Ad ogni modo, questi linguaggi impongono dei limiti sul tipo di insiemi espressibili o sulle capacità computazionali degli stessi. Ad esempio, in molti ambiti, si richiede che gli insiemi siano totalmente specificati: non sono ammesse \emph{variabili} libere.
 
-Si noti che in $\clpset$ il costo computazione non è un requisito necessario. Molte operazioni possono risultare anche molto costose, ma dal punto di vista implementativo si preferisce implementare la risoluzione al problema in modo dichiarativo e più intuitivo possibile.
+Si noti che in \clpset{} il costo computazione non è un requisito necessario. Molte operazioni possono risultare anche molto costose, ma dal punto di vista implementativo si preferisce implementare la risoluzione al problema in modo dichiarativo e più intuitivo possibile.
+
+Di seguito si darà una descrizione tradizionale di \clpset{} definendone prima la sintassi (\ref{subsec:lang_clpset_sintax}) e poi la semantica informale (\ref{subsec:lang_clpset_semantics}). In \ref{subsec:lang_clpset_solver} si descriverà il funzionamento in termini astratti del risolutore di formule per questo linguaggio, implementato in questo lavoro di tesi.
+
+\subsection{Sintassi}
+\label{subsec:lang_clpset_sintax}
+
+La sintassi del linguaggio \clpset{} si basa sui seguenti insiemi di simboli:
+
+\begin{itemize}
+\item $\calF$ è un insieme di costanti e simboli di funzione definito da:    
+\begin{itemize}
+\item $\emptyset \in \calF$,
+\item $\{ \cdot \mid \cdot \} \in \calF$ e $int \in \calF$, simboli relazione binaria,
+\item $Z \subset \calF$ e $F_Z \subset \calF$, dove $Z$ l'insieme delle costanti numeriche intere e $F_Z$ l'insieme degli operatori aritmetici di base (+, -, $\ast$, /);
+\end{itemize}
+\item $\prod_C = \{ =, in, un, disj, \leq, size, set, integer \}$, insieme di simboli di predicato;
+\item $\calV$ è un insieme numerabile di simboli di variabile.
+\end{itemize}
+
+I \lset{}-\textit{termini} sono termini costruiti a partire dai simboli di $\calF$ e $\calV$ nel modo usuale. Ad esempio, i seguenti, sono termini insiemistici ($set-terms$):
+\begin{itemize}
+\item $\{1 \mid \emptyset \} \equiv \{1\}$
+\item $\{1 \mid \{2 \mid \emptyset \} \} \equiv \{1,2\}$
+\item $\{1 \mid \{2 \mid X \} \} \equiv \{1,2 \mid X \}$
+\item $\ldots$
+\end{itemize}
+    
+I \lset{}-\textit{constraint} atomici (o primitivi) sono predicati i cui simboli sono definiti in $\prod_C$, come:
+\begin{itemize}
+\item $X = 1$
+\item $un(\{1\}, \emptyset, R)$
+\end{itemize}
+    
+Le \lset{}-\textit{formula} (o \lset{}-\textit{constraint} composti) sono combinazioni $\wedge$ (and) e $\vee$ (or) di \lset{}-\textit{constraint} primitivi. Le seguenti formule sono esempi di \lset{}-\textit{constraint} composti:
+\begin{itemize}
+\item $1 in R \land 1 nin S \land inters(R,S,T) \land T = \{X\}$
+\item $inters(R, S, T) \land size(T, N) \land N \leq 2$
+\end{itemize}
+
+\subsection{Semantica informale}.
+\label{subsec:lang_clpset_semantics}
+
+La semantica intuitiva dei vari simboli in $\sum_{\mathcal{SET}}$ è la seguente:
+
+\begin{itemize}
+\item $\emptyset$ rappresenta l’insieme vuoto;
+\item $\{\cdot\mid\cdot\}$ rappresenta il costruttore di insiemi definito come $\{t\mid s\} = \{t\}\ \cup s$;
+\item \textit{int} è il costruttore di intervalli definito come
+\begin{equation}
+int (m, n ) =
+  \begin{cases}
+    \emptyset & \text{se } m > n \\
+    [ m, n ] & \text{se } m \leq n
+  \end{cases}
+\end{equation}
+\item $+, -, \ast, /$ rappresentano le usuali operazioni aritmetiche su interi;
+\item il predicato $=$ rappresenta la relazione di uguaglianza;
+\item il predicato \textit{in} rappresenta la relazione di appartenenza;
+\item il predicato \textit{un} rappresenta la relazione di unione; insiemistica definita come:
+$un(r,s,t) = true \Longleftrightarrow t = r \cup s$;
+\item il predicato \textit{disj} rappresenta la relazione di disgiunzione insiemistica definita come
+$disj(r,s) = true \Longleftrightarrow r \cap s = \emptyset$;
+\item il predicato \textit{size} rappresenta la relazione cardinalità di insiemi definita come $size(s, n) = true \Longleftrightarrow n = \mid s \mid$;
+\item il predicato $\leq$ rappresenta la relazione di confronto ”minore o uguale” sugli interi;
+\item il predicato \textit{set} controlla che il termine sia un insieme.
+\end{itemize}
+%\subsubsection{Vincoli}
+
+\subsection{Il solver \satset{}}
+\label{subsec:lang_clpset_solver}
+La procedura \satset{} risolve i vincoli e rappresenta il solver del linguaggio \clpset{}. Il seguente algoritmo ne descrive la struttura:
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Procedure{\satset{}}{}
+\State $C \gets $ \texttt{sort\_infer($C$)};
+\Repeat
+\State $C'$ $\gets C;$
+\Repeat
+\State $C'' \gets C;$
+\State $C \gets $ \texttt{step($C$)};
+\Until {$C$ = $C''$;}
+\State $C \gets $ \texttt{remove\_neq($C$)};
+\Until {$C'$ = $C$;}
+\State
+\State\Return $C$;
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Essenzialmente \satset{} utilizza tre procedure:
+
+\begin{itemize}
+\item \textbf{\texttt{sort\_infer}}: aggiunge alla \lset{}-\textit{formula} $C$ i vincoli \textbf{set} e \textbf{integer} per assicurare che gli oggetti utilizzati nei vincoli siano del tipo corretto.
+    
+\item \textbf{\texttt{step}}: applica speciali \textit{regole di riscrittura} alla formula $C$ corrente e ritorna \textit{false} oppure la formula modificata. L'esecuzione di $STEP$ viene iterata fino ad arrivare ad ottenere una formula in forma irriducibile. Notare che $STEP$ ritorna $false$ se almeno uno dei vincoli in $C$ viene riscritto a $false$. Anche $STEP(false)$ ritorna $false$.
+    
+\item \textbf{\texttt{remove\_neq}}: tratta l'eliminazione dei $\neq-constraints$ nel caso in cui coinvolgano variabili insiemistiche che appaiono anche in vincoli di unione in forma risolta.
+\end{itemize}
+
+Quando la computazione non deterministica di $\satset{}(C)$ termina, se il risultato è $false$ allora si può concludere che $C$ non è soddisfacibile; al contrario, se nessuno dei vincoli in $C$ viene riscritto a $false$ allora ogni soluzione generata da \satset{} è una soluzione per $C$ e viceversa.
 
 \section{Il linguaggio $\lbr$}
-\label{sec:lbr}
+\label{sec:lang_lbr}
+
+Il linguaggio \lbr{} estende il linguaggio \clpset{}, precedentemente decritto, con relazioni binarie.
+La sintassi di \lbr{} è sostanzialmente la stessa di \clpset{}.
+Si richiede soltanto che l'insieme $\calF$ venga esteso con almeno il simbolo binario $(\cdot \mid \cdot)$, usato per rappresentare coppie.
+Inoltre l'insieme $\prod_C$ viene esteso con nuovi simboli di predicato su relazioni binarie, precisamente $comp, id$, $inv$ e $rel$.
+
+L'insieme $\prod_C$ esteso descritto da:\\
+\begin{center}
+\begin{equation}
+\prod_C = 
+  \{  =, in, un, disj, \leq, size, set, integer  \}
+    \cup
+  \{  comp, id, inv, rel  \}
+\end{equation}
+\end{center}
+Anche il solver \satset{} viene esteso con le opportune regole di riscrittura per i nuovi vincoli $comp, id$ e $inv$, prendendo poi il nome di \satbr{}. La procedura \texttt{remove\_neq} viene estesa con il supporto ai nuovi vincoli.
+
+\subsection{Vincoli su relazioni binarie}
+\textit{Un termine insiemistico r rapperesenta una relazione binaria se assume una delle seguenti forme:}
+
+\begin{itemize}
+\item $r = \{\}$
+
+\item $r =
+	\{
+		( x_1, y_1 ), 
+		( x_2, y_2 ),
+		\ldots, 
+		( x_n, y_n )
+    \}$
+    
+\item $r =
+	\{
+		( x_1, y_1 ), 
+		( x_2, y_2 ),
+		\ldots, 
+		( x_n, y_n )
+		\mid
+		S
+    \}$, con $S$ relazione binaria
+\end{itemize}
+dove
+\begin{itemize}
+    \item[-] $x_i, y_i$ con $i = 1, \ldots, n$ sono termini;
+    \item[-] $S$ può essere sia una variabile che un termine insiemistico.    
+\end{itemize}
+
+Di seguito viene data una semantica informale dei vincoli primitivi per relazioni binarie.
+
+\begin{itemize}
+\item $comp(r,s,t)$: dove $r$, $s$ e $t$ sono relazioni binarie. L’interpretazione intuitiva del vincolo è
+\[
+    comp(r, s, t) = true 
+      \Longleftrightarrow 
+    t = \{[x, z] \mid \exists y.[x, y] \in r \land [y, z] \in s\}
+\]
+    
+\item $id(r,I)$: dove \textit{I} è un insieme e \textit{r} una relazione binaria che ne rappresenta l'identità. L’interpretazione intuitiva del vincolo è
+\[
+    id(r, I) = true 
+      \Longleftrightarrow
+    r = \{[x, x] \mid x \in I\}
+\]
+
+\item $inv(r,s)$: dove $r$ ed $s$ sono relazioni binarie. L’interpretazione intuitiva del vincolo è
+\[
+   inv(r, s) = true 
+     \Longleftrightarrow 
+   s = \{[y, x] \mid \exists [x, y] \in r\}
+\]
+\end{itemize}
+
+I vincoli \textit{dom} e \textit{ran} vengono realizzati come vincoli primitivi nonostante sia dimostrato che possono essere realizzati come vincoli derivati (cioè definiti tramite una formula \lbr{}). Questo viene fatto per motivi di efficienza.
+
+\begin{itemize}
+\item $dom(r, A)$: dove $r$ è una relazione binaria e $A$ un insieme che rappresenta il suo dominio. L’interpretazione intuitiva del vincolo è
+\[
+    dom(r, A) = true 
+      \Longleftrightarrow 
+    A = \{x \mid \exists [x,y] \in r\}
+\]
+
+\item $ram(r, B)$: dove $r$ è una relazione binaria e $B$ un insieme che rappresenta il suo codominio (o rango). L’interpretazione intuitiva del vincolo è
+\[
+    ran(r, B) = true 
+      \Longleftrightarrow 
+    B = \{y \mid \exists [x,y] \in r\}
+\]
+\end{itemize}
+
+\paragraph{Esempi}
+\begin{itemize}
+\item $dom(\{(1,2), (3,4)\}, \{1,3\}) \implies true$
+\item $ran(\{(1,2), (3,4)\}, \{2,4\}) \implies true$
+\item $comp(\{(1,2), (3,4)\}, \{(2,6), (4,8)\}, \{(1,6), (3,8)\}) \implies true$
+\item $id(\{(1,1), (2,2)\}, \{1,2\}) \implies true$
+\item $inv(\{(1,2), (3,4)\}, \{(2,1), (4,3)\}) \implies true$
+\end{itemize}
+
+\phantom{a}
+I \textit{constraint} primitivi precedentemente definiti possono essere utilizzati in congiunzione tra loro (assieme a nuove varibili ove necessita) per definire altri vincoli (\textit{vincoli derivati}), ad esempio come segue:
+\begin{equation}
+\begin{split}
+dres(A, R, S) & \Longleftrightarrow un(S, N_1, R) \\ 
+  & \land dom(S, N_2) \\
+  & \land N_2 \subseteq A \\
+  & \land dom(N_1, N_3) \\
+  & \land A \parallel N_3
+\end{split}
+\end{equation}
+\begin{equation}
+\begin{split}
+rres(A, R, S) & \Longleftrightarrow un(S, N_1, R) \\ 
+  & \land ran(S, N_2) \\
+  & \land N_2 \subseteq A \\
+  & \land ran(N_1, N_3) \\
+  & \land A \parallel N_3
+\end{split}
+\end{equation}
+
+che rappresentano rispettivamente i vincoli di dominio ristretto ($dres$) e di codominio ristretto ($rres$).
+
+\paragraph{Esempi}
+\begin{itemize}
+\item $dres\big(\{1,3\}, \{(1,2), (3,4), (5,6)\}, \{(1,2), (3,4)\}\big) \implies true$
+\item $rres\big(\{(1,2), (3,4), (5,6)\}, \{2,4\}, \{(1,2), (3,4)\}\big) \implies true$
+\end{itemize}
+
+Anche i vincoli negativi $ndom, nran, ncomp, nin$ e $ninv$ vengono definiti in termini dei vincoli primitivi sopra citati.
+
+\subsection{Vincoli su funzioni parziali}
+\textit{Un termine insiemistico f rappresenta una funzione parziale se è una relazione binaria e vale la seguente definizione:}
+\[
+\forall x, y, y' : \big((x, y) \in f \wedge (x, y' ) \in f \implies y = y' \big)
+\]
+
+Le funzioni parziali aggiungono il nuovo vincolo \textit{pfun} all'insieme dei vincoli su relazioni binarie.
+Il vincolo \textit{pfun} viene introdotto come vincolo primitivo nonostante anch'esso sia dimostrato essere possibile realizzarlo come vincolo derivato. Anche in questo caso si preferisce questa implementazione per motivi di efficienza.
+
+\paragraph{Sintassi}
+\begin{itemize}
+\item \textit{pfun(f)}: dove $f$ è una relazione binaria.
+\end{itemize}
+
+\paragraph{Interpretazione intuitiva}
+\[
+f = \{ (x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n) \}
+\]
+allora
+\begin{align*}
+pfun(f) & = true \Longleftrightarrow \\
+  & \forall x_i, x_y \in \{ x_1, \ldots, x_n \} \subset dom(f): \\
+    & x_i \neq x_j \land \{ x_1, \ldots, x_n \} \not\in dom(S)
+\end{align*}
+
+Quindi se $pfun(f) = true$ allora $f$ è una funzione parziale altrimenti $f$ è una relazione binaria.
+
+\paragraph{Nota}
+Anche le funzioni parziali hanno i vincoli di $dom$ e $comp$ che rispettano le definizioni date in precedenza, ma hanno un diverso funzionamento e diconseguenza una diversa implementazione.
+
+Ad esempio, se $r$ è una relazione binaria e $f$ una funzione parziale:
+\begin{itemize}
+\item $dom(f,\{1\}) \to f = \{(1,n)\}$
+\item $dom(r,\{1\}) \to r = \{(1,n_1), \cdots, (1,n_m)\}$ con $m \geq 1$
+\end{itemize}
 
 
 %%% *******************************************************
