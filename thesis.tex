@@ -817,51 +817,6 @@ Il funzionamento del solver è quello descritto dallo pseudocodice in  \ref{subs
 \end{itemize} 
 La formula finale ottenuta è semplificata e irriducibile, il che la rende equivalente alla formula originale.
 
-\section{Notazione}
-
- \todo{da spostare in appendice}
-
-Per semplificare l'implementazione si è deciso di adottare alcuni espedienti notazionali descritti dalla sezioni sottostanti.\footnote{La notazione impiegata in \clpset{} è descritta in \ref{sec:lang_clpset}.}. Ciò si è reso necessario per evitare di affrontare problemi non direttamente legati e potersi concentrare solamente sul solver.
-
-\subsection{Formule}
-
-La notazione adottata per la rappresentazione delle formule è la seguente:
-
-\begin{table}[H]
-\center
-\begin{tabular}{ll}
-\textbf{Linguaggio} & \textbf{Notazione} \\
-\clpset{} & $T_1 \land T_2 \land \ldots \land T_n$ \\
-Picat & \verb|[| $T_1, T_2, \ldots, T_n$\verb|]| \\
-\end{tabular}
-\end{table}
-
-\subsection{Operazioni primitive}
-
-Le operazioni primitive di \clpset{} sono spesso espresse tramite simboli (e.g., $=, \neq, \ldots$). La notazione adottata è la seguente:
-
-\begin{table}[H]
-\center
-\begin{tabular}{l l}
-\textbf{Linguaggio} & \textbf{Notazione} \\
-\clpset{} & $T_1 = T_2$ \\
-Picat & \verb|[eq(| $T_1, T_2$ \verb|)]| \\
-\end{tabular}
-\end{table}
-
-\subsection{Insiemi}
-
-Gli insiemi in \clpset{} sono rappresentati tramite la funzione $\{ \cdot \mid \cdot \}$.
-
-\begin{table}[H]
-\center
-\begin{tabular}{l l}
-\textbf{Linguaggio} & \textbf{Notazione} \\
-\clpset{} & $\{ T_1, T_2, \ldots, T_n \mid X \}$ \\
-Picat & \verb|[| $T_1, T_2, \ldots, T_n \mid X$ \verb|]| \\
-\end{tabular}
-\end{table}
-
 \section{Il sistema}
 
 \subsection{Moduli}
@@ -1120,6 +1075,59 @@ TODO
 \chapter{Conclusione e lavori futuri}
 TODO
 
+
+%%% *******************************************************
+%%% *   Appendice   ***************************************
+\begin{appendices}
+
+\chapter{Notazioni per \clpset{} in Picat}
+
+Per semplificare l'implementazione si è deciso di adottare alcuni espedienti notazionali descritti dalle sezioni sottostanti.\footnote{La notazione impiegata in \clpset{} è descritta in \ref{sec:lang_clpset}.}. Ciò si è reso necessario per evitare di affrontare problemi non direttamente legati al solver e potersi concentrare solamente sulla risoluzione dei vincoli insiemistici.
+
+\section{Formule}
+
+La notazione adottata per la rappresentazione delle formule è la seguente:
+
+\begin{table}[H]
+\center
+\begin{tabular}{ll}
+\textbf{Linguaggio} & \textbf{Notazione} \\
+\clpset{} & $T_1 \land T_2 \land \ldots \land T_n$ \\
+Picat & \verb|[| $T_1, T_2, \ldots, T_n$\verb|]| \\
+\end{tabular}
+\end{table}
+
+\section{Operazioni primitive}
+
+Le operazioni primitive di \clpset{} sono spesso espresse tramite simboli (e.g., $=, \neq, \ldots$). La notazione adottata è la seguente:
+
+\begin{table}[H]
+\center
+\begin{tabular}{l l}
+\textbf{Linguaggio} & \textbf{Notazione} \\
+\clpset{} & $T_1 = T_2$ \\
+Picat & \verb|[eq(| $T_1, T_2$ \verb|)]| \\
+\end{tabular}
+\end{table}
+
+\section{Insiemi}
+
+Gli insiemi in \clpset{} sono rappresentati tramite la funzione $\{ \cdot \mid \cdot \}$.
+
+\begin{table}[H]
+\center
+\begin{tabular}{l l}
+\textbf{Linguaggio} & \textbf{Notazione} \\
+\clpset{} & $\{ T_1, T_2, \ldots, T_n \mid X \}$ \\
+Picat & \verb|[| $T_1, T_2, \ldots, T_n \mid X$ \verb|]| \\
+\end{tabular}
+\end{table}
+
+\end{appendices}
+
+
+%%% *******************************************************
+%%% *   Bibliograpy   *************************************
 \printbibliography
 
 \end{document}
