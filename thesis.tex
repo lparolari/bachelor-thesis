@@ -818,24 +818,166 @@ Il funzionamento del solver è quello descritto dallo pseudocodice in  \ref{subs
 La formula finale ottenuta è semplificata e irriducibile, il che la rende equivalente alla formula originale.
 
 \section{Il sistema}
+\label{ch:clpsetpicat_system}
 
-\subsection{Moduli}
+\subsection{Interprete}
+\label{ch:clpsetpicat_system_interpreter}
 
-Il progetto di implementazione di \clpset{} in Picat si articola in diversi moduli: alcuni realizzano funzioni di utilità molto vicine al solver, altri sono moduli di corredo, atti a gestire aspetti non legati direttamente alla risoluzione di formule insiemistiche.
+L'interprete realizzato per la gestione del sistema nel suo insieme è suddiviso per funzionalità: grazie alle caratteristiche di Picat queste funzionalità sono state raggruppate e separate in \emph{moduli} (vedere \ref{sec:picat_advanced_modules} per ulteriori informazioni sul modulo). Ognuno di questi moduli cerca di essere il più coeso possibile e fornisce funzionalità ad altri moduli, incrementando quindi la riusabilità del codice.
 
-I moduli identificati e realizzati sono:
-\begin{itemize}
-\item \verb|solver|: il modulo principale che realizza la risoluzione delle formule;
-\item \verb|lset|: il modulo contenente l'interfaccia e l'implementazione degli insiemi nei termini di \clpset{};
-\item \verb|commands|: il modulo di gestione dell'interfaccia utente;
-\item \verb|global|: il modulo per la gestione delle variabili globali;
-\item \verb|log_h|: il modulo per la gestione dei log;
-\item \verb|prompt|: il modulo di gestione I/O;
-\item \verb|assert|: il modulo di utilità l'implementazione di \emph{unit tests}.
-\end{itemize}
+I moduli identificati e realizzati sono descritti nel seguito.
 
-\subsection{Tests}
- \todo{Aggiungere test}
+\subsubsection{solver.pi}
+
+\verb|solver|. \'E il modulo principale che realizza la risoluzione delle formule. Espone il predicato \verb|solve/2|, utilizzabile da qualunque programma Picat per risolvere una formula di tipo \clpset{}. Questo modulo viene ampiamente trattato in \ref{sec:clpsetpicat_solver}.
+
+\subsubsection{lset.pi}
+
+\verb|lset|. Contiene l'interfaccia e l'implementazione degli insiemi nei termini di \clpset{}.
+
+Espone il costruttore
+\begin{verbatim}
+new_lset() = [].
+new_lset(ListRest) = Lset => 
+    if (not list(ListRest)) 
+    then Lset = [ListRest]
+    else Lset = ListRest
+    end.
+new_lset(Head, Rest) = Lset =>
+    if (not list(Head)) then Head := [Head] end,
+    append(Head, Rest, Lset).
+\end{verbatim}
+e due metodi
+\begin{verbatim}
+%% lset_rest(lset(X)) = R
+%
+% @param lset(X)  The lset from which take the rest.
+% @return  The rest (with setlog meaning) R from lset(X).
+
+lset_rest(X) = R => lset_rest(X, R).
+
+%% lset_head(lset(X)) = R
+%
+% @param lset(X)  The lset from which take the head.
+% @return  The head (with setlog meaning) R from lset(X).
+
+lset_head(X) = R => lset_head(X, R).
+\end{verbatim}
+
+\subsubsection{commands.pi}
+
+\verb|commands|. Gestisce l'interfaccia utente. E' una CLI orientata all'usabilità utente: fornisce messaggi di aiuto, cerca di effettuare controlli sull'input e una sapiente gestione degli errori.
+
+\begin{verbatim}
+%% obeyCommands() is det
+% 
+% @desc Realizes the cycle of interaction with the user:
+%  commands are read, their legality is checked and,
+%  if they are correct, they are executed.
+
+obeyCommands() ?=>
+    while(true)
+        readCommandLine([Command | Arguments]),
+        if membchk(Command, getKnownCommands()) then
+            doCommand(Command, Arguments),
+            if not membchk(Command, getNoHistoryCommands()) then
+                pushLastCommand(Command, Arguments)    
+            end
+        else 
+            unknownCommand(Command)
+        end
+    end.
+obeyCommands() => obeyCommands().
+\end{verbatim}
+
+\subsubsection{global.pi}
+
+\verb|global|. Gestiosce le variabili globali. Aiuta il programmatore ad effettuare operazioni sulle variabili globali senza conoscere il tipo di mappa globale utilizzata e senza effettuare manipolazione di mappe direttamente.
+
+\begin{verbatim}
+%% get_global(+Key) = Value
+%
+% @desc Get variable with name Key and return it's value in Value.
+get_global(Key) = Value =>
+    G = get_map(),
+    Value = G.get(Key).
+
+%% global(+Key, +Value)
+%
+% @desc Set a variable with name Key and value Value.
+set_global(Key, Value) =>
+    G = get_map(),
+    G.put(Key, Value).
+\end{verbatim}
+
+\subsubsection{log\textunderscore h.pi}
+
+\verb|log_h|. Gestisce i log con diverse modalità di verbosità e tipo di messaggi.
+
+\begin{verbatim}
+log_d(X) => println(get_log_file_fd(), "D: " ++ X.to_string).
+log_e(X) => println(get_log_file_fd(), "E: " ++ X.to_string).
+log_i(X) => println(get_log_file_fd(), "I: " ++ X.to_string).
+
+log_d_v(X)   => log_d(X, v).
+log_d_vv(X)  => log_d(X, vv).
+log_d_vvv(X) => log_d(X, vvv).
+
+log_d(X, V), membchk(V, log_mode()) => log_d(X).
+log_d(X, V), membchk(all, log_mode()) => log_d(X).
+log_d(X, V) => true.
+\end{verbatim}
+
+\subsubsection{prompt.pi}
+
+\verb|prompt|. Crea un livello di astrazione sopra l'I/O generico, permettendo quindi una gestione più fine dell'input e dell'output per esempio con formattazione e stampe condizionali.
+
+\begin{verbatim}
+%% echo(P) is det
+%
+% @desc Print the phrase P to the standard output if echo is 
+%  enabled (i.e., the global prompt_echo_enabled is true).
+
+echo(P), 
+        is_global(quiet_mode), 
+        get_global(quiet_mode) !== true  => 
+    println(P.to_string).
+\end{verbatim}
+
+\subsubsection{assert.pi}
+
+\verb|assert|. Implementa metodi di utilità per la gestione degli \emph{unit tests}.
+
+\begin{verbatim}
+%% assert_equal(A, Expected, Actual)
+%
+% @param A:struct  The assertion object.
+% @param Expected:atom  The expected value.
+% @param Actual:atom    The actual value.
+%
+% @desc Log a success if Expected is identical to Actual, log a fail otherwise.
+
+assert_equal(A, Expected, Actual), Expected == Actual => 
+    log_i("SUCCESS " ++ ...").
+assert_equal(A, Expected, Actual) => 
+    log_e("FAILED "  ++ ...).
+\end{verbatim}
+
+\subsection{Unit test}
+\label{ch:clpsetpicat_system_tests}
+
+La stesura dei test per verificare la correttezza dell'implementazione si è subito resa necessaria al fine di incrementare la qualità del software prodotto. Per questo motivo sono stati realizzati predicati che prendono in esame casi semplici ma cercano di esploare i casi limite.
+
+I test realizzati fanno uso del modulo \verb|assert| che mette a disposizione metodi di utilità come \verb|assert_equal/2|, \verb|assert_fail/1|, \verb|fail/1|. Grazie a questi predicati è possibile effettuare test con la seguente struttura
+\begin{verbatim}
+test1 ?=>
+   A = new_assert(test1)
+   solve(Formula, Result),
+   A.assert_equal([], Result)
+test1 => 
+   A = new_assert(test1), A.fail().
+\end{verbatim}
+dove \verb|assert_equal/2| verifica che il valore attuale sia uguale al valore previsto, e se non lo è fallisce attivando il predicato \verb|fail/1| che registra il fallimento di quel test.
 
 \section{Il solver}
 
