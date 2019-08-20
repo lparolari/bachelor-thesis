@@ -27,9 +27,10 @@
 \usepackage{listings}        % code sections, http://ctan.org/pkg/listings
 %\usepackage{showframe}      % shows page frames.
 \usepackage{titlesec}        % change titles size.
-\usepackage{algorithm}
-\usepackage{algpseudocode}
-\usepackage{float}
+\usepackage{algorithm}       % algorithm block.
+\usepackage{algpseudocode}   % style for (autoimported) package algorithmicx.
+\usepackage{float}           % float management.
+\usepackage[toc,page]{appendix}  % appendix.
 
 %   CONFIGS
 \hypersetup{colorlinks=true, urlcolor=blue, linkcolor=blue}
@@ -67,18 +68,18 @@
         \Large
         Corso di laurea in Informatica 
 		
-		\vspace{1.5cm} 
+		\vspace{1.2cm} 
  
  		% *** title
         \Huge
-        \textbf{Progettazione ed implementazione in Picat di un risolutore per vincoli insiemistici}
+        \textbf{Progettazione e implementazione in Picat di un risolutore per vincoli insiemistici}
  
  		% *** subtitle
         \vspace{1cm}
         \LARGE
-        % may have subtitle.
+        Design and implementation in Picat of a set constraint solver 
  
-        \vspace{1.5cm}
+        \vspace{1.2cm}
  
  		% *** authors
 		\large Candidato: \Large\textbf{Luca Parolari}\\
@@ -181,6 +182,7 @@ I programmi logici vengono risolte mediante sistemi di deduzione. Il più famoso
 
 \section{Constraint Logic Programming}
 \label{sec:constraint_logic_programming}
+
 La programmazione logica basata su vincoli estende la programmazione logica introducendo il concetto di \emph{vincolo}. Un programma CLP contiene fatti e regole come un programma LP, con la differenza che nel programma CLP il corpo delle clausole può presentare vincoli.
 
 Per i CLP il risultato di una dimostrazione è quindi un insieme di vincoli (contraint store) e/o un valore letterale valido in quell'insieme di vincoli.
@@ -189,6 +191,7 @@ La programmazione logica basata su vincoli è utilizzata per risolvere \emph{Con
 
 \subsection{Constraint Satisfaction Problem}
 \label{sec:constraint_satisfaction_problem}
+
 Un problema di soddisfacimento di vincoli è una tripla composta da
 \begin{itemize}
 \item un insieme $X$ di variabili ${X_1, \ldots, X_n}$;
@@ -200,6 +203,7 @@ Ogni dominio $D_i$ specifica un insieme di valori possibili per la variabile $X_
 
 \section{Il linguaggio $\clpset$}
 \label{sec:lang_clpset}
+
 \clpset{}, definito in \cite{Dovier00} è un linguaggio logico per la gestione di vincoli su insiemi. Da un punto di vista più generale \clpset{} è un istanza dei CLP sopra descritti, dove il dominio di applicazione dei vincoli è quello insiemistico. In questo contesto gli insiemi sono visti come un tipo di dato primitivo del linguaggio, detti termini della logica del primo ordine. I predicati predefiniti invece sono visti come vincoli predefiniti del linguaggio, gestiti con procedure di risoluzione di vincoli. 
 
 La classe di insiemi considerata vuole essere molto generale: gli insiemi possono essere annidati e/o parzialmente specificati. Gli insiemi parzialmente specificati possono contenere variabili e altri elementi \emph{non-ground}.
@@ -278,6 +282,7 @@ $disj(r,s) = true \Longleftrightarrow r \cap s = \emptyset$;
 
 \subsection{Il solver \satset{}}
 \label{subsec:lang_clpset_solver}
+
 La procedura \satset{} risolve i vincoli e rappresenta il solver del linguaggio \clpset{}. Il seguente algoritmo ne descrive la struttura:
 
 \begin{algorithm}
@@ -330,6 +335,8 @@ L'insieme $\prod_C$ esteso descritto da:\\
 Anche il solver \satset{} viene esteso con le opportune regole di riscrittura per i nuovi vincoli $comp, id$ e $inv$, prendendo poi il nome di \satbr{}. La procedura \texttt{remove\_neq} viene estesa con il supporto ai nuovi vincoli.
 
 \subsection{Vincoli su relazioni binarie}
+\label{sec:lang_lbr_binrel}
+
 \textit{Un termine insiemistico r rapperesenta una relazione binaria se assume una delle seguenti forme:}
 
 \begin{itemize}
@@ -443,6 +450,8 @@ che rappresentano rispettivamente i vincoli di dominio ristretto ($dres$) e di c
 Anche i vincoli negativi $ndom, nran, ncomp, nin$ e $ninv$ vengono definiti in termini dei vincoli primitivi sopra citati.
 
 \subsection{Vincoli su funzioni parziali}
+\label{sec:lang_lbr_pfun}
+
 \textit{Un termine insiemistico f rappresenta una funzione parziale se è una relazione binaria e vale la seguente definizione:}
 \[
 \forall x, y, y' : \big((x, y) \in f \wedge (x, y' ) \in f \implies y = y' \big)
@@ -482,6 +491,7 @@ Ad esempio, se $r$ è una relazione binaria e $f$ una funzione parziale:
 %%% *******************************************************
 %%% Picat
 \chapter{Picat}
+\label{ch:picat}
 
 \minitoc
 
@@ -507,6 +517,7 @@ Inoltre, Picat supporta le maggiori caratteristiche dei linguaggi logici, obblig
 \label{sec:picat_base}
 
 \subsection{Il sistema Picat}
+\label{sec:picat_base_system}
 
 Picat è un linguaggio interpretato. I programmi Picat però, prima di essere eseguiti, sono compilati. Il compilatore non trasforma i sorgenti in codice macchina, ma depura il programma da tutto quello che non è necessario per l'esecuzione, esegue alcuni controlli statici e riscrive alcuni costrutti sintatticamente (e.g. i cicli).
 
@@ -521,6 +532,7 @@ Picat> main.
 \end{verbatim}
 
 \subsection{Tipi di dato}
+\label{sec:picat_base_datatype}
 
 Picat è un linguaggio tipato dinamicamente: il controllo dei tipi avviene a runtime. Le variabili in Picat possono avere o non avere un valore. Una variabile è libera fintanto che non viene vincolata ad un valore (operazione di bounding), inoltre possono avere degli attributi rappresentati come mappa chiave-valore.
 
@@ -577,6 +589,7 @@ X = [1,2,3,4,5]
 Picat possiede una ricca libreria di funzioni di utilità sui tipi di dato che permettono, tra le altre cose, di verificare qual è il tipo di una variabile, convertire tipi ad altri tipi, aggiungere elementi ad un insieme, eccetera.
 
 \subsection{Predicati}
+\label{sec:picat_base_pred}
 
 I predicati sono una componente fondamentale di Picat. Un predicato ha esito positivo o negativo, a meno di eccezioni. Un predicato può esplorare tutte le soluzioni tramite il backtracking implementato in Picat.
 
@@ -607,6 +620,7 @@ no
 \end{verbatim}
 
 \subsection{Funzioni}
+\label{sec:picat_base_func}
 
 Picat permette di definire delle funzioni, ovvero oggetti che hanno sempre esito positivo e che ritornano un solo valore. La sintassi di una funzione è $Head, Cond = Result => Body$. Le funzioni in picat sono uno zucchero sintattico per un predicato cos' formato: $HeadResult, Cond => Body$ dove $HeadResult = p(t_1, \ldots, t_n, r)$.
 
@@ -622,6 +636,7 @@ yes
 \end{verbatim}
 
 \subsection{Assegnamenti e Cicli}
+\label{sec:picat_base_asscycle}
 
 Picat cerca di agevolare notevolmente i programmatori affini a linguaggi imperativi. Per questo motivo offre funzionalità come l'assegnamento, tipicamente non disponibile in un linguaggio logico,
 e cicli, che nei linguaggi logici si realizzano con la ricorsione.
@@ -686,6 +701,7 @@ L = [(a , 1),(a , 2),(b , 1),(b , 2)]
 In questa sezione si da una panoramica delle funzionalità "avanzate" in Picat. Anche in questo caso si raccomanda al lettore l'approfondimento dei dettagli in \cite{PicatGuide}.
 
 \subsection{Tabling}
+\label{sec:picat_advanced_tabling}
 
 Il tabling è un meccanismo di caching che permette di memorizzare la chiamata ad un predicato e relativo risultato per evitare cicli infiniti o per ridurre il costo computazione dovuto alla grossa ridondanza dei calcoli.
 
@@ -701,6 +717,7 @@ Senza tabling \verb|fib(N)| ha costo esponenziale in \verb|N|, con il tabling in
 Il tabling è abilitato usando la keyword \verb|table| prima della definizione del predicato.
 
 \subsection{Moduli}
+\label{sec:picat_advanced_modules}
 
 I moduli sono una funzionalità molto utile di Picat e permettono al programmatore un'organizzazione comoda del codice sorgente, suddivisa su più file (moduli, appunto).
 
@@ -714,6 +731,7 @@ import $Name_1, \ldots, Name_n$.
 E' possibile chiamare predicati di un modulo specificando completamente il nome del predicato con \verb|m.p()|, dove \verb|m| è il nome del modulo e \verb|p| è il nome del predicato. E' consentito proibire l'utilizzo di un predicato da moduli esterni appondendo la keyword \verb|private| prima della definizione del predicato.
 
 \subsection{Eccezioni}
+\label{sec:picat_advanced_exceptions}
 
 Picat fornisce un semplice sistema di gestione delle eccezioni, con cui è possibile gestire eventi eccezionali ed errori non previsti.
 
@@ -727,6 +745,8 @@ catch(Goal, Exception, Handler)
 \end{lstlisting}
 
 \subsection{Higher-Order Calls}
+\label{sec:picat_advanced_hoc}
+
 Un predicato o una funzione può essere di ordine superiore se riceve funzioni come argomenti. Alcuni predicati di ordine superiorie \emph{built-in} del linguaggio sono \verb|call|, \verb|apply| e \verb|find_all|. I predicati \verb|call| e \verb|apply| prendono in input un nome di funzione e lo eseguono con gli argomenti dati; \verb|apply| può ritornare un valore. Il predicato \verb|find_all| invece trova tutte le soluzioni della chiamata per la funzione in input.
 
 Picat fornisce altri predicati di ordine superiore per la gestione delle eccezioni, l'esecuzione e alte utilità.
@@ -747,11 +767,15 @@ Z = 3
 \end{verbatim}
 
 \subsection{Action Rules}
+\label{sec:picat_advanced_actionrules}
+
 Picat fornisce \emph{Action Rules} per descrivere attori event-driven. Un attore è un chiamata ad un predicato che può essere differita rispetto alla normale esecuzione ed è attivabile da eventi. Queste regole hanno sintassi $Head, Cond, \{Event\} => Body$, dove $Event$ è un insieme non vuoto di eventi separaati da virgola.
 
 Gli attori possono essere assegnati a canali sui quali sono notificati gli eventi. Un canale è una variabile con degli attributi in grado di notificare eventi. Un canale può avere diverse porte, che specificano la visiblità dell'evento per qel canale. 
 
 \subsection{Mappe Globali}
+\label{sec:picat_advanced_globalmaps}
+
 Picat fornisce tre tipi diversi di mappe globali, richiedibili durante l'esecuzione: mappe \emph{heap}, mappe \emph{globali} e \emph{tabelle}.
 
 Queste mappe sono create non appena il sistema Picat si avvia. Possono essere consultate richiedendo a Picat una mappa e fornendo un \emph{ID} per la stessa. Le tre mappe differiscono per la modaltà di memorizzazione degli elementi e per il numero di mappe che possono essere richieste.
@@ -777,6 +801,7 @@ Inoltre, l'operazione di pattern-matching sulle regole è molto più leggera ris
 %%% *******************************************************
 %%% Solver CLP(SET) in Picat
 \chapter{CLP(SET) in Picat}
+\label{ch:clpsetpicat}
 
 \minitoc
 
