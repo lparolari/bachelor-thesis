@@ -43,7 +43,20 @@
   basicstyle=\ttfamily,
   mathescape
 }
-\titleformat*{\subsubsection}{\large\bfseries}
+\addto{\captionsitalian}{% Making babel aware of special titles
+  \renewcommand{\mtctitle}{Sommario}
+}
+\newenvironment{dedication}
+  {%\clearpage           % we want a new page          %% I commented this
+   \thispagestyle{empty}% no header and footer
+   \vspace*{\stretch{1}}% some space at the top
+   \itshape             % the text is in italics
+   \raggedleft          % flush to the right margin
+  }
+  {\par % end the paragraph
+   \vspace{\stretch{3}} % space at bottom is three times that at the top
+   \clearpage           % finish off the page
+  }
 
 %   RESOURCES
 \subfile{prooftree}
@@ -70,7 +83,7 @@
         \vspace{0.5cm}
         
         \Large
-        Corso di laurea in Informatica 
+        Corso di Laurea in Informatica 
 		
 		\vspace{1.2cm} 
  
@@ -116,7 +129,7 @@
 
 %%% Dedication
 %\begin{dedication}
-%test
+%A mio nonno.
 %\end{dedication}
 
 %%% TOC
@@ -145,56 +158,31 @@
 
 %%% *******************************************************
 % Linguaggi a vincoli basati su insiemi e relazioni bianrie
-\chapter{Linguaggi a vincoli basati su insiemi e relazioni binarie}
-\label{ch:sets-binrel-based-constraint-languages}
+\chapter{Linguaggio a vincoli basato su insiemi}
+\label{ch:sets_based_constraint_language}
 
 \minitoc
 
-In questo capitolo vengono presentati e contestualizzati due linguaggi orientati alla risoluzione di formule insiemistiche: \clpset{} e \lbr{}. Entrambi i linguaggi seguono il paradigma della programmazione logica e, più precisamente essendo basati su vincoli, della programmazione logica con vincoli (o \textit{Constraint Logic Programming}). Nelle sezioni \ref{sec:logic_programming} e \ref{sec:constraint_logic_programming} sono descritti rispettivamente i due paradigmi in forma molto discorsiva ed introduttiva.
+In questo capitolo vene presentato e contestualizzato un linguaggio orientato alla risoluzione di formule insiemistiche: \lset{}. \lset{} è un linguaggio logico definito come parte del linguaggio di programmazione logica a vincoli (o Constraint Logic Programming, abbreviato CLP) \clpset{}.
 
-Nella sezione \ref{sec:lang_clpset} si da una definizione di \clpset{}, un linguaggio a vincoli basato su insiemi. 
-Nel capitolo XXX è descritta l'implementazione di questo linguaggio in Picat, obiettivo di questo lavoro di tesi.
+\clpset{} (e quindi il suo linguaggio a vincoli \lset{}) è stato implementato in Prolog nello strumento \setlog{} [rifer]; inoltre \lset{} è stato implementato in Java come parte della libreria \jsetl{} [rifer]. Obiettivo principale di questo lavoro di tesi è quello di dare un’implementazione di \lset{} utilizzando il linguaggio di programmazione Picat [rifer].
 
-Nella sezione \ref{sec:lang_lbr} è invece definito \lbr{}, un linguaggio che estende ed include \clpset{}, interamente basato su vincoli su relazioni binarie.
-
-\section{Logic Programming}
-\label{sec:logic_programming}
-
-La programmazione logica (o \emph{logic programming}, spesso abbreviato in \emph{LP}) è un paradigma di programmazione dove gli \emph{statements} del programma rappresentano fatti o regole, espressi tramite qualche logica formale, di un problema. La logica viene utilizzata come meccanismo formale per analizzare le inferenze in termini di operazioni su espressioni simboliche, dedurre conseguenze da un insieme di premesse, studiare la verità (o falsità) di un insieme di proposizioni, data la verità (o falsità) di altre proposizioni e dimostrare la validità di una teoria. Questi concetti possono essere approfonditi in \cite{Console97}.
-
-\paragraph{Esempio}
-Programma logico in Prolog.
-\begin{verbatim}
-% Giovanni è padre di Antonio.
-padre(giovanni, antonio).
-padre(giovanni, riccardo).
-padre(mario, giovanni).
-
-% X è nonno di Y se X è padre di Z e Z è padre di Y.
-nonno(X, Y) :- padre(X, Z), padre(Z, Y).
-
-?- nonno(X, antonio).
-X = mario.
-\end{verbatim}
-
-Nel campo dell'informatica la logica trova molteplici applicazioni in ambiti per lo più di intelligenza artificiale. La logica, sotto opportune ipotesi, può diventare un vero e proprio linguaggio di programmazione, prendendo appunto il nome di Logic Programming. Spesso i linguaggi di programmazione di questo tipo adottano un approccio dichiarativo, descrivendo solamente la forma della soluzione e non la procedura per ottenerla (e.g., il Datalog). Per i linguaggi come il Prolog o Picat invece l'approccio può essere ibrido: il paradigma dichiarativo, imperativo e procedurale si intersecano lasciando al programmatore la scelta del paradigma da usare.
-
-La logica classica si può suddividere in due classi principali: la \emph{logica proposizionale} e la \emph{logica dei predicati}.  I più comuni linguaggi logici sono basati su un sottoinsieme della logica dei predicati del primo ordine, che permette di garantire la correttezza delle soluzioni ma non la terminazione del programma. Entrambe, comunque, permettono di esprimere proposizioni (frasi) e
-relazioni tra posizioni. La principale differenza tra le due è l'espressività. Ciò che può essere espresso nella logica dei predicati può essere espresso nella logica proposizionale, ma non viceversa. La logica dei predicati consente di utilizzare \textbf{variabili} e quantificazioni su di esse, mentre nella logica proposizionale non è possibile.
-
-I programmi logici vengono risolte mediante sistemi di deduzione. Il più famoso ed usato è il \emph{Principio di Risoluzione}, che adotta un'unica regola di infereza. Questo metodo di risoluzione è applicabile a teorie del primo ordine in forma di clausole, ed è notevolmente efficiente.
+Nella sezione 111 sono è descritto il paradigma di programmazione logica a vincoli in forma molto discorsiva ed introduttiva. Nella sezione 222 si dà una presentazione sintetica di \lset{}.\fixme{Aggiungere riferimenti}
 
 \section{Constraint Logic Programming}
 \label{sec:constraint_logic_programming}
 
-La programmazione logica basata su vincoli estende la programmazione logica introducendo il concetto di \emph{vincolo}. Un programma CLP contiene fatti e regole come un programma LP, con la differenza che nel programma CLP il corpo delle clausole può presentare vincoli.
+Nel campo dell'informatica la logica trova molteplici applicazioni, in particolare nell'ambito dell'intelligenza artificiale. La logica classica si può suddividere in due classi principali: la \emph{logica proposizionale} e la \emph{logica dei predicati}.  I più comuni linguaggi logici sono basati su un sottoinsieme della logica dei predicati del primo ordine, che permette di garantire la correttezza delle soluzioni ma non la terminazione del programma. Entrambe, comunque, permettono di esprimere proposizioni (frasi) e relazioni tra posizioni. La principale differenza tra le due è l'espressività. Ciò che può essere espresso nella logica dei predicati può essere espresso nella logica proposizionale, ma non viceversa. La logica dei predicati consente di utilizzare \textbf{variabili} e quantificazioni su di esse, mentre nella logica proposizionale non è possibile.
 
-Per i CLP il risultato di una dimostrazione è quindi un insieme di vincoli (contraint store) e/o un valore letterale valido in quell'insieme di vincoli.
+La logica dei predicati, sotto opportune ipotesi, può diventare un vero e proprio linguaggio di programmazione, prendendo appunto il nome di Logic Programming (abbreviato LP) (per approfondire i concetti di programmazione logica si veda ad esempio \cite{Console97}).
 
-La programmazione logica basata su vincoli è utilizzata per risolvere \emph{Contraint Satisfaction Problem} (spesso abbreviato in \emph{CSP}). Un problema di soddisfacimento di vincoli è intrinsicamente legato al dominio dei suoi vincoli, ciò rende il CSP parametrico rispetto al diminio dei suoi vincoli. Per questo motivo, il nome \clpset{} esprime il linguaggio basato su vincoli  dove il dominio del vincolo è l'insieme.
+Il Logic Programming è un paradigma di programmazione dove gli statements del programma rappresentano fatti o regole, espressi tramite qualche logica formale, di un problema. La logica viene utilizzata come meccanismo formale per analizzare le inferenze in termini di operazioni su espressioni simboliche, dedurre conseguenze da un insieme di premesse, studiare la verità (o falsità) di un insieme di proposizioni, data la verità (o falsità) di altre proposizioni e dimostrare la validità di una teoria.
 
-\subsection{Constraint Satisfaction Problem}
-\label{sec:constraint_satisfaction_problem}
+Spesso i linguaggi di programmazione di questo tipo adottano un approccio dichiarativo, descrivendo solamente la forma della soluzione e non la procedura per ottenerla (e.g., il Datalog). Per i linguaggi come il Prolog o Picat invece l'approccio può essere ibrido: il paradigma dichiarativo, imperativo e procedurale si intersecano lasciando al programmatore la scelta del paradigma da utilizzare.
+
+La programmazione logica a vincoli (CLP) estende la programmazione logica introducendo il concetto di \emph{vincolo}. Un programma CLP contiene fatti e regole come un programma LP, con la differenza che nel programma CLP il corpo delle clausole può presentare vincoli. Per i CLP il risultato di una dimostrazione è quindi un insieme di vincoli (contraint store) e/o un valore letterale valido in quell'insieme di vincoli.
+
+La programmazione logica a vincoli può essere utilizzata per risolvere \emph{Contraint Satisfaction Problem} (spesso abbreviato in \emph{CSP}).
 
 Un problema di soddisfacimento di vincoli è una tripla composta da
 \begin{itemize}
@@ -203,24 +191,22 @@ Un problema di soddisfacimento di vincoli è una tripla composta da
 \item un insieme $C$ di vincoli che specificano le combinazioni di valori possibili per le variabili.
 \end{itemize}
 
-Ogni dominio $D_i$ specifica un insieme di valori possibili per la variabile $X_i$.
+Ogni dominio $D_i$ specifica un insieme di valori possibili per la variabile $X_i$. Dato che i CSP sono parametrici rispetto al dominio dei vincoli, anche il supporto alla risolzuione lo diventa: da qui il nome \clpset{}. Si utilizzerà per la loro risoluzione un’opportuna istanza dello schema generale CLP. Ad esempio se il dominio è quello degli insiemi allora si potrebbe utilizzare \clpset{}.
 
-\section{Il linguaggio $\clpset$}
-\label{sec:lang_clpset}
+\section{Il linguaggio logico a vincoli \lset{}}
+\label{sec:lang_lset}
 
-\clpset{}, definito in \cite{Dovier00} è un linguaggio logico per la gestione di vincoli su insiemi. Da un punto di vista più generale \clpset{} è un istanza dei CLP sopra descritti, dove il dominio di applicazione dei vincoli è quello insiemistico. In questo contesto gli insiemi sono visti come un tipo di dato primitivo del linguaggio, detti termini della logica del primo ordine. I predicati predefiniti invece sono visti come vincoli predefiniti del linguaggio, gestiti con procedure di risoluzione di vincoli. 
-
-La classe di insiemi considerata vuole essere molto generale: gli insiemi possono essere annidati e/o parzialmente specificati. Gli insiemi parzialmente specificati possono contenere variabili e altri elementi \emph{non-ground}.
+\lset{} è un linguaggio logico per la gestione di vincoli su insiemi. \lset{} è stato inizialmente introdotto come parte del linguaggio \clpset{} \cite{Dovier00}. Da un punto di vista più generale \clpset{} è un istanza dei CLP sopra descritti, dove il dominio di applicazione dei vincoli è quello insiemistico. 
 
 Uno degli obiettivi primari di \clpset{} è di essere molto flessibile e fornire forme generali per la manipolazione di insiemi e relative operazioni, in quanto la nozione di \emph{set} è una componente comune nella progettazione di programmi, ma sono pochi i linguaggi che forniscono gli insiemi come struttura dati elementare.
 Sempre in \cite{Dovier00} vengono menzionate alcune eccezioni di linguaggi che si basano su insiemi: SETL, B ed il linguaggio Z, utilizzato per descrivere la specifica formale di programmi. Qualche eccezione esiste anche nel campo dei \emph{database deduttivi} e, più recentemente, anche come \emph{general purpose programming language}. Ad ogni modo, questi linguaggi impongono dei limiti sul tipo di insiemi espressibili o sulle capacità computazionali degli stessi. Ad esempio, in molti ambiti, si richiede che gli insiemi siano totalmente specificati: non sono ammesse \emph{variabili} libere.
 
-Si noti che in \clpset{} il costo computazione non è un requisito necessario. Molte operazioni possono risultare anche molto costose, ma dal punto di vista implementativo si preferisce implementare la risoluzione al problema in modo dichiarativo e più intuitivo possibile.
+In \lset{} gli insiemi sono visti come un tipo di dato primitivo del linguaggio, ovvero termini della logica del primo ordine. I predicati predefiniti invece sono visti come vincoli predefiniti del linguaggio, gestiti con procedure di risoluzione di vincoli. La classe di insiemi considerata vuole essere molto generale: gli insiemi possono essere annidati e/o parzialmente specificati. Gli insiemi parzialmente specificati possono contenere variabili come elementi dell’insieme o come parte dell’insieme stesso.
 
-Di seguito si darà una descrizione tradizionale di \clpset{} definendone prima la sintassi (\ref{subsec:lang_clpset_sintax}) e poi la semantica informale (\ref{subsec:lang_clpset_semantics}). In \ref{subsec:lang_clpset_solver} si descriverà il funzionamento in termini astratti del risolutore di formule per questo linguaggio, implementato in questo lavoro di tesi.
+Di seguito si forniscono le specifiche di \lset{} definendone prima la sintassi (\ref{subsec:lang_lset_sintax}) e poi la semantica informale (\ref{subsec:lang_lset_semantics}). In \ref{subsec:lang_lset_solver} si descriverà il funzionamento in termini astratti del risolutore di formule per questo linguaggio, implementato in questo lavoro di tesi.
 
 \subsection{Sintassi}
-\label{subsec:lang_clpset_sintax}
+\label{subsec:lang_lset_sintax}
 
 La sintassi del linguaggio \clpset{} si basa sui seguenti insiemi di simboli:
 
@@ -235,7 +221,7 @@ La sintassi del linguaggio \clpset{} si basa sui seguenti insiemi di simboli:
 \item $\calV$ è un insieme numerabile di simboli di variabile.
 \end{itemize}
 
-I \lset{}-\textit{termini} sono termini costruiti a partire dai simboli di $\calF$ e $\calV$ nel modo usuale. Ad esempio, i seguenti, sono termini insiemistici ($set-terms$):
+I \calset{}-\textit{termini} sono termini costruiti a partire dai simboli di $\calF$ e $\calV$ nel modo usuale. Ad esempio, i seguenti, sono termini insiemistici ($set-terms$):
 \begin{itemize}
 \item $\{1 \mid \emptyset \} \equiv \{1\}$
 \item $\{1 \mid \{2 \mid \emptyset \} \} \equiv \{1,2\}$
@@ -243,20 +229,20 @@ I \lset{}-\textit{termini} sono termini costruiti a partire dai simboli di $\cal
 \item $\ldots$
 \end{itemize}
     
-I \lset{}-\textit{constraint} atomici (o primitivi) sono predicati i cui simboli sono definiti in $\prod_C$, come:
+I \calset{}-\textit{constraint} atomici (o primitivi) sono predicati i cui simboli sono definiti in $\prod_C$, come:
 \begin{itemize}
 \item $X = 1$
 \item $un(\{1\}, \emptyset, R)$
 \end{itemize}
     
-Le \lset{}-\textit{formula} (o \lset{}-\textit{constraint} composti) sono combinazioni $\wedge$ (and) e $\vee$ (or) di \lset{}-\textit{constraint} primitivi. Le seguenti formule sono esempi di \lset{}-\textit{constraint} composti:
+Le \calset{}-\textit{formula} (o \calset{}-\textit{constraint} composti) sono combinazioni $\wedge$ (and) e $\vee$ (or) di \calset{}-\textit{constraint} primitivi. Le seguenti formule sono esempi di \calset{}-\textit{constraint} composti:
 \begin{itemize}
 \item $1 in R \land 1 nin S \land inters(R,S,T) \land T = \{X\}$
 \item $inters(R, S, T) \land size(T, N) \land N \leq 2$
 \end{itemize}
 
 \subsection{Semantica informale}.
-\label{subsec:lang_clpset_semantics}
+\label{subsec:lang_lset_semantics}
 
 La semantica intuitiva dei vari simboli in $\sum_{\mathcal{SET}}$ è la seguente:
 
@@ -285,7 +271,7 @@ $disj(r,s) = true \Longleftrightarrow r \cap s = \emptyset$;
 %\subsubsection{Vincoli}
 
 \subsection{Il solver \satset{}}
-\label{subsec:lang_clpset_solver}
+\label{subsec:lang_lset_solver}
 
 La procedura \satset{} risolve i vincoli e rappresenta il solver del linguaggio \clpset{}. Il seguente algoritmo ne descrive la struttura:
 
@@ -310,7 +296,7 @@ La procedura \satset{} risolve i vincoli e rappresenta il solver del linguaggio 
 Essenzialmente \satset{} utilizza tre procedure:
 
 \begin{itemize}
-\item \textbf{\texttt{sort\_infer}}: aggiunge alla \lset{}-\textit{formula} $C$ i vincoli \textbf{set} e \textbf{integer} per assicurare che gli oggetti utilizzati nei vincoli siano del tipo corretto.
+\item \textbf{\texttt{sort\_infer}}: aggiunge alla \calset{}-\textit{formula} $C$ i vincoli \textbf{set} e \textbf{integer} per assicurare che gli oggetti utilizzati nei vincoli siano del tipo corretto.
     
 \item \textbf{\texttt{step}}: applica speciali \textit{regole di riscrittura} alla formula $C$ corrente e ritorna \textit{false} oppure la formula modificata. L'esecuzione di $STEP$ viene iterata fino ad arrivare ad ottenere una formula in forma irriducibile. Notare che $STEP$ ritorna $false$ se almeno uno dei vincoli in $C$ viene riscritto a $false$. Anche $STEP(false)$ ritorna $false$.
     
@@ -318,178 +304,6 @@ Essenzialmente \satset{} utilizza tre procedure:
 \end{itemize}
 
 Quando la computazione non deterministica di $\satset{}(C)$ termina, se il risultato è $false$ allora si può concludere che $C$ non è soddisfacibile; al contrario, se nessuno dei vincoli in $C$ viene riscritto a $false$ allora ogni soluzione generata da \satset{} è una soluzione per $C$ e viceversa.
-
-\section{Il linguaggio $\lbr$}
-\label{sec:lang_lbr}
-
-Il linguaggio \lbr{} estende il linguaggio \clpset{}, precedentemente decritto, con relazioni binarie.
-La sintassi di \lbr{} è sostanzialmente la stessa di \clpset{}.
-Si richiede soltanto che l'insieme $\calF$ venga esteso con almeno il simbolo binario $(\cdot \mid \cdot)$, usato per rappresentare coppie.
-Inoltre l'insieme $\prod_C$ viene esteso con nuovi simboli di predicato su relazioni binarie, precisamente $comp, id$, $inv$ e $rel$.
-
-L'insieme $\prod_C$ esteso descritto da:\\
-\begin{center}
-\begin{equation}
-\prod_C = 
-  \{  =, in, un, disj, \leq, size, set, integer  \}
-    \cup
-  \{  comp, id, inv, rel  \}
-\end{equation}
-\end{center}
-Anche il solver \satset{} viene esteso con le opportune regole di riscrittura per i nuovi vincoli $comp, id$ e $inv$, prendendo poi il nome di \satbr{}. La procedura \texttt{remove\_neq} viene estesa con il supporto ai nuovi vincoli.
-
-\subsection{Vincoli su relazioni binarie}
-\label{sec:lang_lbr_binrel}
-
-\textit{Un termine insiemistico r rapperesenta una relazione binaria se assume una delle seguenti forme:}
-
-\begin{itemize}
-\item $r = \{\}$
-
-\item $r =
-	\{
-		( x_1, y_1 ), 
-		( x_2, y_2 ),
-		\ldots, 
-		( x_n, y_n )
-    \}$
-    
-\item $r =
-	\{
-		( x_1, y_1 ), 
-		( x_2, y_2 ),
-		\ldots, 
-		( x_n, y_n )
-		\mid
-		S
-    \}$, con $S$ relazione binaria
-\end{itemize}
-dove
-\begin{itemize}
-    \item[-] $x_i, y_i$ con $i = 1, \ldots, n$ sono termini;
-    \item[-] $S$ può essere sia una variabile che un termine insiemistico.    
-\end{itemize}
-
-Di seguito viene data una semantica informale dei vincoli primitivi per relazioni binarie.
-
-\begin{itemize}
-\item $comp(r,s,t)$: dove $r$, $s$ e $t$ sono relazioni binarie. L’interpretazione intuitiva del vincolo è
-\[
-    comp(r, s, t) = true 
-      \Longleftrightarrow 
-    t = \{[x, z] \mid \exists y.[x, y] \in r \land [y, z] \in s\}
-\]
-    
-\item $id(r,I)$: dove \textit{I} è un insieme e \textit{r} una relazione binaria che ne rappresenta l'identità. L’interpretazione intuitiva del vincolo è
-\[
-    id(r, I) = true 
-      \Longleftrightarrow
-    r = \{[x, x] \mid x \in I\}
-\]
-
-\item $inv(r,s)$: dove $r$ ed $s$ sono relazioni binarie. L’interpretazione intuitiva del vincolo è
-\[
-   inv(r, s) = true 
-     \Longleftrightarrow 
-   s = \{[y, x] \mid \exists [x, y] \in r\}
-\]
-\end{itemize}
-
-I vincoli \textit{dom} e \textit{ran} vengono realizzati come vincoli primitivi nonostante sia dimostrato che possono essere realizzati come vincoli derivati (cioè definiti tramite una formula \lbr{}). Questo viene fatto per motivi di efficienza.
-
-\begin{itemize}
-\item $dom(r, A)$: dove $r$ è una relazione binaria e $A$ un insieme che rappresenta il suo dominio. L’interpretazione intuitiva del vincolo è
-\[
-    dom(r, A) = true 
-      \Longleftrightarrow 
-    A = \{x \mid \exists [x,y] \in r\}
-\]
-
-\item $ram(r, B)$: dove $r$ è una relazione binaria e $B$ un insieme che rappresenta il suo codominio (o rango). L’interpretazione intuitiva del vincolo è
-\[
-    ran(r, B) = true 
-      \Longleftrightarrow 
-    B = \{y \mid \exists [x,y] \in r\}
-\]
-\end{itemize}
-
-\paragraph{Esempi}
-\begin{itemize}
-\item $dom(\{(1,2), (3,4)\}, \{1,3\}) \implies true$
-\item $ran(\{(1,2), (3,4)\}, \{2,4\}) \implies true$
-\item $comp(\{(1,2), (3,4)\}, \{(2,6), (4,8)\}, \{(1,6), (3,8)\}) \implies true$
-\item $id(\{(1,1), (2,2)\}, \{1,2\}) \implies true$
-\item $inv(\{(1,2), (3,4)\}, \{(2,1), (4,3)\}) \implies true$
-\end{itemize}
-
-\phantom{a}
-I \textit{constraint} primitivi precedentemente definiti possono essere utilizzati in congiunzione tra loro (assieme a nuove varibili ove necessita) per definire altri vincoli (\textit{vincoli derivati}), ad esempio come segue:
-\begin{equation}
-\begin{split}
-dres(A, R, S) & \Longleftrightarrow un(S, N_1, R) \\ 
-  & \land dom(S, N_2) \\
-  & \land N_2 \subseteq A \\
-  & \land dom(N_1, N_3) \\
-  & \land A \parallel N_3
-\end{split}
-\end{equation}
-\begin{equation}
-\begin{split}
-rres(A, R, S) & \Longleftrightarrow un(S, N_1, R) \\ 
-  & \land ran(S, N_2) \\
-  & \land N_2 \subseteq A \\
-  & \land ran(N_1, N_3) \\
-  & \land A \parallel N_3
-\end{split}
-\end{equation}
-
-che rappresentano rispettivamente i vincoli di dominio ristretto ($dres$) e di codominio ristretto ($rres$).
-
-\paragraph{Esempi}
-\begin{itemize}
-\item $dres\big(\{1,3\}, \{(1,2), (3,4), (5,6)\}, \{(1,2), (3,4)\}\big) \implies true$
-\item $rres\big(\{(1,2), (3,4), (5,6)\}, \{2,4\}, \{(1,2), (3,4)\}\big) \implies true$
-\end{itemize}
-
-Anche i vincoli negativi $ndom, nran, ncomp, nin$ e $ninv$ vengono definiti in termini dei vincoli primitivi sopra citati.
-
-\subsection{Vincoli su funzioni parziali}
-\label{sec:lang_lbr_pfun}
-
-\textit{Un termine insiemistico f rappresenta una funzione parziale se è una relazione binaria e vale la seguente definizione:}
-\[
-\forall x, y, y' : \big((x, y) \in f \wedge (x, y' ) \in f \implies y = y' \big)
-\]
-
-Le funzioni parziali aggiungono il nuovo vincolo \textit{pfun} all'insieme dei vincoli su relazioni binarie.
-Il vincolo \textit{pfun} viene introdotto come vincolo primitivo nonostante anch'esso sia dimostrato essere possibile realizzarlo come vincolo derivato. Anche in questo caso si preferisce questa implementazione per motivi di efficienza.
-
-\paragraph{Sintassi}
-\begin{itemize}
-\item \textit{pfun(f)}: dove $f$ è una relazione binaria.
-\end{itemize}
-
-\paragraph{Interpretazione intuitiva}
-\[
-f = \{ (x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n) \}
-\]
-allora
-\begin{align*}
-pfun(f) & = true \Longleftrightarrow \\
-  & \forall x_i, x_y \in \{ x_1, \ldots, x_n \} \subset dom(f): \\
-    & x_i \neq x_j \land \{ x_1, \ldots, x_n \} \not\in dom(S)
-\end{align*}
-
-Quindi se $pfun(f) = true$ allora $f$ è una funzione parziale altrimenti $f$ è una relazione binaria.
-
-\paragraph{Nota}
-Anche le funzioni parziali hanno i vincoli di $dom$ e $comp$ che rispettano le definizioni date in precedenza, ma hanno un diverso funzionamento e diconseguenza una diversa implementazione.
-
-Ad esempio, se $r$ è una relazione binaria e $f$ una funzione parziale:
-\begin{itemize}
-\item $dom(f,\{1\}) \to f = \{(1,n)\}$
-\item $dom(r,\{1\}) \to r = \{(1,n_1), \cdots, (1,n_m)\}$ con $m \geq 1$
-\end{itemize}
 
 
 %%% *******************************************************
@@ -499,9 +313,11 @@ Ad esempio, se $r$ è una relazione binaria e $f$ una funzione parziale:
 
 \minitoc
 
-In questo capitolo viene presentato Picat, un linguaggio di programmazione multiparadigma basato sulla logica. Picat è per certi versi molto simile al Prolog, ma dispone di molte funzionalità che modificano radicalmente l'utilizzo comune sia di un linguaggio imperativo che logico.
+In questo capitolo viene presentato Picat, un linguaggio di programmazione multiparadigma basato sulla logica dei predicati del prim'ordine. Picat è per certi versi molto simile al Prolog, ma dispone di molte funzionalità che modificano radicalmente l'utilizzo comune sia di un linguaggio imperativo che logico.
 
-Nella sezione \ref{sec:picat_features} si descrivono le carrateristiche di Picat, mentre in \ref{sec:picat_base} e \ref{sec:picat_advanced} se ne espongono le funzionalità fornendo esempi esplicativi. Non essendo questa una traduzione della guida utente per Picat, si invita il lettore ad approfondire i numerosi dettagli tralasciati per ovvi motivi in questa presentazione sul manuale \cite{PicatGuide}. Si avvisa inoltre che al tempo in cui si sta scrivendo, la guida di Picat è in versione 2.6.
+Nella sezione \ref{sec:picat_features} si descrivono le carateristiche di Picat, mentre in \ref{sec:picat_base} e \ref{sec:picat_advanced} se ne espongono le funzionalità fornendo esempi esplicativi. 
+
+I numerosi dettagli tralasciati per ovvi motivi in questa presentazione possono essere approfonditi sul manuale di Picat \cite{PicatGuide}. Si avvisa inoltre che al tempo in cui si sta scrivendo, la guida di Picat è in versione 2.6.
 
 \section{Caratteristiche}
 \label{sec:picat_features}
@@ -647,7 +463,7 @@ e cicli, che nei linguaggi logici si realizzano con la ricorsione.
 
 \subsubsection{Assegnamento}
 
-Anche l'assegnamento, come altri comandi, è uno zucchero sintattico. Un assegnamento in Picat $X := Y$ viene gestito a tempo di compilazione creando nuovi nomi di variabile. Le nuove variabili conterrano il nuovo valore dopo l'assegnamento e verranno usati nella porzione di programma successiva all'asegnamento al posto della vecchia variabile.
+Anche l'assegnamento, come altri comandi, è uno zucchero sintattico. Un assegnamento in Picat $X := Y$ viene gestito a tempo di compilazione creando nuovi nomi di variabile. Le nuove variabili conterranno il nuovo valore dopo l'assegnamento e verranno usati nella porzione di programma successiva all'assegnamento al posto della vecchia variabile.
 
 \paragraph{Esempio}
 \begin{verbatim}
@@ -688,7 +504,7 @@ while (J <= 5).
 
 Mentre per i tipi di cicli più comuni la semantica è piuttosto ovvia, per le list comprehension la cosa è più interessante. Le list comprehension sono funzioni che servono a costruire una lista iterando valori di altre liste.
 
-La list comprehension ha la seguente seguente sintassi
+La list comprehension ha la seguente sintassi
 \begin{lstlisting}
 [T : $E_1$ in $D_1$, $Cond_1$ , $\ldots$, $E_n$ in $D_n$ , $Cond_n$]
 \end{lstlisting}
@@ -751,7 +567,7 @@ catch(Goal, Exception, Handler)
 \subsection{Higher-Order Calls}
 \label{sec:picat_advanced_hoc}
 
-Un predicato o una funzione può essere di ordine superiore se riceve funzioni come argomenti. Alcuni predicati di ordine superiorie \emph{built-in} del linguaggio sono \verb|call|, \verb|apply| e \verb|find_all|. I predicati \verb|call| e \verb|apply| prendono in input un nome di funzione e lo eseguono con gli argomenti dati; \verb|apply| può ritornare un valore. Il predicato \verb|find_all| invece trova tutte le soluzioni della chiamata per la funzione in input.
+Un predicato o una funzione può essere di ordine superiore se riceve funzioni come argomenti. Alcuni predicati di ordine superiore \emph{built-in} del linguaggio sono \verb|call|, \verb|apply| e \verb|find_all|. I predicati \verb|call| e \verb|apply| prendono in input un nome di funzione e lo eseguono con gli argomenti dati; \verb|apply| può ritornare un valore. Il predicato \verb|find_all| invece trova tutte le soluzioni della chiamata per la funzione in input.
 
 Picat fornisce altri predicati di ordine superiore per la gestione delle eccezioni, l'esecuzione e alte utilità.
 
@@ -773,7 +589,7 @@ Z = 3
 \subsection{Action Rules}
 \label{sec:picat_advanced_actionrules}
 
-Picat fornisce \emph{Action Rules} per descrivere attori event-driven. Un attore è un chiamata ad un predicato che può essere differita rispetto alla normale esecuzione ed è attivabile da eventi. Queste regole hanno sintassi $Head, Cond, \{Event\} => Body$, dove $Event$ è un insieme non vuoto di eventi separaati da virgola.
+Picat fornisce \emph{Action Rules} per descrivere attori event-driven. Un attore è un chiamata ad un predicato che può essere differita rispetto alla normale esecuzione ed è attivabile da eventi. Queste regole hanno sintassi $Head, Cond, \{Event\} => Body$, dove $Event$ è un insieme non vuoto di eventi separati da virgola.
 
 Gli attori possono essere assegnati a canali sui quali sono notificati gli eventi. Un canale è una variabile con degli attributi in grado di notificare eventi. Un canale può avere diverse porte, che specificano la visiblità dell'evento per qel canale. 
 
@@ -795,10 +611,10 @@ Come in Prolog, le variabili di Picat sono etichette a valori. Una variabile log
 \begin{description}
 \item[Unificazione e pattern-matching.] L'unificazione è l'operazione di base sia in Picat che in Prolog per effettuare il bound delle variabili a termini. Ma mentre in Prolog l'unificazione viene utilizzata anche nella risoluzione delle regole, in Picat viene impiegato il pattern-matching per dicidere se una regola è applicabile o meno. Ciò comporta alcune divergenze tra l'esecuzione della stessa regola in Prolog e in Picat.
 Inoltre, l'operazione di pattern-matching sulle regole è molto più leggera rispetto all'unificazione.
-\item[Batracking.] Anche Picat supporta nativamente il backtracking. In Prolog però ogni regola è implicitamente \emph{backtrackable} e si usa l'operatore \emph{cut} \verb|!| per il controllo. In Picat invece una regola è \emph{backtrackable} solo se esplicitamente dichiarato. Ciò permete al programmatore di capire a colpo d'occhio l'intenzione di una regola.
+\item[Backtracking.] Anche Picat supporta nativamente il backtracking. In Prolog però ogni regola è implicitamente \emph{backtrackable} e si usa l'operatore \emph{cut} \verb|!| per il controllo. In Picat invece una regola è \emph{backtrackable} solo se esplicitamente dichiarato. Ciò permete al programmatore di capire a colpo d'occhio l'intenzione di una regola.
 \item[Predicati dinamici.] Picat non supporta i predicati dinamici, mentre in Prolog è possibile asserire un predicato durante l'esecuzione, dando di fatto più flessibilità al linguaggio.
 \item[Operatori definiti da utente.] In Picat non è possibile definire nessun operatore, mentre in Prolog è possibile estendere il set di operatore aggiungendone di nuovi.
-\item[Costrutti.] La differenza più grossa tra i due linguaggi sono i costrutti che Picat fornisce per le list (e array) comprehensions, assegnamenti, cicli e funzioni, che per programmi di scripting e operazioni di modellizzazione rendono Picat più conveniente del Prolog.
+\item[Costrutti.] Una delle differenze più evidenti tra i due linguaggi sono i costrutti. Picat infatti fornisce molti costrutti per svolgere operazioni comuni quali assegnamenti, cicli e salti condizionali. Non mancano inoltre un buon numero di tipi di dato predefiniti con relative operazioni, che per attività di scripting e modellazione rendono Picat più conveniente rispetto al Prolog.
 \end{description}
 
 

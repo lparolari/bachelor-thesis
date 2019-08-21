@@ -480,15 +480,17 @@
 
 % **********************************************************
 % Luca Parolari <luca.parolari23@gmail.com>
-% -- macros for backelor thesis <TITLE> <url_here>
+% -- macros for bachelor thesis <TITLE> <url_here>
 
-% CLP(SET)
-\newcommand*{\clpset}{CLP(\calS\calE\calT)}
-\newcommand*{\satset}{SAT\textsubscript{\calS\calE\calT}}
-\newcommand*{\lset}{\calS\calE\calT}
-\newcommand*{\satbr}{SAT\textsubscript{\calB\calR}}
-% L_BR
-\newcommand*{\lbr}{L\textsubscript{BR}}
+\newcommand*{\clpset}{CLP(\calS\calE\calT)}                % CLP(SET)
+\newcommand*{\satset}{SAT\textsubscript{\calS\calE\calT}}  % SAT_SET
+\newcommand*{\calset}{\calS\calE\calT}                     % SET
+\newcommand*{\satbr}{SAT\textsubscript{\calB\calR}}        % SAT_BR
+\newcommand*{\lbr}{\textit{L}\textsubscript{BR}}           % L_BR
+\newcommand*{\lset}{\textit{L}\textsubscript{\calS\calE\calT}} % L_SET
+\newcommand*{\setlog}{$\{$log$\}$}                         % {log}
+\newcommand*{\jsetl}{JSetL}                                 % JSetL
+
 
 \newcommand*{\fixme}[1]{\footnote{\textbf{FIXME:} {#1}}}
 \newcommand*{\todo}[1]{\footnote{\textbf{TODO:} {#1}}}
