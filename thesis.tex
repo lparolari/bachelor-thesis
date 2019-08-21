@@ -620,18 +620,18 @@ Inoltre, l'operazione di pattern-matching sulle regole è molto più leggera ris
 
 %%% *******************************************************
 %%% Solver CLP(SET) in Picat
-\chapter{CLP(SET) in Picat}
-\label{ch:clpsetpicat}
+\chapter{\lset{} in Picat}
+\label{ch:lsetpicat}
 
 \minitoc
 
 INTRO\fixme{aggiungere intro con ref a sezioni sotto}
 
-L'obiettivo principale del solver \clpset{} è risolvere formule insiemistiche del linguaggio \clpset{}. Il risultato può avere zero, una o più soluzioni ed il solver deve essere in grado di mostrarle tutte, se queste sono finite.
+L'obiettivo principale del solver \lset{} è risolvere formule. Il risultato può avere zero, una o più soluzioni ed il solver deve essere in grado di mostrarle tutte, se queste sono finite.
 
 Il funzionamento del solver è quello descritto dallo pseudocodice in  \ref{subsec:lang_clpset_solver}. Per ricapitolare, il solver svolge queste tre azioni:
 \begin{itemize}
-\item rimpiazza i vincoli derivati con le corrispondenti formule \clpset{};
+\item rimpiazza i vincoli derivati con le corrispondenti formule \lset{};
 \item riduce la complessità sintattica dei vincoli primitivi applicando le regole di riscrittura corrette;
 \item elimina gli insiemi che coinvolgono disuguaglianze.
 \end{itemize} 
@@ -649,13 +649,13 @@ I moduli identificati e realizzati sono descritti nel seguito.
 
 \subsubsection{solver.pi}
 
-\verb|solver|. \'E il modulo principale che realizza la risoluzione delle formule. Espone il predicato \verb|solve/2|, utilizzabile da qualunque programma Picat per risolvere una formula di tipo \clpset{}. Questo modulo viene ampiamente trattato in \ref{sec:clpsetpicat_solver}.
+\verb|solver|. \'E il modulo principale che realizza la risoluzione delle formule. Espone il predicato \verb|solve/2|, utilizzabile da qualunque programma Picat per risolvere una formula di \lset{}. Questo modulo viene ampiamente trattato in \ref{sec:lsetpicat_solver}.
 
 \subsubsection{lset.pi}
 
-\verb|lset|. Contiene l'interfaccia e l'implementazione degli insiemi nei termini di \clpset{}.
+\verb|lset|. Contiene l'interfaccia e l'implementazione degli insiemi nei termini di \lset{}. Consente di astrarre l'entità insieme dalla sua implementazione reale.
 
-Espone il costruttore
+\paragraph{Costruttore}
 \begin{verbatim}
 new_lset() = [].
 new_lset(ListRest) = Lset => 
@@ -667,7 +667,8 @@ new_lset(Head, Rest) = Lset =>
     if (not list(Head)) then Head := [Head] end,
     append(Head, Rest, Lset).
 \end{verbatim}
-e due metodi
+
+\paragraph{Metodi}
 \begin{verbatim}
 %% lset_rest(lset(X)) = R
 %
@@ -683,6 +684,7 @@ lset_rest(X) = R => lset_rest(X, R).
 
 lset_head(X) = R => lset_head(X, R).
 \end{verbatim}
+In \verb|lset_rest/2| e \verb|lset_head/2| risiede l'implementazione (privata) delle due funzionalità.
 
 \subsubsection{commands.pi}
 
@@ -708,6 +710,22 @@ obeyCommands() ?=>
         end
     end.
 obeyCommands() => obeyCommands().
+
+
+%% doSolve(+FormulaString) is det
+%
+% @desc Issue the solver with the given formula and allow to show
+%  all solutions.
+
+doSolve(FormulaString) ?=>
+    parse_term(FormulaString, Term, Vars),
+    solve(Term, Res),
+    println("Vars: " ++ Vars.to_string),
+    println("Constraints: " ++ Res.to_string),
+    nl,
+    A = confirm("Another solution?"),
+    if A == 1 then fail end.
+doSolve(_) => println("no!").
 \end{verbatim}
 
 \subsubsection{global.pi}
@@ -722,7 +740,7 @@ get_global(Key) = Value =>
     G = get_map(),
     Value = G.get(Key).
 
-%% global(+Key, +Value)
+%% set_global(+Key, +Value)
 %
 % @desc Set a variable with name Key and value Value.
 set_global(Key, Value) =>
@@ -762,6 +780,7 @@ echo(P),
         is_global(quiet_mode), 
         get_global(quiet_mode) !== true  => 
     println(P.to_string).
+echo(_) => true.  % Do nothing if disabled.
 \end{verbatim}
 
 \subsubsection{assert.pi}
@@ -783,7 +802,7 @@ assert_equal(A, Expected, Actual) =>
     log_e("FAILED "  ++ ...).
 \end{verbatim}
 
-\subsection{Unit test}
+\subsection{Testing}
 \label{ch:clpsetpicat_system_tests}
 
 La stesura dei test per verificare la correttezza dell'implementazione si è subito resa necessaria al fine di incrementare la qualità del software prodotto. Per questo motivo sono stati realizzati predicati che prendono in esame casi semplici ma cercano di esploare i casi limite.
