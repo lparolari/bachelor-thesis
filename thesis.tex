@@ -651,6 +651,39 @@ La formula finale ottenuta è semplificata e irriducibile, il che la rende equiv
 
 Nella sezione \ref{sec:lsetpicat_system} si fornisce una descrizione del sistema dal punto di vista generale, includendo l'ingegnerizzazione e la suddivisione in moduli delle funzionalità, nonché il testing. Nella sezione \ref{sec:lsetpicat_solver} viene approfondito il solver, il suo funzionamento ed i predicati implementati.
 
+\section{Organizzazione del progetto}
+
+\begin{verbatim}
+.
+|-- JOURNAL.txt
+|-- LICENSE.txt
+|-- Makefile
+|-- README.md
+|-- src
+|   |-- assert.pi
+|   |-- commands.pi
+|   |-- global.pi
+|   |-- log_h.pi
+|   |-- lset.pi
+|   |-- main.pi
+|   |-- Makefile
+|   |-- prompt.pi
+|   `-- solver.pi
+`-- tests
+    |-- lset_test.pi
+    |-- Makefile
+    `-- solver_test.pi
+\end{verbatim}
+
+\begin{itemize}
+	\item \verb|JOURNAL.txt|, il diario di bordo. Vi sono note ed evoluzione del progetto in linea temporale.
+	\item \verb|LICENSE.txt|, la licenza del codice sorgente.
+	\item \verb|README.md|, la descrizione del progetto contenente note per l'installazione e l'utilizzo.
+	\item \verb|Makefile|,\fixme{Da finire}
+	\item \verb|src|, la cartella contenente i file sorgenti. I moduli che compongono il sistema sono mostrati in \ref{sec:lsetpicat_system}.
+	\item \verb|tests|, la cartella contenente i test dei componenti fondamentali.
+\end{itemize}
+
 \section{Il sistema}
 \label{sec:lsetpicat_system}
 
