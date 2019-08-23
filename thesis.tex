@@ -1631,14 +1631,112 @@ In questa sezione vengono dati degli esempi di utilizzo del solver per casi d'us
 
 \section{Modalità interattiva}
 
-La CLI fornisce i seguenti comandi per l'interazione con l'utente.
-\begin{itemize}
-\item aaa
-\end{itemize}
+\subsection{Avvio dell'interprete}
 
-\subsection{Aiuto}
 \begin{verbatim}
+terminal> picat main.pi
 
+This is the pure implementation of {log} in Picat.
+Copyright (C) 2019 Luca Parolari <luca.parolari23@gmail.com>
+  This program is free software, covered by the MIT License
+  There is ABSOLUTELY NO WARRANTY for this program.
+Type 'copying' to see the conditions
+Type 'warranty' for details.
+Type 'help' for advice, 'quit' to exit.
+
+Default settings follows.
+
+Current log level: [v,vv,vvv]
+       Quiet mode: false
+         Log file: stdout
+
+log> 
+\end{verbatim}
+
+\subsection{Comandi disponibili}
+
+\begin{verbatim}
+log> help
+Setlog provides you with the following commands:
+
+help
+help <what>
+    Show help for <what>.
+    The argument describes the topic to give help for.
+    <what> can be one of [solve]
+
+info
+    Display the current interpreter status.
+
+up <n>
+    Redo the last <n> command issued.
+    If <n> is empty the last command is issued,
+    this is equivalent to `up 0`.
+
+log <mode>
+    Set the log mode to <mode>.
+    Available log mode: [none,v,vv,vvv,all].
+log file <file>
+    Set log file to <file>.
+    Default is `stdout`.
+
+solve
+solve <formula>
+solve file <file>
+    Solve the formula, respectively, typed in stdin,
+    given as argument of this command, or read from the
+    first line of file <file> using the setlog solver.
+
+quiet <mode>
+    Set the quit mode execution.
+    Available mode: [true, false]. Default is true.
+\end{verbatim}
+
+Il comando \verb|help| mostra un messaggio di aiuto descrivendo i comandi offerti dalla CLI.
+
+\subsection{Configurazione}
+
+\begin{verbatim}
+log> info
+Current log level: [v,vv,vvv]
+       Quiet mode: false
+         Log file: stdout
+log> log none
+log> quiet true
+log> info
+Current log level: [none]
+       Quiet mode: true
+         Log file: stdout
+\end{verbatim}
+
+\subsection{Risoluzione di formule}
+
+\begin{verbatim}
+log> solve                       % formula da stdin
+{log} => [ eq(X,1) ]
+
+Vars: (map)[X = 1]
+Constraints: []
+
+Another solution? (y/n): y
+no!
+log>
+log> solve [ eq(X,1) ]           % formula come argomento del comando
+{log} => [eq(X,1)]
+Vars: (map)[X = 1]
+Constraints: []
+
+Another solution? (y/n): y
+no!
+log> 
+log> solve file formula1.lset    % formula da file
+{log} => [ eq(X,1) ]
+Vars: (map)[X = 1]
+Constraints: []
+
+Another solution? (y/n): y
+no!
+log> 
 \end{verbatim}
 
 
