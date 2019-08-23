@@ -6,6 +6,7 @@
 \usepackage[T1]{fontenc}     % define T1 charset for out files.
 \usepackage[italian]{babel}  % italian latex typo conventions.
 \usepackage[utf8]{inputenc}  % italian symbols.
+\usepackage{csquotes}        % needed by babel.
 \usepackage{amsmath}         % math features.
 \usepackage{amsthm}          % math theorems.
 \usepackage{amssymb}         % math symbols.
@@ -49,8 +50,10 @@
   basicstyle=\ttfamily,
   mathescape
 }
-\addto{\captionsitalian}{%                    % minitoc title translation
-  \renewcommand{\mtctitle}{Sommario}
+\addto{\captionsitalian}{%                    % custom translations
+  \renewcommand{\mtctitle}{Sommario}%
+  \renewcommand{\appendixtocname}{Appendici}%
+  \renewcommand{\appendixpagename}{Appendici}%
 }
 \newenvironment{dedication}                   % dedication setup
   {%\clearpage           % we want a new page          %% I commented this
@@ -144,6 +147,7 @@
 
 %%% TOC
 \tableofcontents
+\listoffigures
 
 %\lhead[\fancyplain{}{}]{\fancyplain{}{\leftmark}} \chead{}
 %\rhead{\thepage} \lfoot{} \cfoot{} \rfoot{}
