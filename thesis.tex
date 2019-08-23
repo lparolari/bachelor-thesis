@@ -946,7 +946,7 @@ rule(subset(S1, S2), R)    => subset(S1, S2, R).
 
 Le regole implementate sono un sottoinsieme di quelle descritte in \cite{Rossi18}.
 
-\subsection{Regole di riscrittura}
+\subsection{Vincoli integrati}
 \label{sec:lsetpicat_solver_rewriterules}
 
 Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e a qualche predicato ausiliario, sono presenti i predicati che implementano le regole di riscrittura:
@@ -962,93 +962,76 @@ Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e a qualche
 \item \verb|diff/3| ($\setminus$);
 \end{itemize}
 
-Nelle sezioni successive sono riportate le implementazioni delle regole di riscrittura. Si può notare che la descrizione matematica delle regole in \cite{Rossi18} è molto vicina all'implementazione.\fixme{Spostare via da qui?}
+Nella sezione \ref{sec:lsetpicat_constraints} sono riportate le regole di riscrittura e relative implementazioni. Si può notare che la descrizione matematica delle regole in \cite{Rossi18} è molto vicina all'implementazione.
 
+\section{Regole di riscrittura}
 
-%%% *******************************************************
-%%% Dettagli implementativi
-\chapter{Dettagli implementativi}
+\subsection{Il vincolo eq}
 
-\section{Il vincolo or}
+\textit{Sintassi:} $t_1 = t_2$.\\
+\noindent\textit{Semantica informale:} $t_1$ e $t_2$ sono uguali.\\
+\noindent\textit{Regole di riscrittura:} \ref{fig:eq_constraints}.
 
-Molte regole di riscrittura integrate dal solver non contengono solo clausole in congiunzione (legate da $\land$), ma anche clausole in disgiunzione. Questa sottile differenza porta un grosso cambiamento nella gestione del controllo durante la risoluzione di formule. Da un punto di vista algoritmico, mentre le clausole congiunte si possono risolvere una dopo l'altra catturando il primo fallimento per interrompere la computazione, le clausole disgiunte non godono della stessa proprietà. Di fatto, se una clausola in disgiunzione fallisce, non è detto che le altre lo facciano, anzi, spesso non è così. Bisogna quindi essere in grado di tornare al punto in cui si è scelta una delle clausole in \emph{or} da risolvere, ripristinando lo stato del programma, per poter proseguire con la successiva.
+\begin{figure}[H]
+\label{fig:eq_constraints}
 
-Per l'implementazione di questo meccanismo viene in aiuto il \emph{backtracking}, che simula proprio funzionamento in questione. Il backtracking è un algoritmo generale che permette di trovare tutte (o alcune) soluzioni ad un certo problema computazionale, che incrementalmente costruisce nuove soluzione abbandonando quelle che sono state decretate non essere una soluzione. Durante la risoluzione di formule insiemistiche questo si può verificare appunto prendendo una clausola in disgiunzione che non soddisfa i vincoli e provoca il fallimento. Il backtracking in questo caso scarta la soluzione, ripristina il programma al punto di scelta (\emph{choice point}\fixme{Aggiungere una descrizione sommaria di choice point in una footnote})\fixme{Aggiungere citazione a fonte: programming in prolog, altri} e prosegue con un'altra delle clausole non ancora esplorate.
+\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+\setcounter{equation}{0}
+\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
 
-L'implementazione del vincolo or nel solver è costruito in due modi:
+If $x, y, t, t_i, u_i: \text{U}; A,B: \text{Set}$ then:
+
+\begin{equation}
+\dotx = \dotx \to true
+\end{equation}
+\begin{equation}
+\text{If } t \not\in \calV, t = \dotx \to \\ \dotx = t
+\end{equation}
+\begin{equation}
+\text{If} \dotA \not\in vars(t_1, \ldots, t_n), \dotA = \{ t_1, \ldots, t_n \} \to \dotA = \{ t_1, \ldots, t_n \sqcup N \}
+\end{equation}
+\begin{equation}
+\text{If} \dotx \in vars(t), \dotx = t \to false
+\end{equation}
+\begin{equation}
+\dotx = t \to \text{substitute $\dotx$ by $t$ in all others literals of the input formula}
+\end{equation}
+\begin{equation}
+\text{If} f \not\equiv g, f(t_1, \ldots, t_n) = g(t_1, \ldots, t_m) \to false
+\end{equation}
+\begin{equation}
+\begin{split}
+\{ t_1, & \ldots, t_m \sqcup \dotA \} = \{u_1, \ldots, u_n \sqcup \dotA \} \to \\
+& t_1 = u_j \land \{ t_2, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots, u_{j_1}, u_{j+1}, \ldots, u_n \sqcup \dotA \} \\
+& \lor t_1 = u_j \land \{ t_1, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots, u_{j_1}, u_{j+1}, \ldots, u_n \sqcup \dotA \} \\
+& \lor t_1 = u_j \land \{ t_2, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots u_n \sqcup \dotA \} \\
+& \lor \dotA = \{ t_1 \sqcup N \} \land \{ t_2, \ldots, t_m \sqcup N \} = \{ u_1, \ldots, u_n \sqcup N \}
+\end{split}
+\end{equation}
+\begin{equation}
+\begin{split}
+\{ x \sqcup & A \} = \{ y \sqcup B \} \to \\
+& x = y \land A = B \\
+& \lor x = y \land \{ x \sqcup A \} = B \\
+& \lor x = y \land A = \{ y \sqcup B \} \\
+& \lor A = \{ y \sqcup N \} \land \{ x \sqcup N \} = B
+\end{split}
+\end{equation}
+\begin{equation}
+f(t_1, \ldots, t_n) = f(u_1, \ldots, u_n) \to t_1 = u_1 \land \ldots \land t_1 = u_n
+\end{equation}
+
+\end{tcolorbox}
+
+\caption{Regole di riscrittura per vincoli di uguaglianza}
+\end{figure}
+
+\paragraph{Forme irriducibili}
 \begin{itemize}
-\item tramite l'utilizzo di un vincolo ausiliario;
-\item sfruttando il backtracking sulla regola esatta che presenta clausole in disgiunzione.
+	\item $\dotx = t$ e $\dotx$ non è contenuto ne in $t$ ne in altri letterali della fomula.
 \end{itemize}
 
-Nel primo caso l'implementazione è simile a quella di una regola di riscrittura
-\begin{verbatim}
-%% or(List, Result) is nondet
-%
-% @desc Rewrite rule for or constraints.
-
-or([], []) => true.
-or([T|_Tr], R) ?=> R = [T].
-or([_T|Tr], R) => or(Tr, R).
-\end{verbatim}
-dove
-\begin{itemize}
-\item la prima regola gestisce il caso in cui la lista di clausole in or sia vuota, ed ha sempre successo;
-\item la seconda regola gestisce la prima riscrittura: estrae una clausola prendendola dalla testa della lista e la inserisce nel risultato;
-\item la terza regola gestisce il caso in cui la seconda regola fallisca (ovvero la clausola utilizzata non ha soddisfatto la formula) procedendo con un'altra clausola della lista.
-\end{itemize}
-
-\paragraph{Esempio}
-\begin{verbatim}
-{log} => [eq(X,1),or([eq(X,2),eq(X,1)])]
-\end{verbatim}
-
-\begin{itemize}
-
-\item[Step 1] Il risultato della prima riscrittura è
-\begin{verbatim}
---- [eq(1,1),or([eq(1,2),eq(1,1)])]
-==> [eq(1,2)]
-\end{verbatim}
-e si può notare come il vincolo \verb|eq(1,1)| sia stato risolto e rimosso dal constraint store risultate, mentre il vincolo \verb|or([eq(X,2),eq(X,1)])| sia stato riscritto in \verb|eq(1,2)|.
-
-\item[Step 2] Il risultato della seconda riscrittura è
-\begin{verbatim}
---- [eq(1,1),or([eq(1,2),eq(1,1)])]
-==> [eq(1,1)]
-\end{verbatim} 
-da cui invece è evidente il fallimento nella risoluzione di \verb|eq(1,2)|, e la riscrittura del vincolo \verb|or([eq(X,2),eq(X,1)])| in \verb|eq(1,1)|.
-
-\item[Step 3] Il risultato della terza riscrittura è
-\begin{verbatim}
---- [eq(1,1)]
-==> []
-\end{verbatim}
-da cui si nota la risoluzione dell'ultimo vincolo rimasto.
-
-\end{itemize}
-
-\section{Enumerazione delle soluzione}
-
-Il solver per ogni formula può trovare zero, una o più soluzioni, comprendendo anche un numero infinito di soluzioni. L'enumerazione di queste soluzioni è di notevole importanza per \lset{}. Per questo motivo il solver deve essere in grado di cercare altre soluzioni qualora ve ne sinao. Anche in questo caso si ricorre al backtracking.
-
-L'enumerazione di nuove soluzione è infatti implementata forzando un fallimento: tramite il bakctracking si cercano di esplorare strade alternative per la costruzione di altri risultati e se queste alternative sono infinite allora anche questo processo è infinito.
-
-\paragraph{Esempio}
-\begin{verbatim}
-{log} => [ union( [1|X], [1,2], [1,2] ) ]
-\end{verbatim}
-ha 4 soluzioni
-\begin{itemize}
-\item \verb|X = []|;
-\item \verb|X = [1]|;
-\item \verb|X = [2]|;
-\item \verb|X = [1,2]|
-\end{itemize}
-
-\section{Predicato eq/3}
-
-  \fixme{Aggiungere descrizione}
+\paragraph{Implementazione}
 
 \begin{verbatim}
 eq(T1, T2, R),  T1 == T2 =>                                        % 1
@@ -1180,6 +1163,465 @@ eq(T1, T2, R),
     end,
     R = RR.
 \end{verbatim}
+
+\subsection{Il vincolo neq}
+
+\textit{Sintassi:} $t_1 \neq t_2$.\\
+\noindent\textit{Semantica informale:} $t_1$ è diverso da $t_2$.\\
+\noindent\textit{Regole di riscrittura:} \ref{fig:neq_constraints}.
+
+\begin{figure}[H]
+	\label{fig:neq_constraints}
+	
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
+		
+		If $t, t_i: \text{U}; A,B: \text{Set}$ then:
+		
+		\begin{equation}
+		\text{If } t \text{ is a constant or } t \in \calV, t \neq t \to false
+		\end{equation}
+		\begin{equation}
+		\text{If } t \not\in \calV, t \neq \dotx \to \dotx \neq t
+		\end{equation}
+		\begin{equation}
+		\text{If} \dotx \not\in vars(t_1, \ldots, t_n), \dotx \neq \{ t_1, \ldots, t_n \sqcup \dotx \} \to t_1 \not\in \dotx \lor \ldots \lor t_n \not\in \dotx
+		\end{equation}
+		\begin{equation}
+		\text{If} \dotx \in vars(t), \dotx \neq t \to true
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		\{ t_1 \sqcup & A \} = \{ t_2 \sqcup B \} \to \\
+		& N \in \{ t_1 \sqcup A \} \land N \not\in \{ t_2 \sqcup B \} \\
+		& N \not\in \{ t_1 \sqcup A \} \land N \in \{ t_2 \sqcup B \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		f(t_1, \ldots, t_n) \neq g(u_1, \ldots, u_m) \to true
+		\end{equation}
+		\begin{equation}
+		f(t_1, \ldots, t_n) = f(u_1, \ldots, u_n) \to t_1 \neq u_1 \land \ldots \land t_1 \neq u_n
+		\end{equation}
+		
+	\end{tcolorbox}
+	
+	\caption{Regole di riscrittura per vincoli di non disuguaglianza}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $\dotx \neq t$ e $\dotx$ non compare ne in $t$ ne come argomento di qualunque predicato $p(\ldots)$, $p \in \{ un, id, inv, comp \}$.
+\end{itemize}
+
+\paragraph{Implementazione}
+\begin{verbatim}
+neq(T1, T2, R),
+        ground(T1), ground(T2),
+    T1 !== T2 =>  % ground
+    log_d_vv("neq :: neq_ground"),
+    R = [].
+
+neq(T1, T2, R),
+        T1 == T2 =>  % 1
+    log_d_vv("neq :: neq_1"),
+    fail.  % sic.
+
+neq(T, X, R),
+        nonvar(T), var(X) =>  % 2
+    log_d_vv("neq :: neq_2"),
+    R = [ $neq(X, T) ].
+
+neq(X, S, R), 
+        S.is_lset(),
+        X == S.lset_rest(),
+        not occur(X, S.lset_head()) =>  % 3
+    log_d_vv("neq :: neq_3"),
+    RR = [],
+    foreach (T in S.lset_head)
+        RR := RR ++ [$nin(T, X)]
+    end,
+    R = [ $or(RR) ].
+
+neq(X, T, R),
+        occur(X, T) =>  % 4
+    log_d_vv("neq :: neq_4"),
+    R = [].
+
+neq([T1|A], [T2|B], R) ?=>  % 5a
+        log_d_vv("neq :: neq_5a"),
+    R = [ $inls(N, [T1|A], $nin(N, [T2|B])) ].
+
+neq([T1|A], [T2|B], R) ?=>  % 5b
+    log_d_vv("neq :: neq_5a"),
+    R = [ $nin(N, [T1|A]), $insl(N, [T2|B]) ].
+
+neq(F, G, R),
+        F.struct(), G.struct(),
+        F.name() !== G.name() =>  % 6
+    log_d_vv("neq :: neq_6"),
+    R = [].
+
+neq(F, G, R),
+        F.struct(), G.struct(),
+        F.arity() !== G.arity() =>  % 7
+    log_d_vv("neq :: neq_7"),
+    R = [].
+
+neq(X, T, R), 
+        not occur(X, T) => % irr
+    log_d_vv("neq :: neq_irr"),
+    R = [ $neq(X, T) ].
+\end{verbatim}
+
+\subsection{Il vincolo in}
+
+\textit{Sintassi:} $t_1 \in t_2$.\\
+\noindent\textit{Semantica informale:} se $t_2$ è un insime, $t_1$ è un membro di $t_2$.\\
+\noindent\textit{Regole di riscrittura:} \ref{fig:in_constraints}.
+
+\begin{figure}[H]
+	\label{fig:in_constraints}
+	
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
+		
+		If $x, y: \text{U}; A: \text{Set}$ then:
+		
+		\begin{equation}
+		x \in \emptyset \to false
+		\end{equation}
+		\begin{equation}
+		x \in \{ y \sqcup A \} \to x = y \lor x \in A
+		\end{equation}
+		\begin{equation}
+		x \in \dotA \to \dotA = \{ x \sqcup N \}
+		\end{equation}
+		
+	\end{tcolorbox}
+	
+	\caption{Regole di riscrittura per vincoli di appartenenza}
+\end{figure}
+
+\paragraph{Forme irriducibili} Nessuna.
+
+\paragraph{Implementazione}
+\begin{verbatim}
+insl(X, S, R) => 
+    log_d_vv("insl :: -> contains"),
+    contains(S, X, R).
+
+contains(S, X, R),
+        S.is_lset(),
+        S.is_emptyset() =>                                         % 1
+    log_d_vv("contains :: cont_1"),
+    fail.
+
+contains(S@[Y|A], X, R),
+        S.is_lset() ?=>                                            % 2a
+    log_d_vv("contains :: cont_2a"),
+    R = [ $eq(X, Y) ].
+
+contains(S@[Y|A], X, R),
+        S.is_lset() =>                                             % 2b
+    log_d_vv("contains :: cont_2b"),
+    R = [ $contains(A, X) ].
+
+contains(A, X, R),
+        var(A) =>                                                  % 3
+    log_d_vv("contains :: cont_3"),
+    YN = new_lset(X, N),
+    R = [ $eq(A, YN) ].
+\end{verbatim}
+
+\subsection{Il vincolo union}
+
+\textit{Sintassi:} $un(t_1, t_2, t_3)$.\\
+\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi,  allora $t_3 = t_1 \cup t_2$.\\
+\noindent\textit{Regole di riscrittura:} \ref{fig:un_constraints}.
+
+\begin{figure}[H]
+	\label{fig:un_constraints}
+	
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
+		
+		If $t: \text{U}; A, B, C: \text{Set}$ then:
+		
+		\begin{equation}
+		un(A,A,B) \to A = B
+		\end{equation}
+		\begin{equation}
+		un(A,B,\emptyset) \to A = \emptyset \land B = \emptyset
+		\end{equation}
+		\begin{equation}
+		un(\emptyset,A,\dotB) \to \dotB = A
+		\end{equation}
+		\begin{equation}
+		un(A,\emptyset,\dotB) \to \dotB = A
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		un & (\{ t \sqcup C \}, A, \dotB) \to \\
+		  & (t \not\in A \land un(N_1, A, N) \\
+		  & \lor A = \{ t_1 \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
+		  & \land \{ t\sqcup C \} = \{ t \sqcup N_1 \} \land \dotB = \{ t\sqcup N \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		un & (A, \{ t \sqcup C \}, \dotB) \to \\
+		& (t \not\in A \land un(N_1, A, N) \\
+		& \lor A = \{ t_1 \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
+		& \land \{ t\sqcup C \} = \{ t \sqcup N_1 \} \land \dotB = \{ t\sqcup N \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		un & (A, B, \{ t \sqcup C \}) \to \\
+		& (A = \{t \sqcup N_1 \} \land un(N_1, N_2, N) \\
+		& \lor B = \{ t \sqcup N_1 \} \land un(A, N_1, N) \\
+		& \lor A = \{ t \sqcup N_1 \} \land B = \{ t \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
+		& \land \{ t \sqcup C \} = \{ t \sqcup N \}
+		\end{split}
+		\end{equation}		
+		
+	\end{tcolorbox}
+	
+	\caption{Regole di riscrittura per vincoli di appartenenza}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $un(\dotA, \dotB, \dotC)$, $\dotA$ e $\dotB$ variabili distinte.
+\end{itemize}
+
+\paragraph{Implementazione}
+\begin{verbatim}
+union(S1, S2, S3, R), 
+        S1.is_lset(), S2.is_lset(), S3.is_lset(),
+        S1 == S2 =>                                                % 1
+    log_d_vv("union :: un_1"),
+    R = [$eq(S1, S3)].
+
+union(S1, S2, S3, R),
+        S1.is_lset(), S2.is_lset(),
+        S3.is_emptyset() =>                                        % 2
+    log_d_vv("union :: un_2"),
+    R = [$eq(S1, S3), $eq(S2, S3)].
+
+union(S1, S2, V, R),
+        S1.is_emptyset(),
+        S2.is_lset(), 
+        var(V) =>                                                  % 3
+    log_d_vv("union :: un_3"),
+    R = [$eq(V, S2)].
+
+union(S1, S2, V, R),
+        S2.is_emptyset(),
+        S1.is_lset(), 
+        var(V) =>                                                  % 4
+    log_d_vv("union :: un_4"),
+    R = [$eq(V, S1)].
+
+union(S@[T|C], A, B, R),
+        S.is_lset(),
+        %S2.is_lset(), 
+        var(B) ?=>                                                 % 5a
+    log_d_vv("union :: un_5a"),
+    R = [ 
+        $nin(T, A), 
+        $eq(S, [T|N1]), 
+        $eq(B, [T|N]),
+        $union(N1, A, N)
+    ].
+
+union(S@[T|C], A, B, R),
+        S.is_lset(),
+        %S2.is_lset(), 
+        var(B) =>                                                  % 5b
+    log_d_vv("union :: un_5b"),
+    R = [ 
+        $nin(T, A), 
+        $eq(S, [T|N1]), 
+        $eq(B, [T|N]),
+        $union(N1, A, N)  
+    ].
+
+union(A, S@[T|C], B, R),
+        S.is_lset(),
+        %S2.is_lset(), 
+        var(B) ?=>                                                 % 6a
+    log_d_vv("union :: un_6a"),
+    R = [ 
+        $nin(T, A), 
+        $eq(S, [T|N1]), 
+        $eq(B, [T|N]),
+        $union(N1, A, N)  
+    ].
+
+union(A, S@[T|C], B, R),
+        S.is_lset(),
+        %S2.is_lset(), 
+        var(B) =>                                                  % 6b
+    log_d_vv("union :: un_6b"),
+    R = [ 
+        $nin(T, A), 
+        $eq(S, [T|N1]), 
+        $eq(B, [T|N]),
+        $union(N1, A, N)  
+    ].
+
+union(S1, S2, S3@[Z|Zs], R),
+        S1.is_lset(),
+        S2.is_lset(),
+        S3.is_lset() ?=>                                           % 7a
+    log_d_vv("union :: un_7a"),
+    R1 = [ $eq(S1,[Z|N1]), $union(N1,B2,N) ],
+    R4 = [ $eq(S3,[Z|N]) ],
+
+    R = R1 ++ R4.
+
+union(S1, S2, S3@[Z|Zs], R),
+        S1.is_lset(),
+        S2.is_lset(),
+        S3.is_lset() ?=>                                           % 7b
+    log_d_vv("union :: un_7b"),
+    R2 = [ $eq(S2,[Z|N1]), $union(S1,N1,N) ],
+    R4 = [ $eq(S3,[Z|N]) ],
+
+    R = R2 ++ R4.
+
+union(S1, S2, S3@[Z|Zs], R),
+        S1.is_lset(),
+        S2.is_lset(),
+        S3.is_lset() =>                                            % 7c
+    log_d_vv("union :: un_7c"),
+    R3 = [ $eq(S1,[Z|N1]), $eq(S2,[Z|N2]), $union(N1,N2,N) ],
+    R4 = [ $eq(S3,[Z|N]) ],
+
+    R = R3 ++ R4.
+
+union(S1, S2, S3, R),
+        var(S1), var(S2), var(S3),
+        S1 !== S2 =>                                               % irr
+    log_d_vv("union :: un_irr"),
+    R = [ $union(S1, S2, S3) ].
+\end{verbatim}
+
+\subsection{Il vincolo disj}
+
+\textit{Sintassi:} $t_1 \mid\mid t_2$.\\
+\noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1 \cap t_2 = \emptyset$.\\
+\noindent\textit{Regole di riscrittura:} sono costruite componendo le regole precedenti. Si veda \cite{Rossi18} per i dettagli.
+
+\subsection{Il vincolo subset}
+
+\textit{Sintassi:} $t_1 \subseteq t_2$.\\
+\noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1$ è un sottoinsieme di $t_2$.\\
+\noindent\textit{Regole di riscrittura:} sono costruite componendo le regole precedenti. Si veda \cite{Rossi18} per i dettagli.
+
+\subsection{Il vincolo inters}
+
+\textit{Sintassi:} $inters(t_1,t_2,t_3)$.\\
+\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 = t_1 \cap t_2$.\\
+\noindent\textit{Regole di riscrittura:} sono costruite componendo le regole precedenti. Si veda \cite{Rossi18} per i dettagli.
+
+\subsection{Il vincolo diff}
+
+\textit{Sintassi:} $diff(t_1,t_2,t_3)$.\\
+\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 = t_1 \setminus t_2$.\\
+\noindent\textit{Regole di riscrittura:} sono costruite componendo le regole precedenti. Si veda \cite{Rossi18} per i dettagli.
+
+%%% *******************************************************
+%%% Dettagli implementativi
+\chapter{Dettagli implementativi}
+
+\section{Il vincolo or}
+
+Molte regole di riscrittura integrate dal solver non contengono solo clausole in congiunzione (legate da $\land$), ma anche clausole in disgiunzione. Questa sottile differenza porta un grosso cambiamento nella gestione del controllo durante la risoluzione di formule. Da un punto di vista algoritmico, mentre le clausole congiunte si possono risolvere una dopo l'altra catturando il primo fallimento per interrompere la computazione, le clausole disgiunte non godono della stessa proprietà. Di fatto, se una clausola in disgiunzione fallisce, non è detto che le altre lo facciano, anzi, spesso non è così. Bisogna quindi essere in grado di tornare al punto in cui si è scelta una delle clausole in \emph{or} da risolvere, ripristinando lo stato del programma, per poter proseguire con la successiva.
+
+Per l'implementazione di questo meccanismo viene in aiuto il \emph{backtracking}, che simula proprio funzionamento in questione. Il backtracking è un algoritmo generale che permette di trovare tutte (o alcune) soluzioni ad un certo problema computazionale, che incrementalmente costruisce nuove soluzione abbandonando quelle che sono state decretate non essere una soluzione. Durante la risoluzione di formule insiemistiche questo si può verificare appunto prendendo una clausola in disgiunzione che non soddisfa i vincoli e provoca il fallimento. Il backtracking in questo caso scarta la soluzione, ripristina il programma al punto di scelta (\emph{choice point}\fixme{Aggiungere una descrizione sommaria di choice point in una footnote})\fixme{Aggiungere citazione a fonte: programming in prolog, altri} e prosegue con un'altra delle clausole non ancora esplorate.
+
+L'implementazione del vincolo or nel solver è costruito in due modi:
+\begin{itemize}
+\item tramite l'utilizzo di un vincolo ausiliario;
+\item sfruttando il backtracking sulla regola esatta che presenta clausole in disgiunzione.
+\end{itemize}
+
+Nel primo caso l'implementazione è simile a quella di una regola di riscrittura
+\begin{verbatim}
+%% or(List, Result) is nondet
+%
+% @desc Rewrite rule for or constraints.
+
+or([], []) => true.
+or([T|_Tr], R) ?=> R = [T].
+or([_T|Tr], R) => or(Tr, R).
+\end{verbatim}
+dove
+\begin{itemize}
+\item la prima regola gestisce il caso in cui la lista di clausole in or sia vuota, ed ha sempre successo;
+\item la seconda regola gestisce la prima riscrittura: estrae una clausola prendendola dalla testa della lista e la inserisce nel risultato;
+\item la terza regola gestisce il caso in cui la seconda regola fallisca (ovvero la clausola utilizzata non ha soddisfatto la formula) procedendo con un'altra clausola della lista.
+\end{itemize}
+
+\paragraph{Esempio}
+\begin{verbatim}
+{log} => [eq(X,1),or([eq(X,2),eq(X,1)])]
+\end{verbatim}
+
+\begin{itemize}
+
+\item[Step 1] Il risultato della prima riscrittura è
+\begin{verbatim}
+--- [eq(1,1),or([eq(1,2),eq(1,1)])]
+==> [eq(1,2)]
+\end{verbatim}
+e si può notare come il vincolo \verb|eq(1,1)| sia stato risolto e rimosso dal constraint store risultate, mentre il vincolo \verb|or([eq(X,2),eq(X,1)])| sia stato riscritto in \verb|eq(1,2)|.
+
+\item[Step 2] Il risultato della seconda riscrittura è
+\begin{verbatim}
+--- [eq(1,1),or([eq(1,2),eq(1,1)])]
+==> [eq(1,1)]
+\end{verbatim} 
+da cui invece è evidente il fallimento nella risoluzione di \verb|eq(1,2)|, e la riscrittura del vincolo \verb|or([eq(X,2),eq(X,1)])| in \verb|eq(1,1)|.
+
+\item[Step 3] Il risultato della terza riscrittura è
+\begin{verbatim}
+--- [eq(1,1)]
+==> []
+\end{verbatim}
+da cui si nota la risoluzione dell'ultimo vincolo rimasto.
+
+\end{itemize}
+
+\section{Enumerazione delle soluzione}
+
+Il solver per ogni formula può trovare zero, una o più soluzioni, comprendendo anche un numero infinito di soluzioni. L'enumerazione di queste soluzioni è di notevole importanza per \lset{}. Per questo motivo il solver deve essere in grado di cercare altre soluzioni qualora ve ne sinao. Anche in questo caso si ricorre al backtracking.
+
+L'enumerazione di nuove soluzione è infatti implementata forzando un fallimento: tramite il bakctracking si cercano di esplorare strade alternative per la costruzione di altri risultati e se queste alternative sono infinite allora anche questo processo è infinito.
+
+\paragraph{Esempio}
+\begin{verbatim}
+{log} => [ union( [1|X], [1,2], [1,2] ) ]
+\end{verbatim}
+ha 4 soluzioni
+\begin{itemize}
+\item \verb|X = []|;
+\item \verb|X = [1]|;
+\item \verb|X = [2]|;
+\item \verb|X = [1,2]|
+\end{itemize}
+
+\section{Predicato eq/3}
+
+Il predicato \verb|eq/3| implementa, senza sorprese, le regole di riscrittura per i vincoli di uguaglianza
+
+ \fixme{Rimuovere da qui??}
 
 %%% *******************************************************
 %%% SUso del solver
