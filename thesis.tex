@@ -954,8 +954,8 @@ Le regole implementate sono un sottoinsieme di quelle descritte in \cite{Rossi18
 Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e a qualche predicato ausiliario, sono presenti i predicati che implementano le regole di riscrittura:
 \begin{itemize}
 \item \verb|eq/3| ($=$);
-\item \verb|neq/3| ($\neq$);
-\item \verb|insl/3| ($\in$);
+\item \verb|neq/3| ($\neq$)
+\item \verb|insl/3| ($\in$)
 \item \verb|contains/3| ($contains$);
 \item \verb|union/3| ($\cup$);
 \item \verb|disj/3| ($||$);
@@ -965,6 +965,8 @@ Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e a qualche
 \end{itemize}
 
 Nella sezione \ref{sec:lsetpicat_constraints} sono riportate le regole di riscrittura e relative implementazioni. Si può notare che la descrizione matematica delle regole in \cite{Rossi18} è molto vicina all'implementazione.
+
+\clearpage
 
 \section{Regole di riscrittura}
 
@@ -1166,6 +1168,8 @@ eq(T1, T2, R),
     R = RR.
 \end{verbatim}
 
+\clearpage
+
 \subsection{Il vincolo neq}
 
 \textit{Sintassi:} $t_1 \neq t_2$.\\
@@ -1177,7 +1181,7 @@ eq(T1, T2, R),
 	
 	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
 		\setcounter{equation}{0}
-		\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
+		\renewcommand{\theequation}{$\neq$\textsubscript{\arabic{equation}}}
 		
 		If $t, t_i: \text{U}; A,B: \text{Set}$ then:
 		
@@ -1277,6 +1281,8 @@ neq(X, T, R),
     R = [ $neq(X, T) ].
 \end{verbatim}
 
+\clearpage
+
 \subsection{Il vincolo in}
 
 \textit{Sintassi:} $t_1 \in t_2$.\\
@@ -1288,7 +1294,7 @@ neq(X, T, R),
 	
 	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
 		\setcounter{equation}{0}
-		\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
+		\renewcommand{\theequation}{$\in$\textsubscript{\arabic{equation}}}
 		
 		If $x, y: \text{U}; A: \text{Set}$ then:
 		
@@ -1338,6 +1344,8 @@ contains(A, X, R),
     R = [ $eq(A, YN) ].
 \end{verbatim}
 
+\clearpage
+
 \subsection{Il vincolo union}
 
 \textit{Sintassi:} $un(t_1, t_2, t_3)$.\\
@@ -1349,7 +1357,7 @@ contains(A, X, R),
 	
 	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
 		\setcounter{equation}{0}
-		\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
+		\renewcommand{\theequation}{$\cup$\textsubscript{\arabic{equation}}}
 		
 		If $t: \text{U}; A, B, C: \text{Set}$ then:
 		
@@ -1389,7 +1397,7 @@ contains(A, X, R),
 		& \lor A = \{ t \sqcup N_1 \} \land B = \{ t \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
 		& \land \{ t \sqcup C \} = \{ t \sqcup N \}
 		\end{split}
-		\end{equation}		
+		\end{equation}
 		
 	\end{tcolorbox}
 	
@@ -1514,29 +1522,207 @@ union(S1, S2, S3, R),
     R = [ $union(S1, S2, S3) ].
 \end{verbatim}
 
+\clearpage
+
 \subsection{Il vincolo disj}
 
 \textit{Sintassi:} $t_1 \mid\mid t_2$.\\
 \noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1 \cap t_2 = \emptyset$.\\
-\noindent\textit{Regole di riscrittura:} sono costruite componendo le regole precedenti. Si veda \cite{Rossi18} per i dettagli.
+\noindent\textit{Regole di riscrittura:} \ref{fig:disj_constraints}.
+
+\begin{figure}[H]
+	\label{fig:disj_constraints}
+	
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{$\mid\mid$\textsubscript{\arabic{equation}}}
+		
+		If $t, t_i: \text{U}; A, B: \text{Set}$ then:
+		
+		\begin{equation}
+		\emptyset \mid\mid A \to true
+		\end{equation}
+		\begin{equation}
+		A \mid\mid \emptyset \to true
+		\end{equation}
+		\begin{equation}
+		\dotA \mid\mid \dotA \to \dotA = \emptyset
+		\end{equation}
+		\begin{equation}
+		\{ t \sqcup B \} \mid\mid \dotA \to t \not\in \dotA \land \dotA \mid\mid B
+		\end{equation}
+		\begin{equation}
+		\dotA \mid\mid \{ t \sqcup B \} \to t \not\in \dotA \land \dotA \mid\mid B
+		\end{equation}
+		\begin{equation}
+		\{ t_1 \sqcup A \} \mid\mid \{ t_2 \sqcup B \} \to t_1 \neq t_2 \land t_1 \not\in B \land t_2 \not\in A \land A \mid\mid B
+		\end{equation}
+		
+	\end{tcolorbox}
+	
+	\caption{Regole di riscrittura per vincoli di disgiunzione}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $\dotA \mid\mid \dotB$, $\dotA$ e $\dotB$ variabili distinte.
+\end{itemize}
+
+\paragraph{Implementazione}
+
+TODO
+
+\clearpage
 
 \subsection{Il vincolo subset}
 
 \textit{Sintassi:} $t_1 \subseteq t_2$.\\
 \noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1$ è un sottoinsieme di $t_2$.\\
-\noindent\textit{Regole di riscrittura:} sono costruite componendo le regole precedenti. Si veda \cite{Rossi18} per i dettagli.
+\noindent\textit{Regole di riscrittura:} \ref{fig:subset_constraints}.
+
+\begin{figure}[H]
+	\label{fig:subset_constraints}
+	
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{\textsubscript{\arabic{equation}}}
+		
+		If $x, y: \text{U}; A, B: \text{Set}$ then:
+		
+		\begin{equation}
+		\dotA \subseteq \dotA \to true
+		\end{equation}
+		\begin{equation}
+		\emptyset \subseteq A \to true
+		\end{equation}
+		\begin{equation}
+		\dotA \subseteq \emptyset \to \dotA = \emptyset
+		\end{equation}
+		\begin{equation}
+		\{ t \sqcup A \} \subseteq \emptyset \to false
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+			\{ x \sqcup A \} & \subseteq \dotB \to \\ 
+			  & \dotB = \{ x \sqcup N \} \land A \subseteq \{ x \sqcup N \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+			\{ x \sqcup A \} & \subseteq \{ y \sqcup B \} \to \\ 
+			  & x = y \land A \subseteq \{ y \sqcup B \} \\ 
+			  & \lor x \neq y \land x \in B \land A \subseteq \{ x \sqcup B \}
+		\end{split}
+		\end{equation}
+		
+	\end{tcolorbox}
+	
+	\caption{Regole di riscrittura per vincoli di sottoinsieme}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $\dotA \subseteq \dotB$, $\dotA$ e $\dotB$ variabili distinte;
+	\item $\dotA \subseteq \{ y | B \}$.
+\end{itemize}
+
+\paragraph{Implementazione}
+
+TODO
+
+\clearpage
 
 \subsection{Il vincolo inters}
 
 \textit{Sintassi:} $inters(t_1,t_2,t_3)$.\\
 \noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 = t_1 \cap t_2$.\\
-\noindent\textit{Regole di riscrittura:} sono costruite componendo le regole precedenti. Si veda \cite{Rossi18} per i dettagli.
+\noindent\textit{Regole di riscrittura:} \ref{fig:intersect_constraints}.
+
+\begin{figure}[H]
+	\label{fig:intersect_constraints}
+	
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{7}
+		\renewcommand{\theequation}{$\cup$\textsubscript{\arabic{equation}}}
+		
+		If $x: \text{U}; A, B, C: \text{Set}$ then:
+		
+		\begin{equation}
+		inters(\dotA, \dotA, B) \to A = B
+		\end{equation}
+		\begin{equation}
+		inters(\emptyset, \dotA, C) \to C = \emptyset
+		\end{equation}
+		\begin{equation}
+		inters(\dotA, \emptyset, C) \to C = \emptyset
+		\end{equation}
+		\begin{equation}
+		inters(A,B,\emptyset) \to A \mid\mid B
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		inters & (A,B,\dotC) \to \\
+		  & A = \{ x \sqcup N_1 \} \\
+		  & \lor B = \{ x \sqcup N_2 \} \land \dotC = \{ x \sqcup N_3 \} \land inters(N_1, N_2, N_3)
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		inters & (A,B,\dotC) \to \\
+		  & A = \{ x \sqcup N_1 \} \land B = \{ x \sqcup N_2 \} \land inters(N_1, N_2, C)
+		\end{split}
+		\end{equation}
+		
+	\end{tcolorbox}
+	
+	\caption{Regole di riscrittura per vincoli di intersezione}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $inters(\dotA, B, \dotC)$, $\dotA$ e $B$ non sono la stessa variabile;
+	\item $inters(A, \dotB, \dotC)$, $A$ e $\dotB$ non sono la stessa variabile.
+\end{itemize}
+
+\paragraph{Implementazione}
+
+TODO
+
+\clearpage
 
 \subsection{Il vincolo diff}
 
 \textit{Sintassi:} $diff(t_1,t_2,t_3)$.\\
 \noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 = t_1 \setminus t_2$.\\
-\noindent\textit{Regole di riscrittura:} sono costruite componendo le regole precedenti. Si veda \cite{Rossi18} per i dettagli.
+\noindent\textit{Regole di riscrittura:} \ref{fig:difference_constraints}.
+
+\begin{figure}[H]
+	\label{fig:difference_constraints}
+	
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{\textsubscript{\arabic{equation}}}
+		
+		If $A, B, C: \text{Set}$ then:
+		
+		\begin{equation}
+		diff(A,B,C) \to un(C,A,A) \land un(B,C,N) \land un(A,N,N)
+		\end{equation}
+		
+	\end{tcolorbox}
+	
+	\caption{Regole di riscrittura per vincoli di differenza}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item Nessuna.
+\end{itemize}
+
+\paragraph{Implementazione}
+
+TODO
+
 
 %%% *******************************************************
 %%% Dettagli implementativi
