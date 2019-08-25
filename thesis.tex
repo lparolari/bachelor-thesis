@@ -39,6 +39,8 @@
 \usepackage[toc,page]{appendix}  % appendix.
 \usepackage{tcolorbox}
 %\usepackage{minted}
+\usepackage{tikz}            % flow chart.
+%\usepackage{subcaption}      % needed by nested figures.
 
 % ****************************************************************
 %   CONFIGS
@@ -71,6 +73,38 @@
 \titleformat*{\subsubsection}{               % subsubsection size
   \large\bfseries
 }
+\usetikzlibrary{calc,trees,positioning,arrows,chains,shapes.geometric,%
+	decorations.pathreplacing,decorations.pathmorphing,shapes,%
+	matrix,shapes.symbols}
+\tikzset{
+                                   % flow chart
+>=stealth',
+punktchain/.style={
+	rectangle, 
+	rounded corners, 
+	% fill=black!10,
+	draw=black, very thick,
+	text width=10em, 
+	minimum height=3em, 
+	text centered, 
+	on chain},
+line/.style={draw, thick, <-},
+element/.style={
+	tape,
+	top color=white,
+	bottom color=blue!50!black!60!,
+	minimum width=8em,
+	draw=blue!40!black!90, very thick,
+	text width=10em, 
+	minimum height=3.5em, 
+	text centered, 
+	on chain},
+every join/.style={->, thick,shorten >=1pt},
+decoration={brace},
+tuborg/.style={decorate},
+tubnode/.style={midway, right=2pt},
+}
+
 
 % ****************************************************************
 %   RESOURCES
@@ -1951,7 +1985,64 @@ my_predicate =>
 %%% *******************************************************
 %%% Estensioni
 \chapter{Esensioni al solver di base}
-TODO
+
+\minitoc
+
+Per questo lavoro di tesi si sono concentrati gli sforzi nella realizzazione del risolutore di formule stesso, per arrivare ad avere un'implementazione funzionante di \lset{} in Picat, e, di fatto, sono stati tralasciati numerosi dettagli.
+
+Uno dei dettagli non considerati è stato la rappresentazione delle formule. In \ref{sec:ext_formulas} si descrive questo problema e le possibili soluzioni.
+
+\section{Parser di formule}
+\label{ext_formulas}
+
+\subsection{Problema}
+
+La sintassi della formula in \lset{} è molto importante: avere una rappresentazione ben definita e fissa permette agli utenti (umani e non) di \lset{} di utilizzare un solver piuttosto che un altro per la risoluzione di formule, senza bisogno di modifiche alla richiesta di risoluzione.
+
+Questo è un concetto molto comune in ingegneria del software: viene impiegata un'interfaccia, rappresentante il contratto che tra fornitore e cliente, per definire formalmente il ruolo delle controparti. In questo caso l'interfaccia è rappresentata dalla sintassi delle formule, ed il solver deve essere in grado di ricevere e restituire formule con la sintassi prestabilita.
+
+In Picat non è stato possibile adottare a livello di linguaggio e costrutti built-in la rappresentazione delle formule di \lset{}. Si è quindi utilizzato una sintassi nettamente più vicnina alla rappresentazione interna di Picat, descritta in \ref{ch:appendix_lset_picat_notations}.
+
+\subsection{Soluzione}
+
+Lo schema sottostante riassume la condizione ottimale in cui la formula non ha bisogno di preprocessing per essere lavorata dal solver.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[b]{0.4\textwidth}
+		\centering
+		\label{fig:formula_lset_solver}
+		\begin{tikzpicture}
+		[node distance=.8cm,start chain=going below,]
+		\node[punktchain, join] (a) {Formule \lset{}\\$X = \{1|Y\}$};
+		\node[punktchain, join] (b) {Solver};
+		\end{tikzpicture}
+	\end{minipage}%
+	\begin{minipage}[b]{0.4\textwidth}
+		\centering
+		\begin{tikzpicture}
+		[node distance=.8cm,start chain=going below,]
+		\node[punktchain, join] (a) {Formule in rappresentazione Picat\\ 
+		    \texttt{ [eq(X, [1|Y])] } };
+		\node[punktchain, join] (b) {Solver};
+		\end{tikzpicture}
+	\end{minipage}
+\end{figure}\verb
+L'approccio della prima figura non è supportato da Picat per via della sintassi di \lset{}. L'approccio della seconda figura invece è quello adottato, che però non rispetta la sintassi \lset{} per le formule.
+
+La soluzione al problema è riassumibile dallo schema seguente
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+[node distance=.8cm,start chain=going below,]
+\node[punktchain, join] (a) {Formule \lset{}\\ $X = \{1|Y\}$};
+\node[punktchain, join] (b) {Formule in rappresentazione Picat\\ \texttt{  [eq(X, [1|Y])]}};
+\node[punktchain, join] (c) {Solver};
+\end{tikzpicture}
+\end{figure}
+che aggiunge un livello, il \emph{preprocessing delle formule}, appunto. In questo modo il solver non ha bisogno di mofiche, in quanto manipola sempre le stesse formule, e la sintassi della richiesta diventa conforme a quella di \lset{}.
+
+In questo modo inoltre, si può decidere di non realizzare il preprocessor in Picat, ma in Prolog ad esempio, sfruttando il modulo DCG \cite{MetalevelDCG} (Definite Clause Grammar) che consente di effettuare il parsing di frasi dando la grammatica a clausole definite. 
 
 \chapter{Conclusione e lavori futuri}
 TODO
@@ -1962,6 +2053,7 @@ TODO
 \begin{appendices}
 
 \chapter{Notazioni per \lset{} in Picat}
+\label{ch:appendix_lset_picat_notations}
 
 Per semplificare l'implementazione si è deciso di adottare alcuni espedienti notazionali descritti dalle sezioni sottostanti.\footnote{La notazione impiegata in \clpset{} è descritta in \ref{sec:lang_clpset}.}. Ciò si è reso necessario per evitare di affrontare problemi non direttamente legati al solver e potersi concentrare solamente sulla risoluzione dei vincoli insiemistici.
 
@@ -1973,7 +2065,7 @@ La notazione adottata per la rappresentazione delle formule è la seguente:
 \center
 \begin{tabular}{ll}
 \textbf{Linguaggio} & \textbf{Notazione} \\
-\clpset{} & $T_1 \land T_2 \land \ldots \land T_n$ \\
+\lset{} & $T_1 \land T_2 \land \ldots \land T_n$ \\
 Picat & \verb|[| $T_1, T_2, \ldots, T_n$\verb|]| \\
 \end{tabular}
 \end{table}
@@ -1986,7 +2078,7 @@ Le operazioni primitive di \clpset{} sono spesso espresse tramite simboli (e.g.,
 \center
 \begin{tabular}{l l}
 \textbf{Linguaggio} & \textbf{Notazione} \\
-\clpset{} & $T_1 = T_2$ \\
+\lset{} & $T_1 = T_2$ \\
 Picat & \verb|[eq(| $T_1, T_2$ \verb|)]| \\
 \end{tabular}
 \end{table}
@@ -1999,7 +2091,7 @@ Gli insiemi in \clpset{} sono rappresentati tramite la funzione $\{ \cdot \mid \
 \center
 \begin{tabular}{l l}
 \textbf{Linguaggio} & \textbf{Notazione} \\
-\clpset{} & $\{ T_1, T_2, \ldots, T_n \mid X \}$ \\
+\lset{} & $\{ T_1, T_2, \ldots, T_n \mid X \}$ \\
 Picat & \verb|[| $T_1, T_2, \ldots, T_n \mid X$ \verb|]| \\
 \end{tabular}
 \end{table}
