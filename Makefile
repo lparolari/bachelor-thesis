@@ -1,16 +1,15 @@
 MAINFILE = thesis
+BUILD_DIR = _build
 
 .PHONY: all
 all: pdf #dvi
 
-#dvi: $(EXTRA_FILES) bib
-#	latex $(MAINFILE)
-#	latex $(MAINFILE)
-
-# *** build recipes
-pdf: bib
+pdflatex: 
 	pdflatex $(MAINFILE)
 
+# *** build recipes
+pdf: pdflatex bib pdflatex
+	
 bib:
 	biber $(MAINFILE)
 
@@ -34,3 +33,14 @@ cleanall: clean
 	-rm -f *.ps
 	-rm -f *.dvi
 	-rm -rf ./make
+	-rm -f *.mtc*
+	-rm -f *.maf
+	-rm -f *.listing
+	-rm -f *.loa
+	-rm -f *.lof
+	-rm -f *.lot
+	-rm -f *.bcf
+	-rm -f *.fls
+	-rm -f *.pyg
+	-rm -f *.run.xml
+	-rm -rf $(BUILD_DIR)

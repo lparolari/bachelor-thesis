@@ -37,6 +37,8 @@
 \usepackage{algpseudocode}   % style for (autoimported) package algorithmicx.
 \usepackage{float}           % float management.
 \usepackage[toc,page]{appendix}  % appendix.
+\usepackage{tcolorbox}
+%\usepackage{minted}
 
 % ****************************************************************
 %   CONFIGS
@@ -1739,6 +1741,26 @@ no!
 log> 
 \end{verbatim}
 
+\section{API}
+
+L'utilizzo vero e proprio del solver solitamente non è quello da linea di comando, bensì da altri programmi che lavorano con formule e necessitano di risolvere le stesse per poter combinare i risultati in modelli teorici. E' questo il caso del linguaggio Z \cite{Cristia16}, utilizzato per descrivere formalmente la specifica di programmi. Il linguaggio Z è basato sui concetti e sulla sintassi della matematica, e in particolare della teoria degli insiemi. Le specifiche Z sono convertite in programmi eseguibili, scritti in linguaggi come il Java (si veda \cite{DeSantis17}).
+
+Per questo motivo anche l'implementazione di questo solver fornisce API tramite le quali altri programmi possono interagire con il solver. E' il caso del metodo \verb|solve/2| che come primo argomento riceve una formula e nel secondo argomento restituisce la formula risolta.
+
+\paragraph{Esempio} (pseudocodice)
+\begin{verbatim}
+%%% my_program.pi
+
+import solver.
+
+my_predicate =>
+    do some operations ...
+
+    % solve the formula F with Picat solver
+    solve(F, Result),
+
+    use the result Result ...
+\end{verbatim}
 
 %%% *******************************************************
 %%% Estensioni

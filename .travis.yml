@@ -2,8 +2,8 @@ before_install:
 - sudo apt-get update && sudo apt-get install texlive-full dvipng biber
 script:
 - mkdir _build
-#- biber thesis
 - pdflatex -halt-on-error -interaction nonstopmode -output-directory _build thesis.tex
+#- biber thesis
 - pdflatex -halt-on-error -interaction nonstopmode -output-directory _build thesis.tex
 deploy:
   provider: releases
