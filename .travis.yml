@@ -1,15 +1,19 @@
-before_install:
-- sudo apt-get update && sudo apt-get install texlive-full dvipng biber
+sudo: required
+language: generic
+services: docker
+
 script:
-- mkdir _build
-- pdflatex -halt-on-error -interaction nonstopmode -output-directory _build thesis.tex
-#- biber thesis
-- pdflatex -halt-on-error -interaction nonstopmode -output-directory _build thesis.tex
+  - docker pull dxjoke/tectonic-docker
+  - docker run --mount src=$TRAVIS_BUILD_DIR,target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic --keep-intermediates --reruns 0 thesis.tex; biber thesis; tectonic thesis.tex"
+
+after_success:
+ - mv thesis.pdf thesis-${TRAVIS_TAG}.pdf
+
 deploy:
   provider: releases
   api_key:
     secure: VaAEB6OAervNjp0CiBNQ47A/cc47qWJwZ4Zz81EflQJxtKSVtvy7MfRzUEoHFVSVizDtnkgOQ4z7Irfecqfg8jYroPcUnV/E2FefNKkik3InSZIobK+/D8UueqO4sk4diUFHpBuz/oPtL0SE366AhhLt24TSrNp1SZfnQDKCZo4XeUGodphtibliRiTrjxvCDKH0hELm8icQLfUktXs+X83Y23gTBAsJFOnJu5jEth69O64HXqCtycdQC7txJhJcRktESal0cYvemrn9eArcAavCi8CAKKTptlLMPbYRCMxUkgnWNupAfwLanLHvKaxtApbF1S+7zzFm/zvE6cF8hViNpuWyNZw/Tri20xTIxtrNOh54cSUg0B85EzyW5kQqKZKgPyTplqbHWj6krn789y4T8gaCp7C95bQLSJZ6o/tEzFyck/UnJEvX+i77Z13RX5LUEFOD68VpXu2t5YaIri2Sc8wJbvHqUDZqtwpnHDv1ninYdC3luMGzJLxyJ87lrQbCVmU7Jcqiu0/K8zRDzn31f66yby+7OmHR1CeJeMVzCcOuHYb12dB8GqX7+Zz2iCWtBPaH9g9fXeYcNISzOW/r2W7qwXD3N3AzivAPhVe+CpGbJmFaqNjGE8PAoeemkXv00RXSJG98+gV22eG7W7KlXfCugGNoesZWmmoCqc8=
-  file: _build/thesis.pdf
+  file: $TRAVIS_BUILD_DIR/thesis-${TRAVIS_TAG}.pdf
   skip_cleanup: true
   on:
     repo: lparolari/bachelor-thesis
