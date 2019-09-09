@@ -24,6 +24,8 @@
 *.mtc*
 *.maf
 *.listing
+*.loa
+*.lof
 
 ### emacs backups
 *~
