@@ -50,7 +50,7 @@
   urlcolor=blue, 
   linkcolor=blue
 }
-\dominitoc                                    % minitoc setup  
+\dominitoc                                    % minitoc setup
 \lstset{                                      % listing setup
   basicstyle=\ttfamily,
   mathescape
@@ -83,13 +83,13 @@
                                    % flow chart
 >=stealth',
 punktchain/.style={
-	rectangle, 
-	rounded corners, 
+	rectangle,
+	rounded corners,
 	% fill=black!10,
 	draw=black, very thick,
-	text width=10em, 
-	minimum height=3em, 
-	text centered, 
+	text width=10em,
+	minimum height=3em,
+	text centered,
 	on chain},
 line/.style={draw, thick, <-},
 element/.style={
@@ -98,9 +98,9 @@ element/.style={
 	bottom color=blue!50!black!60!,
 	minimum width=8em,
 	draw=blue!40!black!90, very thick,
-	text width=10em, 
-	minimum height=3.5em, 
-	text centered, 
+	text width=10em,
+	minimum height=3.5em,
+	text centered,
 	on chain},
 every join/.style={->, thick,shorten >=1pt},
 decoration={brace},
@@ -122,38 +122,39 @@ tubnode/.style={midway, right=2pt},
 
 %%% First page
 \begin{titlepage}
-    \begin{center}       
+    \begin{center}
         \includegraphics[width=0.4\textwidth]{img/logo_unipr.png}
 
 		\vspace{0.5cm}
-		
+
 		% *** university details
 		\Large
         Dipartimento di Scienze Matematiche\\
         Fisiche ed Informatiche
 
         \vspace{0.5cm}
-        
+
         \Large
-        Corso di Laurea in Informatica 
-		
-		\vspace{1.2cm} 
- 
+        Corso di Laurea in Informatica
+
+		\vspace{1.2cm}
+
  		% *** title
         \Huge
-        \textbf{Progettazione e implementazione in Picat di un risolutore per vincoli insiemistici}
- 
+        \textbf{Progettazione e implementazione in Picat di un risolutore
+          per vincoli insiemistici}
+
  		% *** subtitle
         \vspace{1cm}
         \LARGE
-        Design and implementation in Picat of a set constraint solver 
- 
+        Design and implementation in Picat of a set constraint solver
+
         \vspace{1.2cm}
- 
+
  		% *** authors
 		\large Candidato: \Large\textbf{Luca Parolari}\\
 		\large Relatore: \Large\textbf{Gianfranco Rossi}
-	
+
 		%\begin{minipage}{0.4\textwidth}
 		%	\begin{flushleft}
 		%		\large
@@ -169,13 +170,13 @@ tubnode/.style={midway, right=2pt},
 		%		Dr. Caroline \textsc{Becker} % Supervisor's name
 		%	\end{flushright}
 		%\end{minipage}
-		
+
         \vfill
- 		
+
  		\large
         Tesi di Laurea in Informatica\\
         Anno Accademico 2018-2019
- 
+
     \end{center}
 \end{titlepage}
 
@@ -196,18 +197,9 @@ tubnode/.style={midway, right=2pt},
 %%% *******************************************************
 %%% Introduzione
 \chapter*{Introduzione}
-
+\thispagestyle{empty}
 \lipsum[1-4]
-
-
-% TODO da definire
-%%% *******************************************************
-% Panoramica e background
-%\chapter{Panormaica e background}
-%
-%\minitoc
-%
-%In questo capitolo si vuole dare un'infarinatura sull'ambito dei linguaggi trattati in questo lavoro di tesi.
+\thispagestyle{empty}
 
 
 %%% *******************************************************
@@ -453,7 +445,7 @@ Essenzialmente \satset{$(C)$} utilizza tre procedure:
           \calset{}-\textit{formula} $C$ i vincoli \textbf{set} e
           \textbf{integer} per assicurare che gli oggetti utilizzati
           nei vincoli siano del tipo corretto.
-	
+
 	\item \textbf{\texttt{STEP}}: applica speciali \textit{regole
           di riscrittura} alla formula $C$ corrente e ritorna
           \textit{false} oppure la formula modificata. L'esecuzione di
@@ -461,7 +453,7 @@ Essenzialmente \satset{$(C)$} utilizza tre procedure:
           formula in forma irriducibile. Notare che $STEP$ ritorna
           $false$ se almeno uno dei vincoli in $C$ viene riscritto a
           $false$. Anche $STEP(false)$ ritorna $false$.
-	
+
 	\item \textbf{\texttt{remove\_neq}}: tratta l'eliminazione dei
           $\neq-constraints$ nel caso in cui coinvolgano variabili
           insiemistiche che appaiono anche in vincoli di unione in
@@ -1085,14 +1077,30 @@ Picat incorpora le principali funzionalità dei linguaggi logici,
 funzionali e di scripting. Le caratteristiche di Picat sono riassunte
 dalle lettere del suo nome:
 \begin{itemize}
-\item \textbf{P}attern-matching. Un \emph{predicato} definisce una relazione e può avere zero, una o più soluzioni. Picat è un linguaggio basato su regole. I predicati e le funzioni sono definiti tramite regole di pattern-matching.
-\item \textbf{I}ntuitive. Picat fornisce comandi come l'assegnamento ed i loop, che vengono usati nei comuni linguaggi imperativi, rendendolo di fatto più affine per la scrittura di programmi "comuni".
-\item \textbf{C}onstraints. Picat supporta la programmazione con vincoli. Nasce infatti con quattro moduli per la risoluzione di vincoli: \verb|cp|, \verb|sat|, \verb|smt| e \verb|mip|.
-\item \textbf{A}ctors. Viene fornito il supporto a chiamate event-driven tramite \emph{action rules}, utilizzate per descrivere il comportamento degli attori event-driven.
-\item \textbf{T}abling. Il tabling è utilizzato per memorizzare la soluzione di un calcolo in memoria, permettendo quindi una rapida consultazione del risultato senza ricalcolo. Per questo motivo, il modulo \verb|planner| di Picat ne fa largo uso. 
+\item \textbf{P}attern-matching. Un \emph{predicato} definisce una
+  relazione e può avere zero, una o più soluzioni. Picat è un
+  linguaggio basato su regole. I predicati e le funzioni sono definiti
+  tramite regole di pattern-matching.
+\item \textbf{I}ntuitive. Picat fornisce comandi come l'assegnamento
+  ed i loop, che vengono usati nei comuni linguaggi imperativi,
+  rendendolo di fatto più affine per la scrittura di programmi
+  "comuni".
+\item \textbf{C}onstraints. Picat supporta la programmazione con
+  vincoli. Nasce infatti con quattro moduli per la risoluzione di
+  vincoli: \verb|cp|, \verb|sat|, \verb|smt| e \verb|mip|.
+\item \textbf{A}ctors. Viene fornito il supporto a chiamate
+  event-driven tramite \emph{action rules}, utilizzate per descrivere
+  il comportamento degli attori event-driven.
+\item \textbf{T}abling. Il tabling è utilizzato per memorizzare la
+  soluzione di un calcolo in memoria, permettendo quindi una rapida
+  consultazione del risultato senza ricalcolo. Per questo motivo, il
+  modulo \verb|planner| di Picat ne fa largo uso.
 \end{itemize}
 
-Inoltre, Picat supporta le principali caratteristiche dei linguaggi logici, obbligando però il programmatore ad usarle in modo esplicito, come per il caso dell'unificazione, del non determinismo, del tabling e dei vincoli.
+Inoltre, Picat supporta le principali caratteristiche dei linguaggi
+logici, obbligando però il programmatore ad usarle in modo esplicito,
+come per il caso dell'unificazione, del non determinismo, del tabling
+e dei vincoli.
 
 \section{Funzionalità di base}
 \label{sec:picat_base}
@@ -1100,26 +1108,40 @@ Inoltre, Picat supporta le principali caratteristiche dei linguaggi logici, obbl
 \subsection{Il sistema Picat}
 \label{sec:picat_base_system}
 
-Picat è un linguaggio interpretato. I programmi Picat però, prima di essere eseguiti, sono compilati. Il compilatore non trasforma i sorgenti in codice macchina, ma depura il programma da tutto quello che non è necessario per l'esecuzione, esegue alcuni controlli statici e riscrive alcuni costrutti sintatticamente (e.g. i cicli).
+Picat è un linguaggio interpretato. I programmi Picat però, prima di
+essere eseguiti, sono compilati. Il compilatore non trasforma i
+sorgenti in codice macchina, ma depura il programma da tutto quello
+che non è necessario per l'esecuzione, esegue alcuni controlli statici
+e riscrive alcuni costrutti sintatticamente (e.g. i cicli).
 
-Tramite l'interprete Picat è possibile caricare, compilare ed eseguire programmi, possibilmente anche modalità debug.
+Tramite l'interprete Picat è possibile caricare, compilare ed eseguire
+programmi, possibilmente anche modalità debug.
 
 \paragraph{Esempio}\
 \begin{verbatim}
-> picat
-Picat> compile(program)
-Picat> load(program)
-Picat> main.
+> picat Picat> compile(program) Picat> load(program) Picat> main.
 \end{verbatim}
 
 \subsection{Tipi di dato}
 \label{sec:picat_base_datatype}
 
-Picat è un linguaggio tipato dinamicamente: il controllo dei tipi avviene a runtime. Le variabili in Picat possono avere o non avere un valore. Una variabile è libera fintanto che non viene vincolata ad un valore (operazione di bounding), e può avere degli attributi rappresentati come mappa chiave-valore.
+Picat è un linguaggio tipato dinamicamente: il controllo dei tipi
+avviene a runtime. Le variabili in Picat possono avere o non avere un
+valore. Una variabile è libera fintanto che non viene vincolata ad un
+valore (operazione di bounding), e può avere degli attributi
+rappresentati come mappa chiave-valore.
 
-I tipi primitivi di Picat sono il numero intero, reale e l'atomo. Un atomo è un nome iniziante con lettera miniscola o una stringa quotata da apici singoli.
+I tipi primitivi di Picat sono il numero intero, reale e l'atomo. Un
+atomo è un nome iniziante con lettera miniscola o una stringa quotata
+da apici singoli.
 
-I tipi composti invece sono le liste \verb|[|$t_1, \ldots, t_n$\verb|]| e le strutture \verb|$s(|$t_1, \ldots, t_n$\verb|)|, dove $s$ è il nome della struct, ed $n$ è l'arità. Il dollaro viene impiegato per distinguere una chiamata di funzione da una struct. Picat inoltre mette a disposizione tipi composti speciali come \emph{strings}, \emph{arrays}, \emph{maps}, \emph{sets} e \emph{heaps}.
+I tipi composti invece sono le liste \verb|[|$t_1, \ldots,
+t_n$\verb|]| e le strutture \verb|$s(|$t_1, \ldots, t_n$\verb|)|, dove
+$s$ è il nome della struct, ed $n$ è l'arità. Il dollaro viene
+impiegato per distinguere una chiamata di funzione da una
+struct. Picat inoltre mette a disposizione tipi composti speciali come
+\emph{strings}, \emph{arrays}, \emph{maps}, \emph{sets} e
+\emph{heaps}.
 
 \paragraph{Esempio}\
 \begin{verbatim}
@@ -1167,17 +1189,31 @@ Picat> X = 1..5
 X = [1,2,3,4,5]
 \end{verbatim}
 
-Picat possiede una ricca libreria di funzioni di utilità sui tipi di dato che permettono, tra le altre cose, di verificare qual è il tipo di una variabile, convertire tipi ad altri tipi e aggiungere elementi ad un insieme.
+Picat possiede una ricca libreria di funzioni di utilità sui tipi di
+dato che permettono, tra le altre cose, di verificare qual è il tipo
+di una variabile, convertire tipi ad altri tipi e aggiungere elementi
+ad un insieme.
 
 \subsection{Predicati}
 \label{sec:picat_base_pred}
 
-I predicati sono una componente fondamentale di Picat. Un predicato ha esito positivo o negativo, a meno di eccezioni. Un predicato può esplorare tutte le soluzioni tramite il backtracking implementato in Picat.
+I predicati sono una componente fondamentale di Picat. Un predicato ha
+esito positivo o negativo, a meno di eccezioni. Un predicato può
+esplorare tutte le soluzioni tramite il backtracking implementato in
+Picat.
 
-In Picat i predicati sono definiti con regole di pattern-matching. Le regole utilizzabili per la definizione di un predicato sono $Head, Cond => Body$ e $Head, Cond\ ?=> Body$ che rappresentano rispettivamente la regola \emph{non-backtrackable} e \emph{backtrackable}. La testa $Head$ del predicato è $p(t_1, \ldots, t_n)$ con $p$ il nome del predicato e $n$ l'arità. Le condizioni $Cond$ sono goal opzionali che specificano l'applicabilità della regola. $Body$ è li corpo del predicato.
-Quando una chiamata $C$ è applicabile, Picat riscrive $C$ in $Body$. Se la regola usata è \emph{non-backtrackable} allora la riscrittura è permanente, altrimenti il programma farà backtracking su $C$ se $Body$ fallisce e verrà provata la regola successiva.
-
-
+In Picat i predicati sono definiti con regole di pattern-matching. Le
+regole utilizzabili per la definizione di un predicato sono $Head,
+Cond => Body$ e $Head, Cond\ ?=> Body$ che rappresentano
+rispettivamente la regola \emph{non-backtrackable} e
+\emph{backtrackable}. La testa $Head$ del predicato è $p(t_1, \ldots,
+t_n)$ con $p$ il nome del predicato e $n$ l'arità. Le condizioni
+$Cond$ sono goal opzionali che specificano l'applicabilità della
+regola. $Body$ è li corpo del predicato.  Quando una chiamata $C$ è
+applicabile, Picat riscrive $C$ in $Body$. Se la regola usata è
+\emph{non-backtrackable} allora la riscrittura è permanente,
+altrimenti il programma farà backtracking su $C$ se $Body$ fallisce e
+verrà provata la regola successiva.
 
 \paragraph{Esempio} Regola non backtrackable.
 \begin{verbatim}
@@ -1203,7 +1239,11 @@ no
 \subsection{Funzioni}
 \label{sec:picat_base_func}
 
-Picat permette di definire delle funzioni, ovvero oggetti che hanno sempre esito positivo e che ritornano un solo valore. La sintassi di una funzione è $Head, Cond = Result => Body$. Le funzioni in picat sono uno zucchero sintattico per un predicato cos' formato: $HeadResult, Cond => Body$ dove $HeadResult = p(t_1, \ldots, t_n, r)$.
+Picat permette di definire delle funzioni, ovvero oggetti che hanno
+sempre esito positivo e che ritornano un solo valore. La sintassi di
+una funzione è $Head, Cond = Result => Body$. Le funzioni in picat
+sono uno zucchero sintattico per un predicato cos' formato:
+$HeadResult, Cond => Body$ dove $HeadResult = p(t_1, \ldots, t_n, r)$.
 
 \paragraph{Esempio}
 \begin{verbatim}
@@ -1211,7 +1251,7 @@ fib(0)=F => F=1.
 fib(1)=F => F=1.
 fib(N)=F,N>1 => F=fib(N-1)+fib(N-2).
 
-Picat> X = fib(8) 
+Picat> X = fib(8)
 X = 21
 yes
 \end{verbatim}
@@ -1219,12 +1259,19 @@ yes
 \subsection{Assegnamenti e Cicli}
 \label{sec:picat_base_asscycle}
 
-Picat cerca di agevolare notevolmente i programmatori affini a linguaggi imperativi. Per questo motivo offre funzionalità come l'assegnamento, tipicamente non disponibile in un linguaggio logico,
-e cicli, che nei linguaggi logici si realizzano con la ricorsione.
+Picat cerca di agevolare notevolmente i programmatori affini a
+linguaggi imperativi. Per questo motivo offre funzionalità come
+l'assegnamento, tipicamente non disponibile in un linguaggio logico, e
+cicli, che nei linguaggi logici si realizzano con la ricorsione.
 
 \subsubsection{Assegnamento}
 
-Anche l'assegnamento, come altri comandi, è uno zucchero sintattico. Un assegnamento in Picat $X := Y$ viene gestito a tempo di compilazione creando nuovi nomi di variabile. Le nuove variabili conterranno il nuovo valore dopo l'assegnamento e verranno usati nella porzione di programma successiva all'assegnamento al posto della vecchia variabile.
+Anche l'assegnamento, come altri comandi, è uno zucchero
+sintattico. Un assegnamento in Picat $X := Y$ viene gestito a tempo di
+compilazione creando nuovi nomi di variabile. Le nuove variabili
+conterranno il nuovo valore dopo l'assegnamento e verranno usati nella
+porzione di programma successiva all'assegnamento al posto della
+vecchia variabile.
 
 \paragraph{Esempio}
 \begin{verbatim}
@@ -1238,7 +1285,10 @@ avente anch'esso output $2$.
 
 \subsubsection{Cicli}
 
-Picat supporta tre tipo di cicli: \verb|foreach|, \verb|while| e \verb|do-while|. Il \verb|foreach| viene usato per implementare un particolare tipo di ciclo su liste denominato \emph{list comprehension}.
+Picat supporta tre tipo di cicli: \verb|foreach|, \verb|while| e
+\verb|do-while|. Il \verb|foreach| viene usato per implementare un
+particolare tipo di ciclo su liste denominato \emph{list
+  comprehension}.
 
 \paragraph{Esempio}\
 \begin{lstlisting}
@@ -1263,7 +1313,10 @@ do
 while (J <= 5).
 \end{lstlisting}
 
-Mentre per i tipi di cicli più comuni la semantica è piuttosto ovvia, per le list comprehension la cosa è più interessante. Le list comprehension sono funzioni che servono a costruire una lista iterando valori di altre liste.
+Mentre per i tipi di cicli più comuni la semantica è piuttosto ovvia,
+per le list comprehension la cosa è più interessante. Le list
+comprehension sono funzioni che servono a costruire una lista iterando
+valori di altre liste.
 
 La list comprehension ha la seguente sintassi
 \begin{lstlisting}
@@ -1279,12 +1332,17 @@ L = [(a , 1),(a , 2),(b , 1),(b , 2)]
 \section{Funzionalità avanzate}
 \label{sec:picat_advanced}
 
-In questa sezione si da una panoramica delle funzionalità avanzate in Picat. Anche in questo caso si raccomanda al lettore l'approfondimento dei dettagli in \cite{PicatGuide}.
+In questa sezione si da una panoramica delle funzionalità avanzate in
+Picat. Anche in questo caso si raccomanda al lettore l'approfondimento
+dei dettagli in \cite{PicatGuide}.
 
 \subsection{Tabling}
 \label{sec:picat_advanced_tabling}
 
-Il tabling è un meccanismo di caching che permette di memorizzare la chiamata ad un predicato e relativo risultato per evitare cicli infiniti o per ridurre il costo computazione dovuto alla grossa ridondanza dei calcoli.
+Il tabling è un meccanismo di caching che permette di memorizzare la
+chiamata ad un predicato e relativo risultato per evitare cicli
+infiniti o per ridurre il costo computazione dovuto alla grossa
+ridondanza dei calcoli.
 
 \paragraph{Esempio}\
 \begin{lstlisting}
@@ -1293,30 +1351,43 @@ fib(0) = 1.
 fib(1) = 1.
 fib(N) = fib(N-1)+fib(N-2).
 \end{lstlisting}
-Senza tabling \verb|fib(N)| ha costo esponenziale in \verb|N|, con il tabling invece il costo è lineare.
+Senza tabling \verb|fib(N)| ha costo esponenziale in \verb|N|, con il
+tabling invece il costo è lineare.
 
-Il tabling è abilitato usando la keyword \verb|table| prima della definizione del predicato.
+Il tabling è abilitato usando la keyword \verb|table| prima della
+definizione del predicato.
 
 \subsection{Moduli}
 \label{sec:picat_advanced_modules}
 
-I moduli sono una funzionalità molto utile di Picat e permettono al programmatore un'organizzazione comoda del codice sorgente, suddivisa su più file (moduli, appunto).
+I moduli sono una funzionalità molto utile di Picat e permettono al
+programmatore un'organizzazione comoda del codice sorgente, suddivisa
+su più file (moduli, appunto).
 
-Un modulo è un file sorgente con estensione \verb|.pi|. Un modulo inizia con la dichiarazione di se stesso nella forma \verb|module| $Name$, dove $Name$ corrisponde al nome del file.
+Un modulo è un file sorgente con estensione \verb|.pi|. Un modulo
+inizia con la dichiarazione di se stesso nella forma \verb|module|
+$Name$, dove $Name$ corrisponde al nome del file.
 
-Picat fornisce un sistema molto semplice di import, consentendo così di accedere a funzionalità di altri file sorgente. La sintassi per l'import è 
+Picat fornisce un sistema molto semplice di import, consentendo così
+di accedere a funzionalità di altri file sorgente. La sintassi per
+l'import è
 \begin{lstlisting}
 import $Name_1, \ldots, Name_n$.
 \end{lstlisting}
 
-E' possibile chiamare predicati di un modulo specificando completamente il nome del predicato con \verb|m.p()|, dove \verb|m| è il nome del modulo e \verb|p| è il nome del predicato. E' consentito proibire l'utilizzo di un predicato da moduli esterni appondendo la keyword \verb|private| prima della definizione del predicato.
+E' possibile chiamare predicati di un modulo specificando
+completamente il nome del predicato con \verb|m.p()|, dove \verb|m| è
+il nome del modulo e \verb|p| è il nome del predicato. E' consentito
+proibire l'utilizzo di un predicato da moduli esterni appondendo la
+keyword \verb|private| prima della definizione del predicato.
 
 \subsection{Eccezioni}
 \label{sec:picat_advanced_exceptions}
 
-Picat fornisce un semplice sistema di gestione delle eccezioni, con cui è possibile gestire eventi eccezionali ed errori non previsti.
+Picat fornisce un semplice sistema di gestione delle eccezioni, con
+cui è possibile gestire eventi eccezionali ed errori non previsti.
 
-La sintassi per il lancio delle eccezioni è 
+La sintassi per il lancio delle eccezioni è
 \begin{lstlisting}
 throw Exception
 \end{lstlisting}
@@ -1328,9 +1399,16 @@ catch(Goal, Exception, Handler)
 \subsection{Higher-Order Calls}
 \label{sec:picat_advanced_hoc}
 
-Un predicato o una funzione è di ordine superiore se riceve funzioni come argomenti. Alcuni predicati di ordine superiore \emph{built-in} del linguaggio sono \verb|call|, \verb|apply| e \verb|find_all|. I predicati \verb|call| e \verb|apply| prendono in input un nome di funzione e lo eseguono con gli argomenti dati; \verb|apply| può ritornare un valore. Il predicato \verb|find_all| invece trova tutte le soluzioni della chiamata per la funzione in input.
+Un predicato o una funzione è di ordine superiore se riceve funzioni
+come argomenti. Alcuni predicati di ordine superiore \emph{built-in}
+del linguaggio sono \verb|call|, \verb|apply| e \verb|find_all|. I
+predicati \verb|call| e \verb|apply| prendono in input un nome di
+funzione e lo eseguono con gli argomenti dati; \verb|apply| può
+ritornare un valore. Il predicato \verb|find_all| invece trova tutte
+le soluzioni della chiamata per la funzione in input.
 
-Picat fornisce altri predicati di ordine superiore per la gestione delle eccezioni, l'esecuzione e alte utilità.
+Picat fornisce altri predicati di ordine superiore per la gestione
+delle eccezioni, l'esecuzione e alte utilità.
 
 \paragraph{Esempio}
 \begin{verbatim}
@@ -1350,32 +1428,72 @@ Z = 3
 \subsection{Action Rules}
 \label{sec:picat_advanced_actionrules}
 
-Picat fornisce \emph{Action Rules} per descrivere attori event-driven. Un attore è un chiamata ad un predicato che può essere differita rispetto alla normale esecuzione ed è attivabile da eventi. Queste regole hanno sintassi $Head, Cond, \{Event\} => Body$, dove $Event$ è un insieme non vuoto di eventi separati da virgola.
+Picat fornisce \emph{Action Rules} per descrivere attori
+event-driven. Un attore è un chiamata ad un predicato che può essere
+differita rispetto alla normale esecuzione ed è attivabile da
+eventi. Queste regole hanno sintassi $Head, Cond, \{Event\} => Body$,
+dove $Event$ è un insieme non vuoto di eventi separati da virgola.
 
-Gli attori possono essere assegnati a canali sui quali sono notificati gli eventi. Un canale è una variabile con degli attributi in grado di notificare eventi. Un canale può avere diverse porte, che specificano la visiblità dell'evento per qel canale. 
+Gli attori possono essere assegnati a canali sui quali sono notificati
+gli eventi. Un canale è una variabile con degli attributi in grado di
+notificare eventi. Un canale può avere diverse porte, che specificano
+la visiblità dell'evento per qel canale.
 
 \subsection{Mappe Globali}
 \label{sec:picat_advanced_globalmaps}
 
-Picat fornisce tre tipi diversi di mappe globali utilizzabili durante l'esecuzione: mappe \emph{heap}, mappe \emph{globali} e \emph{tabelle}.
+Picat fornisce tre tipi diversi di mappe globali utilizzabili durante
+l'esecuzione: mappe \emph{heap}, mappe \emph{globali} e
+\emph{tabelle}.
 
-Queste mappe sono create non appena il sistema Picat si avvia. Possono essere consultate richiedendo a Picat una mappa e fornendo un \emph{ID} per la stessa. Le tre mappe differiscono per la modaltà di memorizzazione degli elementi e per il numero di mappe che possono essere richieste.
+Queste mappe sono create non appena il sistema Picat si avvia. Possono
+essere consultate richiedendo a Picat una mappa e fornendo un
+\emph{ID} per la stessa. Le tre mappe differiscono per la modaltà di
+memorizzazione degli elementi e per il numero di mappe che possono
+essere richieste.
 
-Queste mappe sono accessibili durante tutta l'esecuzione e sono quindi molto utili per memorizzare variabili globali.
+Queste mappe sono accessibili durante tutta l'esecuzione e sono quindi
+molto utili per memorizzare variabili globali.
 
 \section{Picat vs. Prolog}
 \label{sec:picat_picatvsprolog}
 
-Sebbene Picat sia un linguaggio multi paradigma, esso è profondamente legato ai concetti di programmazione logica includendo \emph{variabili logiche}, \emph{unificazione} e \emph{backtracking}.
-Come in Prolog, le variabili di Picat sono etichette a valori. Una variabile logica può essere legata a qualunque termine, includendo altre variabili logiche (una volta sola).
+Sebbene Picat sia un linguaggio multi paradigma, esso è profondamente
+legato ai concetti di programmazione logica includendo \emph{variabili
+  logiche}, \emph{unificazione} e \emph{backtracking}.  Come in
+Prolog, le variabili di Picat sono etichette a valori. Una variabile
+logica può essere legata a qualunque termine, includendo altre
+variabili logiche (una volta sola).
 
 \begin{description}
-\item[Unificazione e pattern-matching.] L'unificazione è l'operazione di base sia in Picat che in Prolog per effettuare il bound delle variabili a termini. Ma mentre in Prolog l'unificazione viene utilizzata anche nella risoluzione delle regole, in Picat viene impiegato il pattern-matching per dicidere se una regola è applicabile o meno. Ciò comporta alcune divergenze tra l'esecuzione della stessa regola in Prolog e in Picat.
-Inoltre, l'operazione di pattern-matching sulle regole è molto più leggera rispetto all'unificazione.
-\item[Backtracking.] Anche Picat supporta nativamente il backtracking. In Prolog però ogni regola è implicitamente \emph{backtrackable} e si usa l'operatore \emph{cut} \verb|!| per controllarne il comportamento. In Picat invece una regola è \emph{backtrackable} solo se esplicitamente dichiarato. Ciò permete al programmatore di capire a colpo d'occhio l'intenzione di una regola.
-\item[Predicati dinamici.] Picat non supporta i predicati dinamici, mentre in Prolog è possibile asserire un predicato durante l'esecuzione, dando di fatto più flessibilità al linguaggio.
-\item[Operatori definiti da utente.] In Picat non è possibile definire nessun operatore, mentre in Prolog è possibile estendere il set di operatore aggiungendone di nuovi.
-\item[Costrutti.] Una delle differenze più evidenti tra i due linguaggi sono i costrutti. Picat infatti fornisce molti costrutti per svolgere operazioni comuni quali assegnamenti, cicli e salti condizionali. Non mancano inoltre un buon numero di tipi di dato predefiniti con relative operazioni, che per attività di scripting e modellazione rendono Picat più conveniente rispetto al Prolog.
+\item[Unificazione e pattern-matching.] L'unificazione è l'operazione
+  di base sia in Picat che in Prolog per effettuare il bound delle
+  variabili a termini. Ma mentre in Prolog l'unificazione viene
+  utilizzata anche nella risoluzione delle regole, in Picat viene
+  impiegato il pattern-matching per dicidere se una regola è
+  applicabile o meno. Ciò comporta alcune divergenze tra l'esecuzione
+  della stessa regola in Prolog e in Picat.  Inoltre, l'operazione di
+  pattern-matching sulle regole è molto più leggera rispetto
+  all'unificazione.
+\item[Backtracking.] Anche Picat supporta nativamente il
+  backtracking. In Prolog però ogni regola è implicitamente
+  \emph{backtrackable} e si usa l'operatore \emph{cut} \verb|!| per
+  controllarne il comportamento. In Picat invece una regola è
+  \emph{backtrackable} solo se esplicitamente dichiarato. Ciò permete
+  al programmatore di capire a colpo d'occhio l'intenzione di una
+  regola.
+\item[Predicati dinamici.] Picat non supporta i predicati dinamici,
+  mentre in Prolog è possibile asserire un predicato durante
+  l'esecuzione, dando di fatto più flessibilità al linguaggio.
+\item[Operatori definiti da utente.] In Picat non è possibile definire
+  nessun operatore, mentre in Prolog è possibile estendere il set di
+  operatore aggiungendone di nuovi.
+\item[Costrutti.] Una delle differenze più evidenti tra i due
+  linguaggi sono i costrutti. Picat infatti fornisce molti costrutti
+  per svolgere operazioni comuni quali assegnamenti, cicli e salti
+  condizionali. Non mancano inoltre un buon numero di tipi di dato
+  predefiniti con relative operazioni, che per attività di scripting e
+  modellazione rendono Picat più conveniente rispetto al Prolog.
 \end{description}
 
 
@@ -3022,11 +3140,17 @@ TODO
 \chapter{Notazioni per \lset{} in Picat}
 \label{ch:appendix_lset_picat_notations}
 
-Per semplificare l'implementazione si è deciso di adottare alcuni espedienti notazionali descritti dalle sezioni sottostanti.\footnote{La notazione impiegata in \clpset{} è descritta in \ref{sec:lang_clpset}.}. Ciò si è reso necessario per evitare di affrontare problemi non direttamente legati al solver e potersi concentrare solamente sulla risoluzione dei vincoli insiemistici.
+Per semplificare l'implementazione si è deciso di adottare alcuni
+espedienti notazionali descritti dalle sezioni
+sottostanti.\footnote{La notazione impiegata in \clpset{} è descritta
+  in \ref{sec:lang_clpset}.}. Ciò si è reso necessario per evitare di
+affrontare problemi non direttamente legati al solver e potersi
+concentrare solamente sulla risoluzione dei vincoli insiemistici.
 
 \section{Formule}
 
-La notazione adottata per la rappresentazione delle formule è la seguente:
+La notazione adottata per la rappresentazione delle formule è la
+seguente:
 
 \begin{table}[H]
 \center
@@ -3039,7 +3163,9 @@ Picat & \verb|[| $T_1, T_2, \ldots, T_n$\verb|]| \\
 
 \section{Operazioni primitive}
 
-Le operazioni primitive di \clpset{} sono spesso espresse tramite simboli (e.g., $=, \neq, \ldots$). La notazione adottata è la seguente:
+Le operazioni primitive di \clpset{} sono spesso espresse tramite
+simboli (e.g., $=, \neq, \ldots$). La notazione adottata è la
+seguente:
 
 \begin{table}[H]
 \center
@@ -3052,7 +3178,8 @@ Picat & \verb|[eq(| $T_1, T_2$ \verb|)]| \\
 
 \section{Insiemi}
 
-Gli insiemi in \clpset{} sono rappresentati tramite la funzione $\{ \cdot \mid \cdot \}$.
+Gli insiemi in \clpset{} sono rappresentati tramite la funzione $\{
+\cdot \mid \cdot \}$.
 
 \begin{table}[H]
 \center
