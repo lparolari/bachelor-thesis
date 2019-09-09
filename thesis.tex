@@ -34,6 +34,7 @@
 %\usepackage{showframe}      % shows page frames.
 \usepackage{titlesec}        % change titles size.
 \usepackage{algorithm}       % algorithm block.
+\usepackage{algcompatible}
 \usepackage{algpseudocode}   % style for (autoimported) package algorithmicx.
 \usepackage{float}           % float management.
 \usepackage[toc,page]{appendix}  % appendix.
@@ -59,6 +60,8 @@
   \renewcommand{\appendixtocname}{Appendici}%
   \renewcommand{\appendixpagename}{Appendici}%
 }
+\renewcommand{\listalgorithmname}{Elenco degli algoritmi}
+\floatname{algorithm}{Algoritmo}
 \newenvironment{dedication}                   % dedication setup
   {%\clearpage           % we want a new page          %% I commented this
    \thispagestyle{empty}% no header and footer
@@ -184,6 +187,7 @@ tubnode/.style={midway, right=2pt},
 %%% TOC
 \tableofcontents
 \listoffigures
+\listofalgorithms
 
 %\lhead[\fancyplain{}{}]{\fancyplain{}{\leftmark}} \chead{}
 %\rhead{\thepage} \lfoot{} \cfoot{} \rfoot{}
