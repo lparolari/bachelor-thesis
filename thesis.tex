@@ -207,150 +207,261 @@ tubnode/.style={midway, right=2pt},
 
 
 %%% *******************************************************
-% Linguaggi a vincoli basati su insiemi e relazioni bianrie
+% Linguaggi a vincoli basati su insiemi
 \chapter{Linguaggio a vincoli basato su insiemi}
-\label{ch:sets_based_constraint_language}
+\label{ch:clpbasedlang}
 
 \minitoc
 
-In questo capitolo vene presentato e contestualizzato un linguaggio orientato alla risoluzione di formule insiemistiche: \lset{}. \lset{} è un linguaggio logico definito come parte del linguaggio di programmazione logica a vincoli (o Constraint Logic Programming, abbreviato CLP) \clpset{}.
+In questo capitolo vene presentato e contestualizzato un linguaggio
+orientato alla risoluzione di formule insiemistiche denominato
+\lset{}. \lset{} è un linguaggio logico definito come parte del
+linguaggio di programmazione logica a vincoli (o Constraint Logic
+Programming, abbreviato CLP) \clpset{}.
 
-\clpset{} (e quindi il suo linguaggio a vincoli \lset{}) è stato implementato in Prolog nello strumento \setlog{} \cite{SetLog}; inoltre \lset{} è stato implementato in Java come parte della libreria \jsetl{} \cite{JSetL}. Obiettivo principale di questo lavoro di tesi è quello di dare un’implementazione di \lset{} utilizzando il linguaggio di programmazione Picat \cite{PicatLang}.
+\clpset{} (e quindi il suo linguaggio a vincoli \lset{}) è stato
+implementato in Prolog nello strumento \setlog{} \cite{SetLog};
+inoltre \lset{} è stato implementato in Java come parte della libreria
+\jsetl{} \cite{JSetL}. Obiettivo principale di questo lavoro di tesi è
+quello di dare un’implementazione di \lset{} utilizzando il linguaggio
+di programmazione Picat \cite{PicatLang}.
 
-Nella sezione \ref{sec:constraint_logic_programming} è descritto il paradigma di programmazione logica a vincoli in forma molto discorsiva ed introduttiva. Nella sezione \ref{sec:lang_lset} si dà una presentazione sintetica di \lset{}.\fixme{Aggiungere riferimenti}
+Nella sezione \ref{sec:clpbasedlang_clp} è descritto il paradigma di
+programmazione logico a vincoli in forma molto discorsiva ed
+introduttiva, mentre in \ref{sec:clpbasedlang_lset} si dà una
+presentazione di \lset{}: sintassi, semantica, il solver e regole di
+riscrittura.
 
 \section{Constraint Logic Programming}
-\label{sec:constraint_logic_programming}
+\label{sec:clpbasedlang_clp}
 
-Nel campo dell'informatica la logica trova molteplici applicazioni, in particolare nell'ambito dell'intelligenza artificiale. La logica classica si può suddividere in due classi principali: la \emph{logica proposizionale} e la \emph{logica dei predicati}.  I più comuni linguaggi logici sono basati su un sottoinsieme della logica dei predicati del primo ordine, che permette di garantire la correttezza delle soluzioni ma non la terminazione del programma. Entrambe, comunque, permettono di esprimere proposizioni (frasi) e relazioni tra posizioni. La principale differenza tra le due è l'espressività. Ciò che può essere espresso nella logica dei predicati può essere espresso nella logica proposizionale, ma non viceversa. La logica dei predicati consente di utilizzare \textbf{variabili} e quantificazioni su di esse, mentre nella logica proposizionale non è possibile.
+Nel campo dell'informatica la logica trova molteplici applicazioni, in
+particolare nell'ambito dell'intelligenza artificiale. La logica
+classica si può suddividere in due classi principali: la \emph{logica
+  proposizionale} e la \emph{logica dei predicati}.  I più comuni
+linguaggi logici sono basati su un sottoinsieme della logica dei
+predicati del primo ordine, che permette di garantire la correttezza
+delle soluzioni ma non la terminazione del programma. Entrambe,
+comunque, permettono di esprimere proposizioni (frasi) e relazioni tra
+posizioni. La principale differenza tra le due è l'espressività. Ciò
+che può essere espresso nella logica dei predicati può essere espresso
+nella logica proposizionale, ma non viceversa. La logica dei predicati
+consente di utilizzare \textbf{variabili} e quantificazioni su di
+esse, mentre nella logica proposizionale non è possibile.
 
-La logica dei predicati, sotto opportune ipotesi, può diventare un vero e proprio linguaggio di programmazione, prendendo appunto il nome di Logic Programming (abbreviato LP) (per approfondire i concetti di programmazione logica si veda ad esempio \cite{Console97}).
+La logica dei predicati, sotto opportune ipotesi, può diventare un
+vero e proprio linguaggio di programmazione, prendendo appunto il nome
+di Logic Programming (abbreviato LP) (per approfondire i concetti di
+programmazione logica si veda ad esempio \cite{Console97}).
 
-Il Logic Programming è un paradigma di programmazione dove gli statements del programma rappresentano fatti o regole, espressi tramite qualche logica formale, di un problema. La logica viene utilizzata come meccanismo formale per analizzare le inferenze in termini di operazioni su espressioni simboliche, dedurre conseguenze da un insieme di premesse, studiare la verità (o falsità) di un insieme di proposizioni, data la verità (o falsità) di altre proposizioni e dimostrare la validità di una teoria.
+Il Logic Programming è un paradigma di programmazione dove gli
+statements del programma rappresentano fatti o regole, espressi
+tramite qualche logica formale, di un problema. La logica viene
+utilizzata come meccanismo formale per analizzare le inferenze in
+termini di operazioni su espressioni simboliche, dedurre conseguenze
+da un insieme di premesse, studiare la verità (o falsità) di un
+insieme di proposizioni, data la verità (o falsità) di altre
+proposizioni e dimostrare la validità di una teoria.
 
-Spesso i linguaggi di programmazione di questo tipo adottano un approccio dichiarativo, descrivendo solamente la forma della soluzione e non la procedura per ottenerla (e.g., il Datalog). Per i linguaggi come il Prolog o Picat invece l'approccio può essere ibrido: il paradigma dichiarativo, imperativo e procedurale si intersecano lasciando al programmatore la scelta del paradigma da utilizzare.
+Spesso i linguaggi di programmazione di questo tipo adottano un
+approccio dichiarativo, descrivendo solamente la forma della soluzione
+e non la procedura per ottenerla (e.g., il Datalog). Per i linguaggi
+come il Prolog o Picat invece l'approccio può essere ibrido: il
+paradigma dichiarativo, imperativo e procedurale si intersecano
+lasciando al programmatore la scelta del paradigma da utilizzare.
 
-La programmazione logica a vincoli (CLP) estende la programmazione logica introducendo il concetto di \emph{vincolo}. Un programma CLP contiene fatti e regole come un programma LP, con la differenza che nel programma CLP il corpo delle clausole può presentare vincoli. Per i CLP il risultato di una dimostrazione è quindi un insieme di vincoli (contraint store) e/o un valore letterale valido in quell'insieme di vincoli.
+La programmazione logica a vincoli (CLP) estende la programmazione
+logica introducendo il concetto di \emph{vincolo}. Un programma CLP
+contiene fatti e regole come un programma LP, con la differenza che
+nel programma CLP il corpo delle clausole può presentare vincoli. Per
+i CLP il risultato di una dimostrazione è quindi un insieme di vincoli
+(contraint store) e/o un valore letterale valido in quell'insieme di
+vincoli.
 
-La programmazione logica a vincoli può essere utilizzata per risolvere \emph{Contraint Satisfaction Problem} (spesso abbreviato in \emph{CSP}).
+La programmazione logica a vincoli può essere utilizzata per risolvere
+\emph{Contraint Satisfaction Problem} (spesso abbreviato in
+\emph{CSP}).
 
 Un problema di soddisfacimento di vincoli è una tripla composta da
 \begin{itemize}
-\item un insieme $X$ di variabili ${X_1, \ldots, X_n}$;
-\item un insieme $D$ di domini ${D_1, \ldots, D_n}$, uno per variabile;
-\item un insieme $C$ di vincoli che specificano le combinazioni di valori possibili per le variabili.
+	\item un insieme $X$ di variabili ${X_1, \ldots, X_n}$;
+	\item un insieme $D$ di domini ${D_1, \ldots, D_n}$, uno per
+          variabile;
+	\item un insieme $C$ di vincoli che specificano le
+          combinazioni di valori possibili per le variabili.
 \end{itemize}
 
-Ogni dominio $D_i$ specifica un insieme di valori possibili per la variabile $X_i$. Dato che i CSP sono parametrici rispetto al dominio dei vincoli, anche il supporto alla risolzuione lo diventa: da qui il nome \clpset{}. Si utilizzerà per la loro risoluzione un’opportuna istanza dello schema generale CLP. Ad esempio se il dominio è quello degli insiemi allora si potrebbe utilizzare \clpset{}.
+Ogni dominio $D_i$ specifica un insieme di valori possibili per la
+variabile $X_i$. Dato che i CSP sono parametrici rispetto al dominio
+dei vincoli, anche il supporto alla risolzuione lo diventa: da qui il
+nome \clpset{}. Si utilizzerà per la loro risoluzione un’opportuna
+istanza dello schema generale CLP. Ad esempio se il dominio è quello
+degli insiemi allora si potrebbe utilizzare \clpset{}.
 
 \section{Il linguaggio logico a vincoli \lset{}}
-\label{sec:lang_lset}
+\label{sec:clpbasedlang_lset}
 
-\lset{} è un linguaggio logico per la gestione di vincoli su insiemi. \lset{} è stato inizialmente introdotto come parte del linguaggio \clpset{} \cite{Dovier00}. Da un punto di vista più generale \clpset{} è un istanza dei CLP sopra descritti, dove il dominio di applicazione dei vincoli è quello insiemistico. 
+\lset{} è un linguaggio logico per la gestione di vincoli su
+insiemi. \lset{} è stato inizialmente introdotto come parte del
+linguaggio \clpset{} \cite{Dovier00}. Da un punto di vista più
+generale \clpset{} è un istanza dei CLP sopra descritti, dove il
+dominio di applicazione dei vincoli è quello insiemistico.
 
-Uno degli obiettivi primari di \clpset{} è di essere molto flessibile e fornire forme generali per la manipolazione di insiemi e relative operazioni, in quanto la nozione di \emph{set} è una componente comune nella progettazione di programmi, ma sono pochi i linguaggi che forniscono gli insiemi come struttura dati elementare.
-Sempre in \cite{Dovier00} vengono menzionate alcune eccezioni di linguaggi che si basano su insiemi: SETL, B ed il linguaggio Z, utilizzato per descrivere la specifica formale di programmi. Qualche eccezione esiste anche nel campo dei \emph{database deduttivi} e, più recentemente, anche come \emph{general purpose programming language}. Ad ogni modo, questi linguaggi impongono dei limiti sul tipo di insiemi espressibili o sulle capacità computazionali degli stessi. Ad esempio, in molti ambiti, si richiede che gli insiemi siano totalmente specificati: non sono ammesse \emph{variabili} libere.
+Uno degli obiettivi primari di \clpset{} è di essere molto flessibile
+e fornire forme generali per la manipolazione di insiemi e relative
+operazioni, in quanto la nozione di \emph{set} è una componente comune
+nella progettazione di programmi, ma sono pochi i linguaggi che
+forniscono gli insiemi come struttura dati elementare.  Sempre in
+\cite{Dovier00} vengono menzionate alcune eccezioni di linguaggi che
+si basano su insiemi: SETL, B ed il linguaggio Z, utilizzato per
+descrivere la specifica formale di programmi. Qualche eccezione esiste
+anche nel campo dei \emph{database deduttivi} e, più recentemente,
+anche come \emph{general purpose programming language}. Ad ogni modo,
+questi linguaggi impongono dei limiti sul tipo di insiemi espressibili
+o sulle capacità computazionali degli stessi. Ad esempio, in molti
+ambiti, si richiede che gli insiemi siano totalmente specificati: non
+sono ammesse \emph{variabili} libere.
 
-In \lset{} gli insiemi sono visti come un tipo di dato primitivo del linguaggio, ovvero termini della logica del primo ordine. I predicati predefiniti invece sono visti come vincoli predefiniti del linguaggio, gestiti con procedure di risoluzione di vincoli. La classe di insiemi considerata vuole essere molto generale: gli insiemi possono essere annidati e/o parzialmente specificati. Gli insiemi parzialmente specificati possono contenere variabili come elementi dell’insieme o come parte dell’insieme stesso.
+In \lset{} gli insiemi sono visti come un tipo di dato primitivo del
+linguaggio, ovvero termini della logica del primo ordine. I predicati
+predefiniti invece sono visti come vincoli predefiniti del linguaggio,
+gestiti con procedure di risoluzione di vincoli. La classe di insiemi
+considerata vuole essere molto generale: gli insiemi possono essere
+annidati e/o parzialmente specificati. Gli insiemi parzialmente
+specificati possono contenere variabili come elementi dell’insieme o
+come parte dell’insieme stesso.
 
-Di seguito si forniscono le specifiche di \lset{} definendone prima la sintassi (\ref{subsec:lang_lset_sintax}) e poi la semantica informale (\ref{subsec:lang_lset_semantics}). In \ref{subsec:lang_lset_solver} si descriverà il funzionamento in termini astratti del risolutore di formule per questo linguaggio, implementato in questo lavoro di tesi.
+Di seguito si forniscono le specifiche di \lset{} definendone prima la
+sintassi (\ref{subsec:clpbasedlang_lset_sintax}) e poi la semantica
+informale (\ref{subsec:clpbasedlang_lset_semantics}). In
+\ref{subsec:clpbasedlang_lset_solver} viene descritto il funzionamento
+in termini astratti del risolutore di formule per questo linguaggio,
+implementato in questo lavoro di tesi, mentre in
+\ref{subsec:clpbasedlang_lset_rewriteeq},
+\ref{subsec:clpbasedlang_lset_rewriteset} e
+\ref{subsec:clpbasedlang_lset_rewriteneg} sono trattate
+rispettivamente le regole di riscrittura per vincoli di uguaglianza,
+vincoli su insiemi e vincoli negativi.
 
 \subsection{Sintassi}
-\label{subsec:lang_lset_sintax}
+\label{subsec:clpbasedlang_lset_sintax}
 
-La sintassi del linguaggio \clpset{} si basa sui seguenti insiemi di simboli:
+La sintassi del linguaggio \lset{} si basa sui seguenti insiemi di simboli:
 
 \begin{itemize}
-\item $\calF$ è un insieme di costanti e simboli di funzione definito da:    
-\begin{itemize}
-\item $\emptyset \in \calF$,
-\item $\{ \cdot \mid \cdot \} \in \calF$ e $int \in \calF$, simboli relazione binaria,
-\item $Z \subset \calF$ e $F_Z \subset \calF$, dove $Z$ l'insieme delle costanti numeriche intere e $F_Z$ l'insieme degli operatori aritmetici di base (+, -, $\ast$, /);
-\end{itemize}
-\item $\prod_C = \{ =, in, un, disj, \leq, size, set, integer \}$, insieme di simboli di predicato;
-\item $\calV$ è un insieme numerabile di simboli di variabile.
-\end{itemize}
-
-I \calset{}-\textit{termini} sono termini costruiti a partire dai simboli di $\calF$ e $\calV$ nel modo usuale. Ad esempio, i seguenti, sono termini insiemistici ($set-terms$):
-\begin{itemize}
-\item $\{1 \mid \emptyset \} \equiv \{1\}$
-\item $\{1 \mid \{2 \mid \emptyset \} \} \equiv \{1,2\}$
-\item $\{1 \mid \{2 \mid X \} \} \equiv \{1,2 \mid X \}$
-\item $\ldots$
-\end{itemize}
-    
-I \calset{}-\textit{constraint} atomici (o primitivi) sono predicati i cui simboli sono definiti in $\prod_C$, come:
-\begin{itemize}
-\item $X = 1$
-\item $un(\{1\}, \emptyset, R)$
-\end{itemize}
-    
-Le \calset{}-\textit{formula} (o \calset{}-\textit{constraint} composti) sono combinazioni $\wedge$ (and) e $\vee$ (or) di \calset{}-\textit{constraint} primitivi. Le seguenti formule sono esempi di \calset{}-\textit{constraint} composti:
-\begin{itemize}
-\item $1\ in\ R \land 1\ nin\ S \land inters(R,S,T) \land T = \{X\}$
-\item $inters(R, S, T) \land size(T, N) \land N \leq 2$
+	\item $\calF$ è un insieme di costanti e simboli di funzione
+          definito da:
+	\begin{itemize}
+		\item $\emptyset \in \calF$,
+		\item $\{ \cdot \mid \cdot \} \in \calF$ e $int \in
+                  \calF$, simboli relazione binaria,
+		\item $\calF_0 \subset \calF$, dove $\calF_0$ è un
+                  insieme di costanti e simboli di funzione non
+                  interpretati;
+	\end{itemize}
+	\item $\prod_C = \{ =, in, un, disj, set \}$, insieme di
+          simboli di predicato;
+	\item $\calV$ è un insieme numerabile di simboli di variabile.
 \end{itemize}
 
-\subsection{Semantica informale}.
-\label{subsec:lang_lset_semantics}
+I \calset{}-\textit{termini} sono termini costruiti a partire dai
+simboli di $\calF$ e $\calV$ nel modo usuale. Ad esempio, i seguenti,
+sono termini insiemistici ($set-terms$):
+\begin{itemize}
+	\item $\{1 \mid \emptyset \} \equiv \{1\}$
+	\item $\{1 \mid \{2 \mid \emptyset \} \} \equiv \{1,2\}$
+	\item $\{1 \mid \{2 \mid X \} \} \equiv \{1,2 \mid X \}$
+	\item $\ldots$
+\end{itemize}
+
+I \calset{}-\textit{constraint} atomici (o primitivi) sono predicati
+atomici costruiti a partire dai simboli di $\prod_C$ nel modo
+usuale. Ad esempio, i seguenti, sono \calset{}-\textit{constraint}
+primitivi:
+\begin{itemize}
+	\item $X = 1$
+	\item $un(\{1\}, \emptyset, R)$
+\end{itemize}
+
+Le \calset{}-\textit{formule} (o \calset{}-\textit{constraint}
+composti) sono combinazioni $\wedge$ (and) e $\vee$ (or) di
+\calset{}-\textit{constraint} primitivi. Le seguenti formule sono
+esempi di \calset{}-\textit{constraint} composti:
+\begin{itemize}
+	\item $1\ in\ R \land 1\ nin\ S \land un(R,S,T) \land T = \{X\}$
+	\item $(X\ in S \land X\ neq 1) \lor (X\ nin S \land X = 1)$
+\end{itemize}
+
+\subsection{Semantica informale}
+\label{subsec:clpbasedlang_lset_semantics}
 
 La semantica intuitiva dei vari simboli in $\sum_{\mathcal{SET}}$ è la seguente:
 
 \begin{itemize}
-\item $\emptyset$ rappresenta l’insieme vuoto;
-\item $\{\cdot\mid\cdot\}$ rappresenta il costruttore di insiemi definito come $\{t\mid s\} = \{t\}\ \cup s$;
-\item \textit{int} è il costruttore di intervalli definito come
-\begin{equation}
-int (m, n ) =
-  \begin{cases}
-    \emptyset & \text{se } m > n \\
-    [ m, n ] & \text{se } m \leq n
-  \end{cases}
-\end{equation}
-\item $+, -, \ast, /$ rappresentano le usuali operazioni aritmetiche su interi;
-\item il predicato $=$ rappresenta la relazione di uguaglianza;
-\item il predicato \textit{in} rappresenta la relazione di appartenenza;
-\item il predicato \textit{un} rappresenta la relazione di unione; insiemistica definita come:
-$un(r,s,t) = true \Longleftrightarrow t = r \cup s$;
-\item il predicato \textit{disj} rappresenta la relazione di disgiunzione insiemistica definita come
-$disj(r,s) = true \Longleftrightarrow r \cap s = \emptyset$;
-\item il predicato \textit{size} rappresenta la relazione cardinalità di insiemi definita come $size(s, n) = true \Longleftrightarrow n = \mid s \mid$;
-\item il predicato $\leq$ rappresenta la relazione di confronto ”minore o uguale” sugli interi;
-\item il predicato \textit{set} controlla che il termine sia un insieme.
+	\item $\emptyset$ rappresenta l’insieme vuoto;
+	\item $\{\cdot\mid\cdot\}$ rappresenta il costruttore di
+          insiemi definito come $\{t\mid s\} = \{t\}\ \cup s$;
+	\item il predicato $=$ rappresenta la relazione di
+          uguaglianza;
+	\item il predicato \textit{in} rappresenta la relazione di
+          appartenenza;
+	\item il predicato \textit{un} rappresenta la relazione di
+          unione; insiemistica definita come: $un(r,s,t) = true
+          \Longleftrightarrow t = r \cup s$;
+	\item il predicato \textit{disj} rappresenta la relazione di
+          disgiunzione insiemistica definita come $disj(r,s) = true
+          \Longleftrightarrow r \cap s = \emptyset$;
+	\item il predicato \textit{set} controlla che il termine sia
+          un insieme.
 \end{itemize}
 %\subsubsection{Vincoli}
 
 \subsection{Il solver \satset{}}
-\label{subsec:lang_lset_solver}
+\label{subsec:clpbasedlang_lset_solver}
 
-La procedura \satset{} risolve i vincoli e rappresenta il solver del linguaggio \clpset{}. Il seguente algoritmo ne descrive la struttura:
+La procedura \satset{} risolve i vincoli e rappresenta il solver del
+linguaggio \lset{}. Il seguente algoritmo ne descrive la struttura:
 
 \begin{algorithm}
-\begin{algorithmic}[1]
-\Procedure{\satset{}}{}
-\State $C \gets $ \texttt{sort\_infer($C$)};
-\Repeat
-\State $C'$ $\gets C;$
-\Repeat
-\State $C'' \gets C;$
-\State $C \gets $ \texttt{STEP($C$)};
-\Until {$C$ = $C''$;}
-\State $C \gets $ \texttt{remove\_neq($C$)};
-\Until {$C'$ = $C$;}
-\State
-\State\Return $C$;
-\EndProcedure
-\end{algorithmic}
+	\caption{Procedura \satset{}}
+	\begin{algorithmic}[1]
+		\Procedure{\satset{$(C)$}}{}
+		\State $C \gets $ \texttt{sort\_infer($C$)};
+		\Repeat
+		\State $C'$ $\gets C;$
+		\Repeat
+		\State $C'' \gets C;$
+		\State $C \gets $ \texttt{STEP($C$)};
+		\Until {$C$ = $C''$;}
+		\State $C \gets $ \texttt{remove\_neq($C$)};
+		\Until {$C'$ = $C$;}
+		\State
+		\State\Return $C$;
+		\EndProcedure
+	\end{algorithmic}
+	\label{alg:pseudo_satset}
 \end{algorithm}
 
-Essenzialmente \satset{} utilizza tre procedure:
+Essenzialmente \satset{$(C)$} utilizza tre procedure:
 
 \begin{itemize}
-\item \textbf{\texttt{sort\_infer}}: aggiunge alla \calset{}-\textit{formula} $C$ i vincoli \textbf{set} e \textbf{integer} per assicurare che gli oggetti utilizzati nei vincoli siano del tipo corretto.
-    
-\item \textbf{\texttt{STEP}}: applica speciali \textit{regole di riscrittura} alla formula $C$ corrente e ritorna \textit{false} oppure la formula modificata. L'esecuzione di $STEP$ viene iterata fino ad arrivare ad ottenere una formula in forma irriducibile. Notare che $STEP$ ritorna $false$ se almeno uno dei vincoli in $C$ viene riscritto a $false$. Anche $STEP(false)$ ritorna $false$.
-    
-\item \textbf{\texttt{remove\_neq}}: tratta l'eliminazione dei $\neq-constraints$ nel caso in cui coinvolgano variabili insiemistiche che appaiono anche in vincoli di unione in forma risolta.
+	\item \textbf{\texttt{sort\_infer}}: aggiunge alla
+          \calset{}-\textit{formula} $C$ i vincoli \textbf{set} e
+          \textbf{integer} per assicurare che gli oggetti utilizzati
+          nei vincoli siano del tipo corretto.
+	
+	\item \textbf{\texttt{STEP}}: applica speciali \textit{regole
+          di riscrittura} alla formula $C$ corrente e ritorna
+          \textit{false} oppure la formula modificata. L'esecuzione di
+          $STEP$ viene iterata fino ad arrivare ad ottenere una
+          formula in forma irriducibile. Notare che $STEP$ ritorna
+          $false$ se almeno uno dei vincoli in $C$ viene riscritto a
+          $false$. Anche $STEP(false)$ ritorna $false$.
+	
+	\item \textbf{\texttt{remove\_neq}}: tratta l'eliminazione dei
+          $\neq-constraints$ nel caso in cui coinvolgano variabili
+          insiemistiche che appaiono anche in vincoli di unione in
+          forma risolta.
 \end{itemize}
 
 Quando la computazione non deterministica di $\satset{}(C)$ termina, se il risultato è $false$ allora si può concludere che $C$ non è soddisfacibile; al contrario, se nessuno dei vincoli in $C$ viene riscritto a $false$ allora ogni soluzione generata da \satset{} è una soluzione per $C$ e viceversa.
