@@ -1382,260 +1382,604 @@ Inoltre, l'operazione di pattern-matching sulle regole è molto più leggera ris
 
 \minitoc
 
-L'obiettivo principale del solver \lset{} è risolvere formule. Il risultato può avere zero, una o più soluzioni ed il solver deve essere in grado di mostrarle tutte, se queste sono finite.
-
-Il funzionamento del solver è quello descritto dallo pseudocodice in  \ref{subsec:lang_lset_solver}. Per ricapitolare, il solver svolge queste tre azioni:
-\begin{itemize}
-\item rimpiazza i vincoli derivati con le corrispondenti formule \lset{};
-\item riduce la complessità sintattica dei vincoli primitivi applicando le regole di riscrittura corrette;
-\item elimina gli insiemi che coinvolgono disuguaglianze.
-\end{itemize} 
-La formula finale ottenuta è semplificata e irriducibile, il che la rende equivalente alla formula originale.
-
-Nella sezione \ref{sec:lsetpicat_system} si fornisce una descrizione del sistema dal punto di vista generale, includendo l'ingegnerizzazione e la suddivisione in moduli delle funzionalità, nonché il testing. Nella sezione \ref{sec:lsetpicat_solver} viene approfondito il solver, il suo funzionamento ed i predicati implementati.
+Nella sezione \ref{sec:lsetpicat_project} si dà una breve panoramica
+sull'organizzazione del progetto e delle scelte effettuate per
+strutturarne il codice, nonché qualche accenno alle notazioni e
+convenzioni adottate. In \ref{sec:lsetpicat_system} si fornisce una
+descrizione del sistema dal punto di vista generale, includendo
+l'ingegnerizzazione e la suddivisione in moduli delle
+funzionalità. Inoltre si fornisce una veloce rassegna per ogni modulo
+e se ne descrive l'interfaccia esposta. Nella sezione
+\ref{sec:lsetpicat_solver} viene approfondito il solver, il suo
+funzionamento ed i predicati implementati. La sezione
+\ref{sec:lsetpicat_or} approfondisce i problemi affrontati e relative
+soluzioni nell'implementazione del vincolo \texttt{or} con Picat. In
+\ref{sec:lsetpicat_solutions} si analizza il problema
+dell'enumerazione delle soluzione in Picat. In
+\ref{sec:lsetpicat_testing} si affronta il problema del testing: un
+processo necessario e piuttosto complicato da effettuare durante la
+stesusa dell'implmentazione di un linguaggio.
 
 \section{Organizzazione del progetto}
+\label{sec:lsetpicat_project}
 
-\begin{verbatim}
-.
-|-- JOURNAL.txt
-|-- LICENSE.txt
-|-- Makefile
-|-- README.md
-|-- src
-|   |-- assert.pi
-|   |-- commands.pi
-|   |-- global.pi
-|   |-- log_h.pi
-|   |-- lset.pi
-|   |-- main.pi
-|   |-- Makefile
-|   |-- prompt.pi
-|   `-- solver.pi
-`-- tests
-    |-- lset_test.pi
-    |-- Makefile
-    `-- solver_test.pi
-\end{verbatim}
+L'organizzazione del progetto e dei file sorgente è da subito stata
+una priorità. Soprattutto nell'ambito dei linguaggi logici esistono
+poche linee guida e strutture convenzionali per l'organizzazione dei
+sorgenti. Ciò, unito alla complessità intrinseca dei linguaggi logici,
+complica notevolmente la manutenibilità del software e lo rende molto
+più soggetto a bug ed errori di progettazione.
 
+Picat essendo un linguaggio logico abbastanza sconosciuto, non
+presenta convenzioni comunemente accettate e vincoli che forzino il
+programmatore a seguire una struttura ben definita. Vi sono però dei
+vantaggi da questo punto di vista nell'utilizzo di Picat:
 \begin{itemize}
-	\item \verb|JOURNAL.txt|, il diario di bordo. Vi sono note ed evoluzione del progetto in linea temporale.
-	\item \verb|LICENSE.txt|, la licenza del codice sorgente.
-	\item \verb|README.md|, la descrizione del progetto contenente note per l'installazione e l'utilizzo.
-	\item \verb|Makefile|,\fixme{Da finire}
-	\item \verb|src|, la cartella contenente i file sorgenti. I moduli che compongono il sistema sono mostrati in \ref{sec:lsetpicat_system}.
-	\item \verb|tests|, la cartella contenente i test dei componenti fondamentali.
+	\item è possibile organizzare logicamente la struttura del
+          progetto tramite i moduli, semplificando la gestione delle
+          funzionalità;
+	\item è possibile seguire un approccio OOP con costruttori e
+          funzioni, integrando il concetto di visibilità dei metodi
+          (con la keyword \texttt{private}, si veda
+          \ref{sec:picat_advanced_modules}) per garantire il corretto
+          utilizzo di interfacce di programmazione progettate per
+          svolgere compiti ben definiti;
+	\item non è possibile scrivere del codice ``magico'' o che
+          abbia comportamenti non attesi in quanto il backtracking è
+          sempre esplicito e non è possibile asserire nuovi predicati
+          che cambino il comportamento del programma.
 \end{itemize}
+
+L'organizzazione di questo progetto ha adottato la convenzione più
+comune della suddivisione in file sorgenti che realizzano le
+funzionalità generali (cartella \texttt{src}) e i test (cartella
+\texttt{tests}). Come convenzione interna inoltre si è deciso che le
+funzionalità raggruppate in un singolo modulo debbano essere
+\textit{tightly coupled}\footnote{Letteralmente, \textit{tightly
+    coupled} significa strettamente accoppiati. \`E un concetto che
+  riferito ai componenti di un sistema ne esprime la forte relazione
+  ed interconnesione.}, mentre le funzionalità \textit{loosely
+  coupled} siano dipendenze da funzionalità di moduli diversi.
+
+La strttura che ne è risultata è elencata in figura
+\ref{fig:proj_folder_structure}.
+
+\begin{figure}[]
+	\label{fig:proj_folder_structure}
+	\begin{verbatim}
+	.
+	|-- JOURNAL.txt
+	|-- LICENSE.txt
+	|-- Makefile
+	|-- README.md
+	|-- src
+	|   |-- assert.pi
+	|   |-- commands.pi
+	|   |-- global.pi
+	|   |-- log_h.pi
+	|   |-- lset.pi
+	|   |-- main.pi
+	|   |-- Makefile
+	|   |-- prompt.pi
+	|   `-- solver.pi
+	`-- tests
+	    |-- lset_test.pi
+	    |-- Makefile
+	    `-- solver_test.pi
+	\end{verbatim}
+	\caption{Organizzazione del progetto}
+\end{figure}
+
+Una descrizione sommaria del contenuto dei file e delle directory è
+riportata di seguito:
+\begin{itemize}
+	\item \texttt{JOURNAL.txt}, il diario di bordo. Vi sono note
+          ed evoluzione del progetto in linea temporale.
+	\item \texttt{LICENSE.txt}, la licenza del codice sorgente.
+	\item \texttt{README.md}, la descrizione del progetto
+          contenente note per l'installazione e l'utilizzo.
+	\item \texttt{Makefile}, consente l'automatizzazione di task
+          ricorrenti, evitando al programmatore l'esecuzione manuale
+          degli stessi. Ad esempio, il \texttt{Makefile} nella
+          cartella \texttt{tests} costruisce uno scipt che esegue un
+          clone dei sorgenti ed esegue i test.
+	\item \texttt{src}, la cartella contenente i file sorgenti. I
+          moduli che compongono il sistema sono mostrati in
+          \ref{sec:lsetpicat_architecture}.
+	\item \texttt{tests}, la cartella contenente i test dei
+          componenti fondamentali.
+\end{itemize}
+
+Per quanto riguarda lo stile del codice sorgente, dei commenti e
+dell'utilizzo del linguaggio logico è stato preso spunto da
+\cite{Covington12}, al quale si rimanda per ulteriori informazioni. Le
+convenzioni descritte in questo articolo, essendo basate sul Prolog,
+non sono state seguite in modo pedante.
 
 \section{Il sistema}
 \label{sec:lsetpicat_system}
 
-\subsection{Interprete}
-\label{sec:lsetpicat_system_interpreter}
+\subsection{Linguaggio (concreto) di input}
 
-L'interprete realizzato per la gestione del sistema nel suo insieme è suddiviso per funzionalità: grazie alle caratteristiche di Picat queste funzionalità sono state raggruppate e separate in \emph{moduli} (vedere \ref{sec:picat_advanced_modules} per ulteriori informazioni sul modulo). Ognuno di questi moduli cerca di essere il più coeso possibile e fornisce funzionalità ad altri moduli, incrementando quindi la riusabilità del codice.
+TODO
+
+Aggiungere una descrizione della corrispondenza con lset come
+nell'appendice?
+
+\subsection{Architettura}
+\label{sec:lsetpicat_architecture}
+
+L'interprete realizzato per la gestione del sistema nel suo insieme è
+suddiviso per funzionalità: grazie alle caratteristiche di Picat
+queste funzionalità sono state raggruppate e separate in \emph{moduli}
+(vedere \ref{sec:picat_advanced_modules} per ulteriori informazioni
+sul modulo). Ognuno di questi moduli cerca di essere il più coeso
+possibile e fornisce funzionalità ad altri moduli, incrementando
+quindi la riusabilità del codice.
 
 I moduli identificati e realizzati sono descritti nel seguito.
 
 \subsubsection{solver.pi}
 
-\verb|solver|. \'E il modulo principale che realizza la risoluzione delle formule. Espone il predicato \verb|solve/2|, utilizzabile da qualunque programma Picat per risolvere una formula di \lset{}. Questo modulo viene ampiamente trattato in \ref{sec:lsetpicat_solver}.
+Il modulo \texttt{solver} è il modulo principale che realizza la
+risoluzione delle formule. Espone il predicato \verb|solve/2|,
+utilizzabile da qualunque programma Picat per risolvere una formula di
+\lset{}. Questo modulo viene ampiamente trattato in
+\ref{sec:lsetpicat_solver}.
 
 \subsubsection{lset.pi}
 
-\verb|lset|. Contiene l'interfaccia e l'implementazione degli insiemi nei termini di \lset{}. Consente di astrarre l'entità insieme dalla sua implementazione reale. L'approccio OOP è intenzionale: Picat, come detto in precedenza, favorisce la programmazione imperativa e la ricalca con costrutti e funzioni molto simili dal punto di vista logico.
+Il modulo \texttt{lset} contiene l'interfaccia e l'implementazione
+degli insiemi nei termini di \lset{}. Consente di astrarre l'entità
+insieme dalla sua implementazione reale. L'approccio OOP è
+intenzionale: Picat, come detto in precedenza, favorisce la
+programmazione imperativa e la ricalca con costrutti e funzioni molto
+simili dal punto di vista logico.
 
-\paragraph{Costruttore}
+L'adozione di questo meccanismo ha permesso di sperimentare due
+implementazioni differenti dell'insieme di \lset{}:
+
+\begin{itemize}
+	\item \textbf{Rappresentazione ``coppia''} La rappresentazione
+          \emph{coppia} prevede la suddivisione dell'insieme in due
+          elementi: il primo è una lista dei componenti dell'insieme
+          completamente specificati, mentre il secondo rappresenta il
+          resto dell'insieme (una variabile).
+	\item \textbf{Rappresentazione ``lista-resto''} La
+          rappresentazione \emph{lista-resto} prevede di trattare un
+          insieme come una lista in cui gli elementi dell'insieme
+          completamente specificati vengono elencati all'inizio della
+          lista, ed il resto dell'inisieme corrisponde al resto della
+          lista.
+\end{itemize}
+
+Entrambe le rappresentazioni riuscivano a descrivere semanticamente un
+insieme di \lset{}, ma l'implementazione scelta è stata
+\emph{lista-resto}. Questa infatti aveva la particolarità di
+sfruttrare alcune caratteristiche delle regole di riscrittura che
+trattavano gli insiemi proprio come liste, consentendo quindi
+l'implementazione della regola pari pari alla descrizione matematica.
+
+\paragraph{Interfaccia}
+
+L'interfaccia di questo modulo dispone di
+\begin{itemize}
+	\item \texttt{new\textunderscore lset/0} o
+          \texttt{new\textunderscore lset/1}, i costruttori,
+          utilizzati rispettivamente per creare un insieme vuoto o un
+          insieme a partire da una lista;
+	\item \texttt{lset\textunderscore head/1}, un metodo per
+          recuperare la testa dell'insieme;
+	\item \texttt{lset\textunderscore rest/1}, un metodo per
+          recuperare il resto dell'insieme
+\end{itemize}
+
+\paragraph{Esempio}
+
+I metodi di questo modulo sono facilmente usabili come in un linguaggio OOP:
 \begin{verbatim}
-new_lset() = [].
-new_lset(ListRest) = Lset => 
-    if (not list(ListRest)) 
-    then Lset = [ListRest]
-    else Lset = ListRest
-    end.
-new_lset(Head, Rest) = Lset =>
-    if (not list(Head)) then Head := [Head] end,
-    append(Head, Rest, Lset).
+Picat> X = new_lset()         % crea un insieme vuoto
+Picat> Y = new_lset([1,2|A])  % crea un insieme costituito da 1 e resto A
+
+% restutuisce in YHead il resto dell'insieme Y
+Picat> YHead = Y.lset_head()
+YHead = [1,2]
+
+% restutuisce in YRest il resto dell'insieme Y
+Picat> YRest = Y.lset_rest()
+YRest = A
 \end{verbatim}
 
-\paragraph{Metodi}
-\begin{verbatim}
-%% lset_rest(lset(X)) = R
-%
-% @param lset(X)  The lset from which take the rest.
-% @return  The rest (with setlog meaning) R from lset(X).
-
-lset_rest(X) = R => lset_rest(X, R).
-
-%% lset_head(lset(X)) = R
-%
-% @param lset(X)  The lset from which take the head.
-% @return  The head (with setlog meaning) R from lset(X).
-
-lset_head(X) = R => lset_head(X, R).
-\end{verbatim}
-In \verb|lset_rest/2| e \verb|lset_head/2| risiede l'implementazione (privata) delle due funzionalità.
 
 \subsubsection{commands.pi}
 
-\verb|commands|. Gestisce l'interfaccia utente. E' una CLI orientata all'usabilità utente: fornisce messaggi di aiuto, cerca di effettuare controlli sull'input e una sapiente gestione degli errori.
+Il modulo \texttt{commands} gestisce l'interfaccia utente. Implementa
+una CLI orientata all'usabilità utente: fornisce messaggi di aiuto,
+cerca di effettuare controlli sull'input e una sapiente gestione degli
+errori.
 
+Di fatto questo modulo implementa un ciclo che non termina mai se non
+quanto il comando di uscita è ricevuto. Inoltre, il ciclo principale è
+racchiuso in nel predicato di ordine superiore \texttt{catch} (si veda
+\ref{sec:picat_advanced_hoc} per più informazioni sui predicati di
+ordine superiore) che consente di catturare qualunque eccezione esca
+dalla gestione dei comandi, per evitare spiacevoli crash e consentendo
+all'utente di capire ciò che succede in caso di errore.
+
+La CLI all'avvio svolge, in ordine, le seguenti operazioni:
+\begin{itemize}
+	\item inizializza le variabili globali necessarie con i valori
+          predefiniti;
+	\item mostra un messaggio di introduzione contenente qualche
+          piccona nota sulla garanzia, copyright e mostra i comandi di
+          aiuto principali, nonché uno stato delle variabili
+          inizializzate;
+	\item si mette in attesa di un comando.
+\end{itemize}
+
+La lettura dei comandi è effettuata tramite funzioni predefinite di
+Picat per leggere l'input da \texttt{stdin} e funzioni di utilità per
+la manipolazione di stringhe nel predicato
+\texttt{readCommandLine/1}. La stringa letta è convertita in una lista
+di atomi e ritornata al chiamante, il quale sa per certo che nella
+lista risultato il primo elemento è sempre un comando e, se esistono,
+sono presenti alcuni argomenti nel resto della lista.
+
+Una volta letto il comando si controlla che esso sia un comando
+consentito (esiste ed è stato implementato) e se ne effettua il
+dispatching, consentendone l'esecuzione. Un'interessante proprietà di
+questa CLI è la gestione dell'\textit{history}: per i comandi validi,
+viene mantenuta una storia consultabile e rieseguibile di comandi (si
+veda l'esempio \ref{fig:example_commandshistory}).
+
+\begin{figure}
+	\begin{verbatim}
+	log> help
+	...
+
+	log> info
+	Current log level: [v,vv,vvv]
+	Quiet mode: false
+	Log file: stdout
+
+	log> log none
+
+	log> info
+	Current log level: []
+	Quiet mode: false
+	Log file: stdout
+
+	log> up history
+	3: [help]                   % primo comando eseguito
+	2: [info]
+	1: [log,none]
+	0: [info]                   % ultimo comando eseguito
+
+	log> up                     % esegue l'ultimo comando (come "up 0")
+	Current log level: []
+	Quiet mode: false
+	Log file: stdout
+	\end{verbatim}
+	\caption{Esempio: history dei comandi}
+	\label{fig:example_commandshistory}
+\end{figure}
+
+L'esecuzione di un comando valido viene attivata tramite il predicato
+\texttt{doCommand/2} che riceve come primo argomento il comando e come
+secondo argomento una lista (possibilmente vuota) di
+argomenti. L'implementazione di questo predicato segue molto lo stile
+di programmazione logico: il predicato distingue i casi a seconda del
+primo argomento ed è implementato per svolgere funzioni diverse
+appunto a seconda di quale sia il comando di input, per esempio:
 \begin{verbatim}
-%% obeyCommands() is det
-% 
-% @desc Realizes the cycle of interaction with the user:
-%  commands are read, their legality is checked and,
-%  if they are correct, they are executed.
-
-obeyCommands() ?=>
-    while(true)
-        readCommandLine([Command | Arguments]),
-        if membchk(Command, getKnownCommands()) then
-            doCommand(Command, Arguments),
-            if not membchk(Command, getNoHistoryCommands()) then
-                pushLastCommand(Command, Arguments)    
-            end
-        else 
-            unknownCommand(Command)
-        end
-    end.
-obeyCommands() => obeyCommands().
-
-...
-
-%% doSolve(+FormulaString) is det
-%
-% @desc Issue the solver with the given formula and allow to show
-%  all solutions.
-
-doSolve(FormulaString) ?=>
-    parse_term(FormulaString, Term, Vars),
-    solve(Term, Res),
-    println("Vars: " ++ Vars.to_string),
-    println("Constraints: " ++ Res.to_string),
-    nl,
-    A = confirm("Another solution?"),
-    if A == 1 then fail end.
-doSolve(_) => println("no!").
+doCommand(help, Args) => ...  doCommand(solve, Args) => ...
+  doCommand(...) => ...
 \end{verbatim}
+Questo ``\textit{swtich}'' poteva essere effettuato in modo più
+imperativo sfruttando la presenza delle \textit{strutture di
+  controllo} in Picat, ma si è preferito adottare questo pattern per
+facilitare la lettura.
+
+Questo modulo fonrisce alcuni metodi di utilità per: la validazione
+dell'input (\texttt{getKnownCommands/0} e
+\texttt{getNoHistoryCommands/0}), la creazione di messaggi di errore
+(\texttt{unknownCommand/1}, \texttt{wrongArgNumber/2} e
+\texttt{wrongArgValues/2}), la gestione della \textit{history} dei
+comandi (\texttt{push\textunderscore last\textunderscore command/2},
+\texttt{get\textunderscore last\textunderscore command/0} e
+\texttt{get\textunderscore last\textunderscore command/1}), la
+gestione del solver (\texttt{doSolve/2}).
 
 \subsubsection{global.pi}
 
-\verb|global|. Gestiosce le variabili globali. Aiuta il programmatore ad effettuare operazioni sulle variabili globali senza conoscere il tipo di mappa globale utilizzata e senza effettuare manipolazione di mappe direttamente.
+Il modulo \texttt{global} gestisce le variabili globali. Aiuta il
+programmatore ad effettuare operazioni sulle variabili globali senza
+conoscere il tipo di mappa globale utilizzata e senza effettuare
+manipolazione diretta della mappa stessa.
 
-\begin{verbatim}
-%% get_global(+Key) = Value
-%
-% @desc Get variable with name Key and return it's value in Value.
-get_global(Key) = Value =>
-    G = get_map(),
-    Value = G.get(Key).
+\paragraph{Interfaccia}
+Il modulo fornisce principalmente due metodi per creare e leggere
+variabili globali.
 
-%% set_global(+Key, +Value)
-%
-% @desc Set a variable with name Key and value Value.
-set_global(Key, Value) =>
-    G = get_map(),
-    G.put(Key, Value).
-\end{verbatim}
+\begin{itemize}
+	\item \texttt{get\textunderscore global/1}, prende in input il
+          nome della variabile globale (\emph{key}) e ne restituisce
+          il valore associato. Se la chiave data in input non è
+          associata a nessun valore l'eccezione
+          \texttt{existence\textunderscore error/2} è sollevata.
+	\item \texttt{set\textunderscore global/2}, prende in input
+          una chiave \emph{key} e un valore \emph{value} ed imposta in
+          una mappa globale la variabile \emph{key} con valore
+          \emph{value}.
+\end{itemize}
+
+L'implementazione corrente di questo modulo non consente la scelta
+della mappa globale utilizzata per la memorizzazione delle variabili a
+runtime, ma ciò potrebbe essere oggetto di future migliorie.
 
 \subsubsection{log\textunderscore h.pi}
 
-\verb|log_h|. Gestisce i log con diverse modalità di verbosità e tipo di messaggi.
+Il modulo \texttt{log\textunderscore h} è pensato come un livello di
+astrazione sull'I/O nativo di Picat, in grado di realizzare messaggi
+di log con certe peculiarità.
 
-\begin{verbatim}
-log_d(X) => println(get_log_file_fd(), "D: " ++ X.to_string).
-log_e(X) => println(get_log_file_fd(), "E: " ++ X.to_string).
-log_i(X) => println(get_log_file_fd(), "I: " ++ X.to_string).
+Il modulo fornisce le seguenti caratteristiche.
 
-log_d_v(X)   => log_d(X, v).
-log_d_vv(X)  => log_d(X, vv).
-log_d_vvv(X) => log_d(X, vvv).
+\begin{itemize}
+	\item \textbf{Livelli di log}. I livelli di log sono
+          utilizzati per avere diverse granularità dei messaggi
+          tracciati. I livelli integrati in questo modulo sono
+	\begin{itemize}
+		\item \texttt{none}, nessun log è effettuato;
+		\item \texttt{v}, primo livello di verbosità. Mostra i
+                  log con verbosità \texttt{v};
+		\item \texttt{vv}, secondo livello di
+                  verbosità. Mostra i log con verbosità \texttt{vv} e
+                  \texttt{v};
+		\item \texttt{vvv}, terzo livello di verbosità. Mostra
+                  i log con verbosità \texttt{vvv}, \texttt{vv} e
+                  \texttt{v};
+		\item \texttt{all}, comprende tutti i livelli di
+                  verbosità.
+	\end{itemize}
+	I tre livelli di verbostià predefiniti sono volutamente
+        implementati con ereditarietà (e.g., il livello di verbosità
+        \texttt{vvv} mostra i log anche dei livelli \texttt{vv} e
+        \texttt{v} oltre ad i propri). Comunque, il modulo permette di
+        specificare altri livelli di verbosità qualora ve ne sia
+        necessità e di darne un'implementazione ereditaria (vedere
+        esempio \ref{fig:example_loglevel_noinheritance} e
+        \ref{fig:example_loglevel_inheritance}).
 
-log_d(X, V), membchk(V, log_mode()) => log_d(X).
-log_d(X, V), membchk(all, log_mode()) => log_d(X).
-log_d(X, V) => true.
-\end{verbatim}
+	\item \textbf{Tipi di log}. I log possono avere tipi
+          differenti: \texttt{debug}, \texttt{error} o \texttt{info},
+          da utilizzare nel caso in cui il tipo del messaggio
+          differisca. Il tipo non è determinante per il canale di
+          output su cui il messaggio verrà loggato, ma è utilizzato
+          per distinguere a colpo d'occhio il tipo dei log. Ad ogni
+          messaggio di log viene aggiunto un prefisso, rispettivamente
+          \texttt{D:}, \texttt{E:} o \texttt{I:}.
+
+	\item \textbf{Canali di output}. I log possono essere
+          tracciati su canali di output differenti. Di default vengono
+          mostrati sullo standard output, ma tramite un file
+          descriptor è possibile indicare il file sul quale scrivere i
+          log.
+\end{itemize}
+
+\begin{figure}
+	\begin{verbatim}
+	log_mode(critical) => set_log_mode([critical]).
+
+	test() =>
+	log_d("Critical message example", critical),
+	log_d("Warning message example", warning),
+	log_d("Notice message example", notice).
+
+	% OUTPUT
+	% D: Critical message example
+
+	\end{verbatim}
+
+	\caption{Esempio: livelli di log custom non ereditari}
+	\label{fig:example_loglevel_noinheritance}
+\end{figure}
+
+\begin{figure}
+	\begin{verbatim}
+	log_mode(critical) => set_log_mode([critical, warning, notice]).
+
+	test() =>
+		log_d("Critical message example", critical),
+		log_d("Warning message example", warning),
+		log_d("Notice message example", notice).
+
+	% OUTPUT
+	% D: Critical message example
+	% D: Warning message example
+	% D: Notice message example
+	\end{verbatim}
+	\caption{Esempio: livelli di log custom ereditari}
+	\label{fig:example_loglevel_inheritance}
+\end{figure}
+
+\paragraph{Interfaccia}
+
+L'interfaccia offerta da questo modulo consiste nei seguenti metodi
+\begin{itemize}
+	\item \texttt{log\textunderscore d/1},
+          \texttt{log\textunderscore e/1}, \texttt{log\textunderscore
+            i/1} attuano la scrittura vera e propria del messaggio di
+          log sul file di destinazione con relativo tipo;
+	\item \texttt{log\textunderscore d/2},
+          \texttt{log\textunderscore e/2}, \texttt{log\textunderscore
+            i/2} verificano che il secondo argomento (il livello di
+          log) sia tra quelli impostati ed in caso lanciano la
+          scrittura del log;
+	\item \texttt{log\textunderscore mode/1} imposta il log mode
+          scegliendo tra una delle modalità implementate;
+	\item \texttt{set\textunderscore log\textunderscore mode/1} e
+          \texttt{get\textunderscore log\textunderscore mode/1}
+          rispettivamente impostano un log mode arbitrario e ritornano
+          il log mode impostato;
+	\item \texttt{set\textunderscore log\textunderscore file/0 e
+          get\textunderscore log\textunderscore file/0} impostano e
+          ritornano rispettivamente il nome del file sul quale
+          scrivere i log (di default questo valore è impostato a
+          \texttt{stdout}).
+\end{itemize}
 
 \subsubsection{prompt.pi}
 
-\verb|prompt|. Crea un livello di astrazione sopra l'I/O generico, permettendo quindi una gestione più fine dell'input e dell'output per esempio con formattazione e stampe condizionali.
+Il modulo \texttt{prompt} crea un livello di astrazione sopra l'I/O di
+Picat, permettendo quindi una gestione più fine dell'input e
+dell'output con formattazione e output condizionali, funzioni
+predefinite per leggere valori booleani, stringhe, eccetera.
 
-\begin{verbatim}
-%% echo(P) is det
-%
-% @desc Print the phrase P to the standard output if echo is 
-%  enabled (i.e., the global prompt_echo_enabled is true).
+\paragraph{Interfaccia}
 
-echo(P), 
-        is_global(quiet_mode), 
-        get_global(quiet_mode) !== true  => 
-    println(P.to_string).
-echo(_) => true.  % Do nothing if disabled.
-\end{verbatim}
+\begin{itemize}
+	\item \texttt{prompt(Q) = A}. Non implementato.
+	\item \texttt{confirm(Q) = A}. Mostra la domanda \texttt{Q} su
+          \texttt{stdout} all'utente e ne cattura \texttt{A} la
+          risposta da \texttt{stdin} che deve essere forzatamente un
+          valore booleano (y/n).
+	\item \texttt{echo(P)}. Mostra la frase \texttt{P} su
+          \texttt{stdout}.
+	\item \texttt{set\textunderscore quiet(B)} e
+          \texttt{get\textunderscore quiet() = B} rispettivamente
+          impostano e ritornano la quiet mode.
+\end{itemize}
+
+La \emph{quiet mode} viene utilizzata da tutto il modulo per gestire
+l'I/O in modo condizionale. Per esempio, se la quiet mode è abilitata
+allora gli echo non mostreranno nessun messaggio.
 
 \subsubsection{assert.pi}
 
-\verb|assert|. Implementa metodi di utilità per la gestione degli \emph{unit tests}.
+Il modulo \texttt{assert} implementa metodi di utilità per la gestione
+degli \emph{unit tests}. In particolare è necessario avere una
+batteria di test che sia in grado di notificare in modo semplice il
+successo o il fallimento di un test.
 
-\begin{verbatim}
-%% assert_equal(A, Expected, Actual)
-%
-% @param A:struct  The assertion object.
-% @param Expected:atom  The expected value.
-% @param Actual:atom    The actual value.
-%
-% @desc Log a success if Expected is identical to Actual, log a fail otherwise.
+Questo modulo implementa quindi delle funzioni di utilità che
+gestiscono i test e sono in grado di confrontare i risultati attesi
+con quelli attuali per decretare il successo (o fallimento) del test.
 
-assert_equal(A, Expected, Actual), Expected == Actual => 
-    log_i("SUCCESS " ++ ...").
-assert_equal(A, Expected, Actual) => 
-    log_e("FAILED "  ++ ...).
-\end{verbatim}
+\paragraph{Interfaccia}
+\begin{itemize}
+	\item \texttt{new\textunderscore assert/1}. Il costruttore
+          necessario per avere un oggetto di tipo assert tramite il
+          quale identificare un test.
+	\item \texttt{assert\textunderscore equal/2}. Confronta il
+          risultato atteso (il primo parametro) con il risultato
+          attuale (il secondo parametro) e verifica tramite
+          l'uguaglianza di Picat (\texttt{==}\footnote{`E necessario
+            utilizzare il doppio uguale per non consentire a Picat di
+            istanziare variabili \emph{unbound}.}) che i due valori
+          siano identici.
+	\item \texttt{assert\textunderscore fail/0}. Asserisce un
+          fallimento. Il meccanismo in questo caso è delicato: si
+          rimanda all'esempio \ref{fig:example_unittest_assertfail}.
+	\item \texttt{success/0} e \texttt{fail/0} forzano
+          rispettivamente il successo o fallimento di un test.
+\end{itemize}
 
-\subsection{Testing}
-\label{sec:lsetpicat_system_tests}
+\begin{figure}
+	\begin{verbatim}
+	% predicato che realizza il test di una certa funzionalità.
 
-La stesura dei test per verificare la correttezza dell'implementazione si è subito resa necessaria al fine di incrementare la qualità del software prodotto. Per questo motivo sono stati realizzati predicati che prendono in esame casi semplici ma cercano di esploare i casi limite.
+	test() ?=>
 
-I test realizzati fanno uso del modulo \verb|assert| che mette a disposizione metodi di utilità come \verb|assert_equal/2|, \verb|assert_fail/1|, \verb|fail/1|. Grazie a questi predicati è possibile effettuare test con la seguente struttura
-\begin{verbatim}
-test1 ?=>
-   A = new_assert(test1)
-   solve(Formula, Result),
-   A.assert_equal([], Result)
-test1 => 
-   A = new_assert(test1), A.fail().
-\end{verbatim}
-dove \verb|assert_equal/2| verifica che il valore attuale sia uguale al valore previsto, e se non lo è fallisce attivando il predicato \verb|fail/1| che registra il fallimento di quel test.
+	    A = new_assert("test")
+
+	    % solve è il predicato da testare, di cui è atteso il fallimento.
+
+	    solve(F, FF),
+
+	    % se il controllo riesce a raggiungere questo punto della
+	    %  computazione significa che il predicato di cui era atteso
+	    %  il fallimento non è fallito, e ciò è da segnalare con un
+	    %  errore tramite A.fail()
+
+	    A.fail().
+
+	test() =>
+
+	    A = new_assert("test"),
+
+	    % se invece il predicato solve fallisce, il predicato test effettua
+	    %  il backtracking, scatenando la computazione di questa regola.
+	    %  Ciò, a meno di fallimenti durante la creazione dell'aserzione o
+	    %  all'esecuzione di metodi dell'asserzione, ci garantisce che il
+	    %  test ha successo.
+
+	    A.assert_fail().
+	\end{verbatim}
+ 	\caption{Esempio: asserire un fallimento}
+	\label{fig:example_unittest_assertfail}
+\end{figure}
 
 \section{Il solver}
 \label{sec:lsetpicat_solver}
 
+L'obiettivo principale del solver \lset{} è risolvere formule. Il
+risultato può avere zero, una o più soluzioni ed il solver deve essere
+in grado di mostrarle tutte, se queste sono finite.
+
+Il funzionamento del solver è quello descritto dallo pseudocodice in
+\ref{subsec:clpbasedlang_lset_solver}. Per ricapitolare, il solver
+svolge queste tre azioni:
+\begin{itemize}
+	\item rimpiazza i vincoli derivati con le corrispondenti
+          formule \lset{};
+	\item riduce la complessità sintattica dei vincoli primitivi
+          applicando le regole di riscrittura corrette;
+	\item elimina gli insiemi che coinvolgono disuguaglianze.
+\end{itemize}
+La formula finale ottenuta è semplificata e irriducibile, il che la
+rende equivalente alla formula originale.
+
 \subsection{Predicato solve/2}
 \label{sec:lsetpicat_solver_solve2}
 
-Il predicato \verb|solve/2| riceve in input una formula, e restituisce in output la formula risolta. Questo predicato scandisce ogni termine della formula congiuntiva data in input e cerca di ridurla generando una nuova formula (possibilmente nulla) e un insieme di vincoli (possibilmente vuoto).
+Il predicato \verb|solve/2| riceve in input una formula, e restituisce
+in output la formula risolta. Questo predicato scandisce ogni termine
+della formula congiuntiva data in input e cerca di ridurla generando
+una nuova formula (possibilmente nulla) e un insieme di vincoli
+(possibilmente vuoto).
 
-\paragraph{Implementazione} Il predicato \verb|solve/2| risolve la formula congiuntiva in input $C$ e riscrive ogni termine in forma più semplice, creando un nuovo constraint store $CN$. Se le riscritture applicate rendono il constraint store uguale alla formula in input allora si è raggiunto un \textbf{punto fisso} e si termina l'esecuzione con risultato $CC = CN$, altrimenti si prosegue cercando di risolvere il nuovo constraint store $solve(CN, CC)$.
+\paragraph{Implementazione}
+
+Il predicato \verb|solve/2| risolve la formula congiuntiva in input
+$C$ e riscrive ogni termine in forma più semplice, creando un nuovo
+constraint store $CN$. Se le riscritture applicate rendono il
+constraint store uguale alla formula in input allora si è raggiunto un
+\textbf{punto fisso} e si termina l'esecuzione con risultato $CC =
+CN$, altrimenti si prosegue cercando di risolvere il nuovo constraint
+store $solve(CN, CC)$.
+
 \begin{verbatim}
 %% solve(C, CC) is det
 
 solve(C, CC) =>
     CN = [],
     foreach (T in C)
-        sat(T, C1), 
+        sat(T, C1),
         CN := CN ++ C1,
     end,
     CN := CN.flatten(),
-   
-    if C == CN 
-    then CC = CN 
+
+    if C == CN
+    then CC = CN
     else solve(CN, CC)
     end.
 \end{verbatim}
 
-\paragraph{Utilizzo} Il predicato \verb|solve/2| può essere usato come un API, esposta dal modulo \emph{solver}. Il modulo \emph{commands} di fatto usa questo predicato per risolvere una formula.
+\paragraph{Utilizzo}
+Il predicato \verb|solve/2| può essere usato come un API, esposta dal
+modulo \emph{solver}. Il modulo \emph{commands} di fatto usa questo
+predicato per risolvere una formula.
 \begin{verbatim}
 %% doSolve(+FormulaString) is semidet
 
@@ -1650,7 +1994,10 @@ doSolve(FormulaString) ?=>
 doSolve(_) => println("no!").
 \end{verbatim}
 
-Il predicato \verb|solve/2| visto come API è utile anche nell'effetuare gli \emph{unit tests}. L'esempio riportato, seppur poco interessante dal punto di vista della formula, mostra l'utilizzo di \verb|solve/2| per verificare la correttezza della risoluzione.
+Il predicato \verb|solve/2| visto come API è utile anche
+nell'effetuare gli \emph{unit tests}. L'esempio riportato, seppur poco
+interessante dal punto di vista della formula, mostra l'utilizzo di
+\verb|solve/2| per verificare la correttezza della risoluzione.
 \begin{verbatim}
 setlog_eq1_1_test ?=>
     A = new_assert("setlog_eq1_1_test"),
@@ -1663,9 +2010,15 @@ setlog_eq1_1_test => A = new_assert("setlog_eq1_1_test"), A.fail().
 \subsection{Predicato sat/2}
 \label{sec:lsetpicat_solver_sat2}
 
-Il predicato \verb|sat/2| combinato con \verb|rule/2| seleziona la regola da applicare in base al termine dato, distinguendo se l'operazione che si vuole compiere è $=, \neq, \in, \ldots$, e applicando le giuste regole di riscrittura. 
+Il predicato \verb|sat/2| combinato con \verb|rule/2| seleziona la
+regola da applicare in base al termine dato, distinguendo se
+l'operazione che si vuole compiere è $=, \neq, \in, \ldots$, e
+applicando le giuste regole di riscrittura.
 
-\paragraph{Implementazione} \verb|sat/2| gestisce l'input, mentre \verb|rule/2| effettua il dispatching della regola giusta. Notare come il predicato \verb|rule/2| sia pensato per essere estendibile.
+\paragraph{Implementazione}
+\verb|sat/2| gestisce l'input, mentre \verb|rule/2| effettua il
+dispatching della regola giusta. Notare come il predicato
+\verb|rule/2| sia pensato per essere estendibile.
 \begin{verbatim}
 %% sat(F, FF) is det
 
@@ -1692,7 +2045,9 @@ Le regole implementate sono un sottoinsieme di quelle descritte in \cite{Rossi18
 \subsection{Vincoli integrati}
 \label{sec:lsetpicat_solver_rewriterules}
 
-Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e a qualche predicato ausiliario, sono presenti i predicati che implementano le regole di riscrittura:
+Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e
+a qualche predicato ausiliario, sono presenti i predicati che
+implementano le regole di riscrittura:
 \begin{itemize}
 \item \verb|eq/3| ($=$);
 \item \verb|neq/3| ($\neq$)
@@ -1705,7 +2060,153 @@ Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e a qualche
 \item \verb|diff/3| ($\setminus$);
 \end{itemize}
 
-Nella sezione \ref{sec:lsetpicat_constraints} sono riportate le regole di riscrittura e relative implementazioni. Si può notare che la descrizione matematica delle regole in \cite{Rossi18} è molto vicina all'implementazione.
+\section{Il vincolo or}
+\label{sec:lsetpicat_or}
+
+Molte regole di riscrittura integrate dal solver non contengono solo
+clausole in congiunzione (legate da $\land$), ma anche clausole in
+disgiunzione. Questa sottile differenza porta un grosso cambiamento
+nella gestione del controllo durante la risoluzione di formule. Da un
+punto di vista algoritmico, mentre le clausole congiunte si possono
+risolvere una dopo l'altra catturando il primo fallimento per
+interrompere la computazione, le clausole disgiunte non godono della
+stessa proprietà. Di fatto, se una clausola in disgiunzione fallisce,
+non è detto che le altre lo facciano, anzi, spesso non è così. Bisogna
+quindi essere in grado di tornare al punto in cui si è scelta una
+delle clausole in \emph{or} da risolvere, ripristinando lo stato del
+programma, per poter proseguire con la successiva.
+
+Per l'implementazione di questo meccanismo viene in aiuto il
+\emph{backtracking}, che simula proprio funzionamento in questione. Il
+backtracking è un algoritmo generale che permette di trovare tutte (o
+alcune) soluzioni ad un certo problema computazionale, che
+incrementalmente costruisce nuove soluzione abbandonando quelle che
+sono state decretate non essere una soluzione. Durante la risoluzione
+di formule insiemistiche questo si può verificare appunto prendendo
+una clausola in disgiunzione che non soddisfa i vincoli e provoca il
+fallimento. Il backtracking in questo caso scarta la soluzione,
+ripristina il programma al punto di scelta (\emph{choice
+  point}\fixme{Aggiungere una descrizione sommaria di choice point in
+  una footnote})\fixme{Aggiungere citazione a fonte: programming in
+  prolog, altri} e prosegue con un'altra delle clausole non ancora
+esplorate.
+
+L'implementazione del vincolo or nel solver è costruito in due modi:
+\begin{itemize}
+	\item tramite l'utilizzo di un vincolo ausiliario;
+	\item sfruttando il backtracking sulla regola esatta che
+          presenta clausole in disgiunzione.
+\end{itemize}
+
+Nel primo caso l'implementazione è simile a quella di una regola di
+riscrittura
+\begin{verbatim}
+%% or(List, Result) is nondet
+%
+% @desc Rewrite rule for or constraints.
+
+or([], []) => true.
+or([T|_Tr], R) ?=> R = [T].
+or([_T|Tr], R) => or(Tr, R).
+\end{verbatim}
+dove
+\begin{itemize}
+	\item la prima regola gestisce il caso in cui la lista di
+          clausole in or sia vuota, ed ha sempre successo;
+	\item la seconda regola gestisce la prima riscrittura: estrae
+          una clausola prendendola dalla testa della lista e la
+          inserisce nel risultato;
+	\item la terza regola gestisce il caso in cui la seconda
+          regola fallisca (ovvero la clausola utilizzata non ha
+          soddisfatto la formula) procedendo con un'altra clausola
+          della lista.
+\end{itemize}
+
+\paragraph{Esempio}
+\begin{verbatim}
+{log} => [eq(X,1),or([eq(X,2),eq(X,1)])]
+\end{verbatim}
+
+\begin{itemize}
+
+	\item[Step 1] Il risultato della prima riscrittura è
+	\begin{verbatim}
+	--- [eq(1,1),or([eq(1,2),eq(1,1)])]
+	==> [eq(1,2)]
+	\end{verbatim}
+	e si può notare come il vincolo \verb|eq(1,1)| sia stato
+        risolto e rimosso dal constraint store risultate, mentre il
+        vincolo \verb|or([eq(X,2),eq(X,1)])| sia stato riscritto in
+        \verb|eq(1,2)|.
+
+	\item[Step 2] Il risultato della seconda riscrittura è
+	\begin{verbatim}
+	--- [eq(1,1),or([eq(1,2),eq(1,1)])]
+	==> [eq(1,1)]
+	\end{verbatim}
+	da cui invece è evidente il fallimento nella risoluzione di
+        \verb|eq(1,2)|, e la riscrittura del vincolo
+        \verb|or([eq(X,2),eq(X,1)])| in \verb|eq(1,1)|.
+
+	\item[Step 3] Il risultato della terza riscrittura è
+	\begin{verbatim}
+	--- [eq(1,1)]
+	==> []
+	\end{verbatim}
+	da cui si nota la risoluzione dell'ultimo vincolo rimasto.
+
+\end{itemize}
+
+\section{Enumerazione delle soluzione}
+\label{sec:lsetpicat_solutions}
+
+Il solver per ogni formula può trovare zero, una o più soluzioni,
+comprendendo anche un numero infinito di soluzioni. L'enumerazione di
+queste soluzioni è di notevole importanza per \lset{}. Per questo
+motivo il solver deve essere in grado di cercare altre soluzioni
+qualora ve ne sinao. Anche in questo caso si ricorre al backtracking.
+
+L'enumerazione di nuove soluzione è infatti implementata forzando un
+fallimento: tramite il bakctracking si cercano di esplorare strade
+alternative per la costruzione di altri risultati e se queste
+alternative sono infinite allora anche questo processo è infinito.
+
+\paragraph{Esempio}
+\begin{verbatim}
+{log} => [ union( [1|X], [1,2], [1,2] ) ]
+\end{verbatim}
+ha 4 soluzioni
+\begin{itemize}
+	\item \verb|X = []|;
+	\item \verb|X = [1]|;
+	\item \verb|X = [2]|;
+	\item \verb|X = [1,2]|
+\end{itemize}
+
+\section{Testing}
+\label{sec:lsetpicat_testing}
+
+La stesura dei test per verificare la correttezza dell'implementazione
+si è subito resa necessaria al fine di incrementare la qualità del
+software prodotto. Per questo motivo sono stati realizzati predicati
+che prendono in esame casi semplici ma cercano di esploare i casi
+limite.
+
+I test realizzati fanno uso del modulo \verb|assert| che mette a
+disposizione metodi di utilità come \verb|assert_equal/2|,
+\verb|assert_fail/1|, \verb|fail/1|. Grazie a questi predicati è
+possibile effettuare test con la seguente struttura
+\begin{verbatim}
+test1 ?=>
+    A = new_assert(test1)
+    solve(Formula, Result),
+    A.assert_equal([], Result)
+test1 =>
+    A = new_assert(test1), A.fail().
+\end{verbatim}
+dove \verb|assert_equal/2| verifica che il valore attuale sia uguale
+al valore previsto, e se non lo è fallisce attivando il predicato
+\verb|fail/1| che registra il fallimento di quel test.
 
 \clearpage
 
