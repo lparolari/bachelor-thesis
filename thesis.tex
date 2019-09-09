@@ -464,7 +464,592 @@ Essenzialmente \satset{$(C)$} utilizza tre procedure:
           forma risolta.
 \end{itemize}
 
-Quando la computazione non deterministica di $\satset{}(C)$ termina, se il risultato è $false$ allora si può concludere che $C$ non è soddisfacibile; al contrario, se nessuno dei vincoli in $C$ viene riscritto a $false$ allora ogni soluzione generata da \satset{} è una soluzione per $C$ e viceversa.
+Quando la computazione non-deterministica di $\satset{}(C)$ termina,
+se il risultato è $false$ allora si può concludere che $C$ non è
+soddisfacibile; al contrario, se nessuno dei vincoli in $C$ viene
+riscritto a $false$ allora ogni soluzione generata da \satset{} è una
+soluzione per $C$ e viceversa.
+
+\subsection{Regole di riscrittura per vincoli di eguaglianza}
+\label{subsec:clpbasedlang_lset_rewriteeq}
+
+ \fixme{Almeno un esempio di riscrittura di un vincolo composto
+   (semplice); ad esempio: {1,2}={X,Y} and X neq 1 oppure 1 in X and 1
+   nin X}
+
+Nelle sezioni successive sono riportate le regole di riscrittura
+descritte in \cite{Rossi18}, trattate durante la realizzazione del
+solver.
+
+L'implementazione di queste regole in Picat è riportata al capitolo
+\ref{ch:impl}.
+
+\subsubsection{Il vincolo eq}
+
+\textit{Sintassi:} $t_1 = t_2$.\\
+\noindent\textit{Semantica informale:} $t_1$ e $t_2$ sono uguali.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:eq_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
+
+		If $x, y, t, t_i, u_i: \text{U}; A,B: \text{Set}$ then:
+
+		\begin{equation}
+		\dotx = \dotx \to true
+		\end{equation}
+		\begin{equation}
+		\text{If } t \not\in \calV, t = \dotx \to \\ \dotx = t
+		\end{equation}
+		\begin{equation}
+		\text{If} \dotA \not\in vars(t_1, \ldots, t_n), \dotA = \{ t_1, \ldots, t_n \} \to \dotA = \{ t_1, \ldots, t_n \sqcup N \}
+		\end{equation}
+		\begin{equation}
+		\text{If} \dotx \in vars(t), \dotx = t \to false
+		\end{equation}
+		\begin{equation}
+		\dotx = t \to \text{substitute $\dotx$ by $t$ in all others literals of the input formula}
+		\end{equation}
+		\begin{equation}
+		\text{If} f \not\equiv g, f(t_1, \ldots, t_n) = g(t_1, \ldots, t_m) \to false
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		\{ t_1, & \ldots, t_m \sqcup \dotA \} = \{u_1, \ldots, u_n \sqcup \dotA \} \to \\
+		& t_1 = u_j \land \{ t_2, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots, u_{j_1}, u_{j+1}, \ldots, u_n \sqcup \dotA \} \\
+		& \lor t_1 = u_j \land \{ t_1, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots, u_{j_1}, u_{j+1}, \ldots, u_n \sqcup \dotA \} \\
+		& \lor t_1 = u_j \land \{ t_2, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots u_n \sqcup \dotA \} \\
+		& \lor \dotA = \{ t_1 \sqcup N \} \land \{ t_2, \ldots, t_m \sqcup N \} = \{ u_1, \ldots, u_n \sqcup N \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		\{ x \sqcup & A \} = \{ y \sqcup B \} \to \\
+		& x = y \land A = B \\
+		& \lor x = y \land \{ x \sqcup A \} = B \\
+		& \lor x = y \land A = \{ y \sqcup B \} \\
+		& \lor A = \{ y \sqcup N \} \land \{ x \sqcup N \} = B
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		f(t_1, \ldots, t_n) = f(u_1, \ldots, u_n) \to t_1 = u_1 \land \ldots \land t_1 = u_n
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di uguaglianza}
+	\label{fig:eq_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $\dotx = t$ e $\dotx$ non è contenuto ne in $t$ ne in
+          altri letterali della fomula.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:eq_constraints}
+
+\subsubsection{Il vincolo neq}
+
+\textit{Sintassi:} $t_1 \neq t_2$.\\
+\noindent\textit{Semantica informale:} $t_1$ è diverso da $t_2$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:neq_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{$\neq$\textsubscript{\arabic{equation}}}
+
+		If $t, t_i: \text{U}; A,B: \text{Set}$ then:
+
+		\begin{equation}
+		\text{If } t \text{ is a constant or } t \in \calV, t \neq t \to false
+		\end{equation}
+		\begin{equation}
+		\text{If } t \not\in \calV, t \neq \dotx \to \dotx \neq t
+		\end{equation}
+		\begin{equation}
+		\text{If} \dotx \not\in vars(t_1, \ldots, t_n), \dotx \neq \{ t_1, \ldots, t_n \sqcup \dotx \} \to t_1 \not\in \dotx \lor \ldots \lor t_n \not\in \dotx
+		\end{equation}
+		\begin{equation}
+		\text{If} \dotx \in vars(t), \dotx \neq t \to true
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		\{ t_1 \sqcup & A \} = \{ t_2 \sqcup B \} \to \\
+		& N \in \{ t_1 \sqcup A \} \land N \not\in \{ t_2 \sqcup B \} \\
+		& N \not\in \{ t_1 \sqcup A \} \land N \in \{ t_2 \sqcup B \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		f(t_1, \ldots, t_n) \neq g(u_1, \ldots, u_m) \to true
+		\end{equation}
+		\begin{equation}
+		f(t_1, \ldots, t_n) = f(u_1, \ldots, u_n) \to t_1 \neq u_1 \land \ldots \land t_1 \neq u_n
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di disuguaglianza}
+	\label{fig:neq_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $\dotx \neq t$ e $\dotx$ non compare ne in $t$ ne come
+          argomento di qualunque predicato $p(\ldots)$, $p \in \{ un,
+          id, inv, comp \}$.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:neq_constraints}
+
+\subsection{Regole di riscrittura per vincoli (positivi) su insiemi}
+\label{subsec:clpbasedlang_lset_rewriteset}
+
+\subsubsection{Il vincolo in}
+
+\textit{Sintassi:} $t_1 \in t_2$.\\
+\noindent\textit{Semantica informale:} se $t_2$ è un insime, $t_1$ è un membro di $t_2$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:in_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{$\in$\textsubscript{\arabic{equation}}}
+
+		If $x, y: \text{U}; A: \text{Set}$ then:
+
+		\begin{equation}
+		x \in \emptyset \to false
+		\end{equation}
+		\begin{equation}
+		x \in \{ y \sqcup A \} \to x = y \lor x \in A
+		\end{equation}
+		\begin{equation}
+		x \in \dotA \to \dotA = \{ x \sqcup N \}
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di appartenenza}
+	\label{fig:in_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili} Nessuna.
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:in_constraints}
+
+\subsubsection{Il vincolo union}
+
+\textit{Sintassi:} $un(t_1, t_2, t_3)$.\\
+\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi,  allora $t_3 = t_1 \cup t_2$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:un_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{$\cup$\textsubscript{\arabic{equation}}}
+
+		If $t: \text{U}; A, B, C: \text{Set}$ then:
+
+		\begin{equation}
+		un(A,A,B) \to A = B
+		\end{equation}
+		\begin{equation}
+		un(A,B,\emptyset) \to A = \emptyset \land B = \emptyset
+		\end{equation}
+		\begin{equation}
+		un(\emptyset,A,\dotB) \to \dotB = A
+		\end{equation}
+		\begin{equation}
+		un(A,\emptyset,\dotB) \to \dotB = A
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		un & (\{ t \sqcup C \}, A, \dotB) \to \\
+		& (t \not\in A \land un(N_1, A, N) \\
+		& \lor A = \{ t_1 \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
+		& \land \{ t\sqcup C \} = \{ t \sqcup N_1 \} \land \dotB = \{ t\sqcup N \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		un & (A, \{ t \sqcup C \}, \dotB) \to \\
+		& (t \not\in A \land un(N_1, A, N) \\
+		& \lor A = \{ t_1 \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
+		& \land \{ t\sqcup C \} = \{ t \sqcup N_1 \} \land \dotB = \{ t\sqcup N \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		un & (A, B, \{ t \sqcup C \}) \to \\
+		& (A = \{t \sqcup N_1 \} \land un(N_1, N_2, N) \\
+		& \lor B = \{ t \sqcup N_1 \} \land un(A, N_1, N) \\
+		& \lor A = \{ t \sqcup N_1 \} \land B = \{ t \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
+		& \land \{ t \sqcup C \} = \{ t \sqcup N \}
+		\end{split}
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di appartenenza}
+	\label{fig:un_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $un(\dotA, \dotB, \dotC)$, $\dotA$ e $\dotB$ variabili distinte.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:un_constraints}
+
+\subsubsection{Il vincolo disj}
+
+\textit{Sintassi:} $t_1 \mid\mid t_2$.\\
+\noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1 \cap t_2 = \emptyset$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:disj_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{$\mid\mid$\textsubscript{\arabic{equation}}}
+
+		If $t, t_i: \text{U}; A, B: \text{Set}$ then:
+
+		\begin{equation}
+		\emptyset \mid\mid A \to true
+		\end{equation}
+		\begin{equation}
+		A \mid\mid \emptyset \to true
+		\end{equation}
+		\begin{equation}
+		\dotA \mid\mid \dotA \to \dotA = \emptyset
+		\end{equation}
+		\begin{equation}
+		\{ t \sqcup B \} \mid\mid \dotA \to t \not\in \dotA \land \dotA \mid\mid B
+		\end{equation}
+		\begin{equation}
+		\dotA \mid\mid \{ t \sqcup B \} \to t \not\in \dotA \land \dotA \mid\mid B
+		\end{equation}
+		\begin{equation}
+		\{ t_1 \sqcup A \} \mid\mid \{ t_2 \sqcup B \} \to t_1 \neq t_2 \land t_1 \not\in B \land t_2 \not\in A \land A \mid\mid B
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di disgiunzione}
+	\label{fig:disj_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $\dotA \mid\mid \dotB$, $\dotA$ e $\dotB$ variabili distinte.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:disj_constraints}
+
+\subsubsection{Il vincolo subset}
+
+\textit{Sintassi:} $t_1 \subseteq t_2$.\\
+\noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1$ è un sottoinsieme di $t_2$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:subset_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{\textsubscript{\arabic{equation}}}
+
+		If $x, y: \text{U}; A, B: \text{Set}$ then:
+
+		\begin{equation}
+		\dotA \subseteq \dotA \to true
+		\end{equation}
+		\begin{equation}
+		\emptyset \subseteq A \to true
+		\end{equation}
+		\begin{equation}
+		\dotA \subseteq \emptyset \to \dotA = \emptyset
+		\end{equation}
+		\begin{equation}
+		\{ t \sqcup A \} \subseteq \emptyset \to false
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		\{ x \sqcup A \} & \subseteq \dotB \to \\
+		& \dotB = \{ x \sqcup N \} \land A \subseteq \{ x \sqcup N \}
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		\{ x \sqcup A \} & \subseteq \{ y \sqcup B \} \to \\
+		& x = y \land A \subseteq \{ y \sqcup B \} \\
+		& \lor x \neq y \land x \in B \land A \subseteq \{ x \sqcup B \}
+		\end{split}
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di sottoinsieme}
+	\label{fig:subset_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $\dotA \subseteq \dotB$, $\dotA$ e $\dotB$ variabili distinte;
+	\item $\dotA \subseteq \{ y | B \}$.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:subset_constraints}
+
+\subsubsection{Il vincolo inters}
+
+\textit{Sintassi:} $inters(t_1,t_2,t_3)$.\\
+\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 = t_1 \cap t_2$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:intersect_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{7}
+		\renewcommand{\theequation}{$\cup$\textsubscript{\arabic{equation}}}
+
+		If $x: \text{U}; A, B, C: \text{Set}$ then:
+
+		\begin{equation}
+		inters(\dotA, \dotA, B) \to A = B
+		\end{equation}
+		\begin{equation}
+		inters(\emptyset, \dotA, C) \to C = \emptyset
+		\end{equation}
+		\begin{equation}
+		inters(\dotA, \emptyset, C) \to C = \emptyset
+		\end{equation}
+		\begin{equation}
+		inters(A,B,\emptyset) \to A \mid\mid B
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		inters & (A,B,\dotC) \to \\
+		& A = \{ x \sqcup N_1 \} \\
+		& \lor B = \{ x \sqcup N_2 \} \land \dotC = \{ x \sqcup N_3 \} \land inters(N_1, N_2, N_3)
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		inters & (A,B,\dotC) \to \\
+		& A = \{ x \sqcup N_1 \} \land B = \{ x \sqcup N_2 \} \land inters(N_1, N_2, C)
+		\end{split}
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di intersezione}
+	\label{fig:intersect_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $inters(\dotA, B, \dotC)$, $\dotA$ e $B$ non sono la stessa variabile;
+	\item $inters(A, \dotB, \dotC)$, $A$ e $\dotB$ non sono la stessa variabile.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:inters_constraints}
+
+\subsubsection{Il vincolo diff}
+
+\textit{Sintassi:} $diff(t_1,t_2,t_3)$.\\
+\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 = t_1 \setminus t_2$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:difference_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{\textsubscript{\arabic{equation}}}
+
+		If $A, B, C: \text{Set}$ then:
+
+		\begin{equation}
+		diff(A,B,C) \to un(C,A,A) \land un(B,C,N) \land un(A,N,N)
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di differenza}
+	\label{fig:difference_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item Nessuna.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:diff_constraints}
+
+\subsection{Regole di riscrittura per vincoli negativi su insiemi}
+\label{subsec:clpbasedlang_lset_rewriteneg}
+
+I vincoli negativi su insiemi in \lset{} non sono dati dalla comune
+negazione, bensì sono introdotti come vincoli derivati. La negazione
+classica viene eliminata e per ogni predicato $\neg p(t_1, \ldots,
+t_n)$ si ottiene una forma positiva del predicato $p'(t_1, \ldots,
+t_n)$ che ne rappresenta la negazione.
+
+\subsubsection{Il vincolo not in}
+
+\textit{Sintassi:} $t_1 \not\in t_2$.\\
+\noindent\textit{Semantica informale:} se $t_2$ è un insieme, allora $t_1$ non è un membro di $t_2$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:notin_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{3}
+		\renewcommand{\theequation}{$\in$\textsubscript{\arabic{equation}}}
+
+		If $x, y: \text{U}; A, B, C: \text{Set}$ then:
+
+		\begin{equation}
+		x \not\in \emptyset \to true
+		\end{equation}
+		\begin{equation}
+		x \not\in \{ y \sqcup A \} \to x \neq y \land x \not\in A
+		\end{equation}
+		\begin{equation}
+		\text{If } \dotA \in vars(x), x \not\in \dotA \to true
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di non appartenenza}
+	\label{fig:notin_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item $t \not\in dotA$, e $dotA$ non occorre in $t$.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:notin_constraints}
+
+\subsubsection{Il vincolo not union}
+
+\textit{Sintassi:} $nun(t_1,t_2,t_3)$.\\
+\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 \neq t_1 \cup t_2$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:notun_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{13}
+		\renewcommand{\theequation}{$\cup$\textsubscript{\arabic{equation}}}
+
+		If $A, B, C: \text{Set}$ then:
+
+		\begin{equation}
+		\begin{split}
+		nun(& A,B,C) \to \\
+		  & N \in C \land N \not\in A N \not\in B \\
+		  & \lor N \in A \land N \not\in C \\
+		  & \lor N \in B \land N \not\in C
+		\end{split}
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli non unione}
+	\label{fig:notun_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item Nessuna.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:notun_constraints}
+
+\subsubsection{Il vincolo not disjoint}
+
+\textit{Sintassi:} $t_1 \not\mid\mid t_2$.\\
+\noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1 \cap t_2 \neq \emptyset$.\\
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:notdisj_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{6}
+		\renewcommand{\theequation}{$\mid\mid$\textsubscript{\arabic{equation}}}
+
+		If $A, B: \text{Set}$ then:
+
+		\begin{equation}
+		A \not\mid\mid B \to N \in A \land N \in B
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per vincoli di non disgiunzione}
+	\label{fig:notdisj_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item Nessuna.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:notdisj_constraints}
+
+\subsubsection{Altri vincoli negativi}
+
+\noindent\textit{Regole di riscrittura:} Figura \ref{fig:othernegatives_constraints}.
+
+\begin{figure}
+	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
+		\setcounter{equation}{0}
+		\renewcommand{\theequation}{\arabic{equation}}
+
+		If $R, S, T, A, B, C: \text{Set}$ then:
+
+		\begin{equation}
+		nsubset(A,B) \to n \in A \land n \not\in B
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		ninters& (A,B,C) \to \\
+		  & n \in C \land ( n \not\in A \lor n \in C \land n \not\in B ) \\
+		  & \lor n \not\in C \land n \in A \land n \not\in B
+		\end{split}
+		\end{equation}
+		\begin{equation}
+		\begin{split}
+		ndiff& (A,B,C) \to \\
+		  & n \in C \land n \not\in A \lor n \in C \land n \in B \\
+		  & \lor n \not\in C \land n \in A \land n \not\in B
+		\end{split}
+		\end{equation}
+
+	\end{tcolorbox}
+
+	\caption{Regole di riscrittura per altri vincoli negativi}
+	\label{fig:othernegatives_constraints}
+\end{figure}
+
+\paragraph{Forme irriducibili}
+\begin{itemize}
+	\item Nessuna.
+\end{itemize}
+
+\paragraph{Implementazione}
+Algoritmo \ref{alg:othernegatives_constraints}
+
 
 
 %%% *******************************************************
@@ -474,16 +1059,27 @@ Quando la computazione non deterministica di $\satset{}(C)$ termina, se il risul
 
 \minitoc
 
-In questo capitolo viene presentato Picat, un linguaggio di programmazione multiparadigma basato sulla logica dei predicati del prim'ordine. Picat è per certi versi molto simile al Prolog, ma dispone di molte funzionalità che modificano radicalmente l'utilizzo comune sia di un linguaggio imperativo che logico.
+In questo capitolo viene presentato Picat, un linguaggio di
+programmazione multiparadigma basato sulla logica dei predicati del
+prim'ordine. Picat è per certi versi molto simile al Prolog, ma
+dispone di molte funzionalità che modificano radicalmente l'utilizzo
+comune sia di un linguaggio imperativo che logico.
 
-Nella sezione \ref{sec:picat_features} si descrivono le carateristiche di Picat, mentre in \ref{sec:picat_base} e \ref{sec:picat_advanced} se ne espongono le funzionalità fornendo esempi esplicativi. 
+Nella sezione \ref{sec:picat_features} si descrivono le carateristiche
+di Picat, mentre in \ref{sec:picat_base} e \ref{sec:picat_advanced} se
+ne espongono le funzionalità fornendo esempi esplicativi.
 
-I numerosi dettagli tralasciati per ovvi motivi in questa presentazione possono essere approfonditi sul manuale di Picat \cite{PicatGuide}. Si avvisa inoltre che al tempo in cui si sta scrivendo, la guida di Picat è in versione 2.6.
+I numerosi dettagli tralasciati per ovvi motivi in questa
+presentazione possono essere approfonditi sul manuale di Picat
+\cite{PicatGuide}. Si avvisa inoltre che al tempo in cui si sta
+scrivendo, la guida di Picat è in versione 2.6.
 
 \section{Caratteristiche}
 \label{sec:picat_features}
 
-Picat incorpora le principali funzionalità dei linguaggi logici, funzionali e di scripting. Le caratteristiche di Picat sono riassunte dalle lettere del suo nome:
+Picat incorpora le principali funzionalità dei linguaggi logici,
+funzionali e di scripting. Le caratteristiche di Picat sono riassunte
+dalle lettere del suo nome:
 \begin{itemize}
 \item \textbf{P}attern-matching. Un \emph{predicato} definisce una relazione e può avere zero, una o più soluzioni. Picat è un linguaggio basato su regole. I predicati e le funzioni sono definiti tramite regole di pattern-matching.
 \item \textbf{I}ntuitive. Picat fornisce comandi come l'assegnamento ed i loop, che vengono usati nei comuni linguaggi imperativi, rendendolo di fatto più affine per la scrittura di programmi "comuni".
