@@ -2239,42 +2239,42 @@ all’implementazione.\fixme{Finire la descrizione}
 	\label{alg:eq_constraints}
 \end{algorithm}
 \begin{verbatim}
-eq(T1, T2, R),  T1 == T2 =>                                        % 1
-    log_d_vv("eq :: eq_1"),
+eq(T1, T2, R),  T1 == T2 =>                                % 1
+        log_d_vv("eq :: eq_1"),
     R = [].
 
-eq(T1, T2, R), nonvar(T1), var(T2) =>                              % 2
-    log_d_vv("eq :: eq_2"),
+eq(T1, T2, R), nonvar(T1), var(T2) =>                      % 2
+        log_d_vv("eq :: eq_2"),
     R = [ $eq(T2, T1) ].
 
-eq(T1, T2, R), 
+eq(T1, T2, R),
         var(T1), T2.is_lset(),
-	    not occur_check(T1, T2.lset_head()),
-        T1 == T2.lset_rest() =>                                    % 3
-    log_d_vv("eq :: eq_3"),
+        not occur_check(T1, T2.lset_head()),
+        T1 == T2.lset_rest() =>                            % 3
+   	log_d_vv("eq :: eq_3"),
     YSetNew = new_lset(T2.lset_head(),_N),
     R = [ $eq(T1, YSetNew) ].
 
-eq(T1, T2, _R), 
+eq(T1, T2, _R),
         var(T1),
-        occur_check(T1, T2) =>                                     % 4
+        occur_check(T1, T2) =>                             % 4
     log_d_vv("eq :: eq_4"),
     fail.  % sic.
 
-eq(T1, T2, R), 
-        var(T1) =>                                                 % 5
+eq(T1, T2, R),
+        var(T1) =>                                         % 5
     log_d_vv("eq :: eq_5"),
     R = [], T1 = T2.
 
-eq(T1, T2, _R), 
-        struct(T1), struct(T2), 
-        T1.name() !== T2.name() =>                                 % 6
+eq(T1, T2, _R),
+        struct(T1), struct(T2),
+        T1.name() !== T2.name() =>                         % 6
     log_d_vv("eq :: eq_6"),
     fail.  % sic.
 
-eq(T1@[X|Xs], T2, R), 
+eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
-        T1.lset_rest() == T2.lset_rest() ?=>                       % 7a
+        T1.lset_rest() == T2.lset_rest() ?=>               % 7a
     log_d_vv("eq :: eq_7a"),
 
     YH = T2.lset_head(),                   % head of T2.
@@ -2287,9 +2287,9 @@ eq(T1@[X|Xs], T2, R),
 
     R = R1 ++ R2.
 
-eq(T1@[X|_], T2, R), 
+eq(T1@[X|_], T2, R),
         T1.is_lset(), T2.is_lset(),
-        T1.lset_rest() == T2.lset_rest() ?=>                       % 7b
+        T1.lset_rest() == T2.lset_rest() ?=>               % 7b
     log_d_vv("eq :: eq_7b"),
 
     YH = T2.lset_head(),                   % head of T2.
@@ -2304,7 +2304,7 @@ eq(T1@[X|_], T2, R),
 
 eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
-        T1.lset_rest() == T2.lset_rest() ?=>                       % 7c
+        T1.lset_rest() == T2.lset_rest() ?=>               % 7c
     log_d_vv("eq :: eq_7c"),
 
     % no slice for T2, only Y elem.
@@ -2318,7 +2318,7 @@ eq(T1@[X|Xs], T2, R),
 
 eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
-        T1.lset_rest() == T2.lset_rest() =>                        % 7d
+        T1.lset_rest() == T2.lset_rest() =>                % 7d
     log_d_vv("eq :: eq_7d"),
 
     XRest = lset_rest(T1),
@@ -2335,32 +2335,32 @@ eq(T1@[X|Xs], T2, R),
     R = R1 ++ R2.
 
 eq(T1@[X|Xs], T2@[Y|Ys], R),
-        T1.is_lset(), T2.is_lset() ?=>                             % 8a
+        T1.is_lset(), T2.is_lset() ?=>                     % 8a
     log_d_vv("eq :: eq_8a"),
     R = [ $eq(X,Y), $eq(Xs, Ys) ].
 
 eq(T1@[X|_], T2@[Y|Ys], R),
-        T1.is_lset(), T2.is_lset() ?=>                             % 8b
+        T1.is_lset(), T2.is_lset() ?=>                     % 8b
     log_d_vv("eq :: eq_8b"),
     R = [ $eq(X,Y), $eq(T1, Ys) ].
 
 eq(T1@[X|Xs], T2@[Y|_], R),
-        T1.is_lset(), T2.is_lset() ?=>                             % 8c
+        T1.is_lset(), T2.is_lset() ?=>                     % 8c
     log_d_vv("eq :: eq_8c"),
     R = [ $eq(X,Y), $eq(Xs, T2) ].
 
 eq(T1@[X|Xs], T2@[Y|Ys], R),
-        T1.is_lset(), T2.is_lset() =>                              % 8d
+        T1.is_lset(), T2.is_lset() =>                      % 8d
     log_d_vv("eq :: eq_8d"),
-    R = [  
-        $eq( Xs,  [Y|N] ),  
-        $eq( [X|N],  Ys ) 
+    R = [
+        $eq( Xs,  [Y|N] ),
+        $eq( [X|N],  Ys )
     ].
 
 eq(T1, T2, R),
         T1.struct(), T2.struct(),
         T1.name() == T2.name(),
-        T1.arity() == T2.arity() =>                                % 9
+        T1.arity() == T2.arity() =>                        % 9
     log_d_vv("eq :: eq_9"),
     RR = [],
     foreach(I in 1..T1.arity())
@@ -2369,81 +2369,33 @@ eq(T1, T2, R),
     R = RR.
 \end{verbatim}
 
-\clearpage
+\section{Il vincolo neq}
 
-\subsection{Il vincolo neq}
-
-\textit{Sintassi:} $t_1 \neq t_2$.\\
-\noindent\textit{Semantica informale:} $t_1$ è diverso da $t_2$.\\
-\noindent\textit{Regole di riscrittura:} \ref{fig:neq_constraints}.
-
-\begin{figure}[H]
-	\label{fig:neq_constraints}
-	
-	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
-		\setcounter{equation}{0}
-		\renewcommand{\theequation}{$\neq$\textsubscript{\arabic{equation}}}
-		
-		If $t, t_i: \text{U}; A,B: \text{Set}$ then:
-		
-		\begin{equation}
-		\text{If } t \text{ is a constant or } t \in \calV, t \neq t \to false
-		\end{equation}
-		\begin{equation}
-		\text{If } t \not\in \calV, t \neq \dotx \to \dotx \neq t
-		\end{equation}
-		\begin{equation}
-		\text{If} \dotx \not\in vars(t_1, \ldots, t_n), \dotx \neq \{ t_1, \ldots, t_n \sqcup \dotx \} \to t_1 \not\in \dotx \lor \ldots \lor t_n \not\in \dotx
-		\end{equation}
-		\begin{equation}
-		\text{If} \dotx \in vars(t), \dotx \neq t \to true
-		\end{equation}
-		\begin{equation}
-		\begin{split}
-		\{ t_1 \sqcup & A \} = \{ t_2 \sqcup B \} \to \\
-		& N \in \{ t_1 \sqcup A \} \land N \not\in \{ t_2 \sqcup B \} \\
-		& N \not\in \{ t_1 \sqcup A \} \land N \in \{ t_2 \sqcup B \}
-		\end{split}
-		\end{equation}
-		\begin{equation}
-		f(t_1, \ldots, t_n) \neq g(u_1, \ldots, u_m) \to true
-		\end{equation}
-		\begin{equation}
-		f(t_1, \ldots, t_n) = f(u_1, \ldots, u_n) \to t_1 \neq u_1 \land \ldots \land t_1 \neq u_n
-		\end{equation}
-		
-	\end{tcolorbox}
-	
+\begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di non disuguaglianza}
-\end{figure}
-
-\paragraph{Forme irriducibili}
-\begin{itemize}
-	\item $\dotx \neq t$ e $\dotx$ non compare ne in $t$ ne come argomento di qualunque predicato $p(\ldots)$, $p \in \{ un, id, inv, comp \}$.
-\end{itemize}
-
-\paragraph{Implementazione}
+	\label{alg:neq_constraints}
+\end{algorithm}
 \begin{verbatim}
 neq(T1, T2, R),
         ground(T1), ground(T2),
-    T1 !== T2 =>  % ground
+    	T1 !== T2 =>                                       % ground
     log_d_vv("neq :: neq_ground"),
     R = [].
 
 neq(T1, T2, R),
-        T1 == T2 =>  % 1
+        T1 == T2 =>                                        % 1
     log_d_vv("neq :: neq_1"),
     fail.  % sic.
 
 neq(T, X, R),
-        nonvar(T), var(X) =>  % 2
+       	nonvar(T), var(X) =>                               % 2
     log_d_vv("neq :: neq_2"),
     R = [ $neq(X, T) ].
 
-neq(X, S, R), 
+neq(X, S, R),
         S.is_lset(),
         X == S.lset_rest(),
-        not occur(X, S.lset_head()) =>  % 3
+        not occur(X, S.lset_head()) =>                     % 3
     log_d_vv("neq :: neq_3"),
     RR = [],
     foreach (T in S.lset_head)
@@ -2452,196 +2404,107 @@ neq(X, S, R),
     R = [ $or(RR) ].
 
 neq(X, T, R),
-        occur(X, T) =>  % 4
+       	occur(X, T) =>                                     % 4
     log_d_vv("neq :: neq_4"),
     R = [].
 
-neq([T1|A], [T2|B], R) ?=>  % 5a
-        log_d_vv("neq :: neq_5a"),
+neq([T1|A], [T2|B], R) ?=>                                 % 5a
+    log_d_vv("neq :: neq_5a"),
     R = [ $inls(N, [T1|A], $nin(N, [T2|B])) ].
 
-neq([T1|A], [T2|B], R) ?=>  % 5b
+neq([T1|A], [T2|B], R) ?=>                                 % 5b
     log_d_vv("neq :: neq_5a"),
     R = [ $nin(N, [T1|A]), $insl(N, [T2|B]) ].
 
 neq(F, G, R),
         F.struct(), G.struct(),
-        F.name() !== G.name() =>  % 6
+        F.name() !== G.name() =>                           % 6
     log_d_vv("neq :: neq_6"),
     R = [].
 
 neq(F, G, R),
         F.struct(), G.struct(),
-        F.arity() !== G.arity() =>  % 7
+        F.arity() !== G.arity() =>                         % 7
     log_d_vv("neq :: neq_7"),
     R = [].
 
-neq(X, T, R), 
-        not occur(X, T) => % irr
+neq(X, T, R),
+        not occur(X, T) =>                                 % irr
     log_d_vv("neq :: neq_irr"),
     R = [ $neq(X, T) ].
 \end{verbatim}
 
-\clearpage
+\section{Il vincolo in}
 
-\subsection{Il vincolo in}
-
-\textit{Sintassi:} $t_1 \in t_2$.\\
-\noindent\textit{Semantica informale:} se $t_2$ è un insime, $t_1$ è un membro di $t_2$.\\
-\noindent\textit{Regole di riscrittura:} \ref{fig:in_constraints}.
-
-\begin{figure}[H]
-	\label{fig:in_constraints}
-	
-	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
-		\setcounter{equation}{0}
-		\renewcommand{\theequation}{$\in$\textsubscript{\arabic{equation}}}
-		
-		If $x, y: \text{U}; A: \text{Set}$ then:
-		
-		\begin{equation}
-		x \in \emptyset \to false
-		\end{equation}
-		\begin{equation}
-		x \in \{ y \sqcup A \} \to x = y \lor x \in A
-		\end{equation}
-		\begin{equation}
-		x \in \dotA \to \dotA = \{ x \sqcup N \}
-		\end{equation}
-		
-	\end{tcolorbox}
-	
+\begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di appartenenza}
-\end{figure}
-
-\paragraph{Forme irriducibili} Nessuna.
-
-\paragraph{Implementazione}
+	\label{alg:in_constraints}
+\end{algorithm}
 \begin{verbatim}
-insl(X, S, R) => 
+insl(X, S, R) =>
     log_d_vv("insl :: -> contains"),
     contains(S, X, R).
 
 contains(S, X, R),
         S.is_lset(),
-        S.is_emptyset() =>                                         % 1
+        S.is_emptyset() =>                                 % 1
     log_d_vv("contains :: cont_1"),
     fail.
 
 contains(S@[Y|A], X, R),
-        S.is_lset() ?=>                                            % 2a
+        S.is_lset() ?=>                                    % 2a
     log_d_vv("contains :: cont_2a"),
     R = [ $eq(X, Y) ].
 
 contains(S@[Y|A], X, R),
-        S.is_lset() =>                                             % 2b
+        S.is_lset() =>                                     % 2b
     log_d_vv("contains :: cont_2b"),
     R = [ $contains(A, X) ].
 
 contains(A, X, R),
-        var(A) =>                                                  % 3
+        var(A) =>                                          % 3
     log_d_vv("contains :: cont_3"),
     YN = new_lset(X, N),
     R = [ $eq(A, YN) ].
 \end{verbatim}
 
-\clearpage
+\section{Il vincolo union}
 
-\subsection{Il vincolo union}
-
-\textit{Sintassi:} $un(t_1, t_2, t_3)$.\\
-\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi,  allora $t_3 = t_1 \cup t_2$.\\
-\noindent\textit{Regole di riscrittura:} \ref{fig:un_constraints}.
-
-\begin{figure}[H]
-	\label{fig:un_constraints}
-	
-	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
-		\setcounter{equation}{0}
-		\renewcommand{\theequation}{$\cup$\textsubscript{\arabic{equation}}}
-		
-		If $t: \text{U}; A, B, C: \text{Set}$ then:
-		
-		\begin{equation}
-		un(A,A,B) \to A = B
-		\end{equation}
-		\begin{equation}
-		un(A,B,\emptyset) \to A = \emptyset \land B = \emptyset
-		\end{equation}
-		\begin{equation}
-		un(\emptyset,A,\dotB) \to \dotB = A
-		\end{equation}
-		\begin{equation}
-		un(A,\emptyset,\dotB) \to \dotB = A
-		\end{equation}
-		\begin{equation}
-		\begin{split}
-		un & (\{ t \sqcup C \}, A, \dotB) \to \\
-		  & (t \not\in A \land un(N_1, A, N) \\
-		  & \lor A = \{ t_1 \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
-		  & \land \{ t\sqcup C \} = \{ t \sqcup N_1 \} \land \dotB = \{ t\sqcup N \}
-		\end{split}
-		\end{equation}
-		\begin{equation}
-		\begin{split}
-		un & (A, \{ t \sqcup C \}, \dotB) \to \\
-		& (t \not\in A \land un(N_1, A, N) \\
-		& \lor A = \{ t_1 \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
-		& \land \{ t\sqcup C \} = \{ t \sqcup N_1 \} \land \dotB = \{ t\sqcup N \}
-		\end{split}
-		\end{equation}
-		\begin{equation}
-		\begin{split}
-		un & (A, B, \{ t \sqcup C \}) \to \\
-		& (A = \{t \sqcup N_1 \} \land un(N_1, N_2, N) \\
-		& \lor B = \{ t \sqcup N_1 \} \land un(A, N_1, N) \\
-		& \lor A = \{ t \sqcup N_1 \} \land B = \{ t \sqcup N_2 \} \land un(N_1, N_2, N) ) \\
-		& \land \{ t \sqcup C \} = \{ t \sqcup N \}
-		\end{split}
-		\end{equation}
-		
-	\end{tcolorbox}
-	
+\begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di appartenenza}
-\end{figure}
-
-\paragraph{Forme irriducibili}
-\begin{itemize}
-	\item $un(\dotA, \dotB, \dotC)$, $\dotA$ e $\dotB$ variabili distinte.
-\end{itemize}
-
-\paragraph{Implementazione}
+	\label{alg:un_constraints}
+\end{algorithm}
 \begin{verbatim}
 union(S1, S2, S3, R), 
         S1.is_lset(), S2.is_lset(), S3.is_lset(),
-        S1 == S2 =>                                                % 1
+        S1 == S2 =>                                        % 1
     log_d_vv("union :: un_1"),
     R = [$eq(S1, S3)].
 
 union(S1, S2, S3, R),
         S1.is_lset(), S2.is_lset(),
-        S3.is_emptyset() =>                                        % 2
+        S3.is_emptyset() =>                                % 2
     log_d_vv("union :: un_2"),
     R = [$eq(S1, S3), $eq(S2, S3)].
 
 union(S1, S2, V, R),
         S1.is_emptyset(),
         S2.is_lset(), 
-        var(V) =>                                                  % 3
+        var(V) =>                                          % 3
     log_d_vv("union :: un_3"),
     R = [$eq(V, S2)].
 
 union(S1, S2, V, R),
         S2.is_emptyset(),
         S1.is_lset(), 
-        var(V) =>                                                  % 4
+        var(V) =>                                          % 4
     log_d_vv("union :: un_4"),
     R = [$eq(V, S1)].
 
 union(S@[T|C], A, B, R),
         S.is_lset(),
         %S2.is_lset(), 
-        var(B) ?=>                                                 % 5a
+        var(B) ?=>                                         % 5a
     log_d_vv("union :: un_5a"),
     R = [ 
         $nin(T, A), 
@@ -2653,7 +2516,7 @@ union(S@[T|C], A, B, R),
 union(S@[T|C], A, B, R),
         S.is_lset(),
         %S2.is_lset(), 
-        var(B) =>                                                  % 5b
+        var(B) =>                                          % 5b
     log_d_vv("union :: un_5b"),
     R = [ 
         $nin(T, A), 
@@ -2665,7 +2528,7 @@ union(S@[T|C], A, B, R),
 union(A, S@[T|C], B, R),
         S.is_lset(),
         %S2.is_lset(), 
-        var(B) ?=>                                                 % 6a
+        var(B) ?=>                                         % 6a
     log_d_vv("union :: un_6a"),
     R = [ 
         $nin(T, A), 
@@ -2677,7 +2540,7 @@ union(A, S@[T|C], B, R),
 union(A, S@[T|C], B, R),
         S.is_lset(),
         %S2.is_lset(), 
-        var(B) =>                                                  % 6b
+        var(B) =>                                          % 6b
     log_d_vv("union :: un_6b"),
     R = [ 
         $nin(T, A), 
@@ -2689,7 +2552,7 @@ union(A, S@[T|C], B, R),
 union(S1, S2, S3@[Z|Zs], R),
         S1.is_lset(),
         S2.is_lset(),
-        S3.is_lset() ?=>                                           % 7a
+        S3.is_lset() ?=>                                   % 7a
     log_d_vv("union :: un_7a"),
     R1 = [ $eq(S1,[Z|N1]), $union(N1,B2,N) ],
     R4 = [ $eq(S3,[Z|N]) ],
@@ -2699,7 +2562,7 @@ union(S1, S2, S3@[Z|Zs], R),
 union(S1, S2, S3@[Z|Zs], R),
         S1.is_lset(),
         S2.is_lset(),
-        S3.is_lset() ?=>                                           % 7b
+        S3.is_lset() ?=>                                   % 7b
     log_d_vv("union :: un_7b"),
     R2 = [ $eq(S2,[Z|N1]), $union(S1,N1,N) ],
     R4 = [ $eq(S3,[Z|N]) ],
@@ -2709,7 +2572,7 @@ union(S1, S2, S3@[Z|Zs], R),
 union(S1, S2, S3@[Z|Zs], R),
         S1.is_lset(),
         S2.is_lset(),
-        S3.is_lset() =>                                            % 7c
+        S3.is_lset() =>                                    % 7c
     log_d_vv("union :: un_7c"),
     R3 = [ $eq(S1,[Z|N1]), $eq(S2,[Z|N2]), $union(N1,N2,N) ],
     R4 = [ $eq(S3,[Z|N]) ],
@@ -2718,14 +2581,12 @@ union(S1, S2, S3@[Z|Zs], R),
 
 union(S1, S2, S3, R),
         var(S1), var(S2), var(S3),
-        S1 !== S2 =>                                               % irr
+        S1 !== S2 =>                                       % irr
     log_d_vv("union :: un_irr"),
     R = [ $union(S1, S2, S3) ].
 \end{verbatim}
 
-\clearpage
-
-\subsection{Il vincolo disj}
+\section{Il vincolo disj}
 
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di disgiunzione}
