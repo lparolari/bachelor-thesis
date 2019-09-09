@@ -3147,28 +3147,46 @@ my_predicate =>
 
 %%% *******************************************************
 %%% Estensioni
-\chapter{Esensioni al solver di base}
+\chapter{Estensioni al solver di base}
+\label{ch:ext}
 
 \minitoc
 
-Per questo lavoro di tesi si sono concentrati gli sforzi nella realizzazione del risolutore di formule stesso, per arrivare ad avere un'implementazione funzionante di \lset{} in Picat, e, di fatto, sono stati tralasciati numerosi dettagli.
+Per questo lavoro di tesi si sono concentrati gli sforzi nella
+realizzazione del risolutore di formule stesso, per arrivare ad avere
+un'implementazione funzionante di \lset{} in Picat, e, di fatto, sono
+stati tralasciati numerosi dettagli.
 
-Uno dei dettagli non considerati è stato la rappresentazione delle formule. In \ref{sec:ext_formulas} si descrive questo problema e le possibili soluzioni.
+Uno dei dettagli non considerati è stato la rappresentazione delle
+formule. In \ref{sec:ext_formulas} si descrive questo problema e le
+possibili soluzioni.
 
 \section{Parser di formule}
-\label{ext_formulas}
+\label{sec:ext_formulas}
 
-\subsection{Problema}
+La sintassi della formula in \lset{} è molto importante: avere una
+rappresentazione ben definita e fissa permette agli utenti (umani e
+non) di \lset{} di utilizzare un solver piuttosto che un altro per la
+risoluzione di formule, senza bisogno di modifiche alla richiesta di
+risoluzione.
 
-La sintassi della formula in \lset{} è molto importante: avere una rappresentazione ben definita e fissa permette agli utenti (umani e non) di \lset{} di utilizzare un solver piuttosto che un altro per la risoluzione di formule, senza bisogno di modifiche alla richiesta di risoluzione.
+Questo è un concetto molto comune in ingegneria del software: viene
+impiegata un'interfaccia, rappresentante il contratto che tra
+fornitore e cliente, per definire formalmente il ruolo delle
+controparti. In questo caso l'interfaccia è rappresentata dalla
+sintassi delle formule, ed il solver deve essere in grado di ricevere
+e restituire formule con la sintassi prestabilita.
 
-Questo è un concetto molto comune in ingegneria del software: viene impiegata un'interfaccia, rappresentante il contratto che tra fornitore e cliente, per definire formalmente il ruolo delle controparti. In questo caso l'interfaccia è rappresentata dalla sintassi delle formule, ed il solver deve essere in grado di ricevere e restituire formule con la sintassi prestabilita.
+Nell'implementazione Picat di \lset{} non è stato possibile adottare
+la rappresentazione delle formule di \lset{} adottata in \setlog{} a
+causa delle citate limitazioni di Picat rispetto al Prolog sulla forma
+sintattica dei termini. Si è quindi utilizzato per il momento una
+sintassi nettamente più vicina alla rappresentazione interna di Picat,
+descritta all'appendice \ref{ch:appendix_lset_picat_notations}.
 
-In Picat non è stato possibile adottare a livello di linguaggio e costrutti built-in la rappresentazione delle formule di \lset{}. Si è quindi utilizzato una sintassi nettamente più vicnina alla rappresentazione interna di Picat, descritta in \ref{ch:appendix_lset_picat_notations}.
-
-\subsection{Soluzione}
-
-Lo schema sottostante riassume la condizione ottimale in cui la formula non ha bisogno di preprocessing per essere lavorata dal solver.
+Lo schema sottostante riassume la condizione ottimale in cui la
+formula non ha bisogno di alcuna traduzione per essere elaborata dal
+solver.
 
 \begin{figure}[H]
 	\centering
@@ -3185,13 +3203,15 @@ Lo schema sottostante riassume la condizione ottimale in cui la formula non ha b
 		\centering
 		\begin{tikzpicture}
 		[node distance=.8cm,start chain=going below,]
-		\node[punktchain, join] (a) {Formule in rappresentazione Picat\\ 
+		\node[punktchain, join] (a) {Formule in rappresentazione Picat\\
 		    \texttt{ [eq(X, [1|Y])] } };
 		\node[punktchain, join] (b) {Solver};
 		\end{tikzpicture}
 	\end{minipage}
-\end{figure}\verb
-L'approccio della prima figura non è supportato da Picat per via della sintassi di \lset{}. L'approccio della seconda figura invece è quello adottato, che però non rispetta la sintassi \lset{} per le formule.
+\end{figure}
+L'approccio della prima figura non è supportato da Picat per via della
+sintassi di \lset{}. L'approccio della seconda figura invece è quello
+adottato, che però non rispetta la sintassi \lset{} per le formule.
 
 La soluzione al problema è riassumibile dallo schema seguente
 \begin{figure}[H]
@@ -3203,9 +3223,16 @@ La soluzione al problema è riassumibile dallo schema seguente
 \node[punktchain, join] (c) {Solver};
 \end{tikzpicture}
 \end{figure}
-che aggiunge un livello, il \emph{preprocessing delle formule}, appunto. In questo modo il solver non ha bisogno di mofiche, in quanto manipola sempre le stesse formule, e la sintassi della richiesta diventa conforme a quella di \lset{}.
+che aggiunge un livello, il \emph{parsing delle formule}, appunto. In
+questo modo il solver non ha bisogno di mofiche, in quanto il lavoro è
+effettuato ad un livello intermedio, manipolando la sintassi delle
+formule.
 
-In questo modo inoltre, si può decidere di non realizzare il preprocessor in Picat, ma in Prolog ad esempio, sfruttando il modulo DCG \cite{MetalevelDCG} (Definite Clause Grammar) che consente di effettuare il parsing di frasi dando la grammatica a clausole definite. 
+Così facendo inoltre, si può decidere di non realizzare il
+preprocessor in Picat, ma in Prolog ad esempio, sfruttando il modulo
+DCG \cite{MetalevelDCG} (Definite Clause Grammar) che consente di
+effettuare il parsing di frasi dando la grammatica a clausole
+definite.
 
 \chapter{Conclusione e lavori futuri}
 TODO
