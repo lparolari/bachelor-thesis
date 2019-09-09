@@ -3011,124 +3011,240 @@ Il predicato \verb|eq/3| implementa, senza sorprese, le regole di riscrittura pe
 %%% *******************************************************
 %%% SUso del solver
 \chapter{Uso del solver \lset{} da Picat}
+\label{ch:use}
 
-In questa sezione vengono dati degli esempi di utilizzo del solver per casi d'uso comuni.
+In questa sezione vengono dati degli esempi di utilizzo del solver per
+casi d'uso comuni. Nella sezione \ref{sec:use_interactive} si mostra
+l'utilizzo del risolutore tramite la modalità interattiva, mentre in
+\ref{sec:use_api} si illustra l'utilizzo dello stesso tramite API.
 
 \section{Modalità interattiva}
+\label{sec:use_interactive}
+
+La modalità interattiva consente l'uso del solver da CLI, tramite
+interazione da linea di comando (o, in ambienti più evoluti, tramite
+GUI). Questa modalità è utilizzata per scopi fini a sè stessi come il
+testing del sistema, la risoluzione isolata di formule.
 
 \subsection{Avvio dell'interprete}
 
+L'interprete di \lset{} è avviato tramite alcuni semplici passi:
+\begin{enumerate}
+	\item avvio dell'interprete Picat;
+	\item caricamento dei sorgetnti di \lset{} (grazie al sistema
+          di import è possibile caricare solamente il file che
+          contiene la chiamata iniziale da eseguire);
+	\item compilazione dei sorgenti caricati;
+	\item esecuzione della procedura iniziale.
+\end{enumerate}
+
+Questi step nella pratica si traducono in \texttt{picat main.pi}
+oppure in
 \begin{verbatim}
-terminal> picat main.pi
-
-This is the pure implementation of {log} in Picat.
-Copyright (C) 2019 Luca Parolari <luca.parolari23@gmail.com>
-  This program is free software, covered by the MIT License
-  There is ABSOLUTELY NO WARRANTY for this program.
-Type 'copying' to see the conditions
-Type 'warranty' for details.
-Type 'help' for advice, 'quit' to exit.
-
-Default settings follows.
-
-Current log level: [v,vv,vvv]
-       Quiet mode: false
-         Log file: stdout
-
-log> 
+$ Picat
+picat> load(main.pi)
+picat> compile(main.pi)
+picat> main.
 \end{verbatim}
+oppure grazie ad una forma più concisa \texttt{picat main.pi} (vedere
+esempio \ref{fig:example_interpreterstart}).
+
+\begin{figure}
+	\begin{verbatim}
+	$ picat main.pi
+
+	This is the pure implementation of {log} in Picat.
+	Copyright (C) 2019 Luca Parolari <luca.parolari23@gmail.com>
+	This program is free software, covered by the MIT License
+	There is ABSOLUTELY NO WARRANTY for this program.
+	Type 'copying' to see the conditions
+	Type 'warranty' for details.
+	Type 'help' for advice, 'quit' to exit.
+
+	Default settings follows.
+
+	Current log level: [v,vv,vvv]
+	Quiet mode: false
+	Log file: stdout
+
+	log>
+	\end{verbatim}
+	\caption{Esempio: avvio dell'interprete}
+	\label{fig:example_interpreterstart}
+\end{figure}
 
 \subsection{Comandi disponibili}
 
-\begin{verbatim}
-log> help
-Setlog provides you with the following commands:
+La modalità interattiva permette all'utente di interagire con il
+sistema tramite dei comandi. I comandi disponibili sono
+\begin{itemize}
+	\item \texttt{help}, mostra informazioni sull'utilizzo dei
+          comandi e/o la documentazione degli stessi;
+	\item \texttt{info}, mostra lo stato delle impostazioni del
+          sistema;
+	\item \texttt{up}, riesegue l'$n$-esimo comando o mostra la
+          lista dei comandi eseguiti;
+	\item \texttt{log}, imposta il log mode oppure il nome del
+          file sul quale scrivere i log;
+	\item \texttt{solve}, risolve una formula leggendola da
+          diversi canali di input;
+	\item \texttt{quite}, imposta la modalità silenziosa per le
+          interazioni utente.
+\end{itemize}
 
-help
-help <what>
-    Show help for <what>.
-    The argument describes the topic to give help for.
-    <what> can be one of [solve]
+Informazioni più dettagliate possono essere reperite eseguendo il
+comando \texttt{help} (esempio in figura
+\ref{fig:example_helpcommand}) che mostra i comandi offerti dalla CLI
+e la loro descrizione.
 
-info
-    Display the current interpreter status.
+\begin{figure}
+	\begin{verbatim}
+	log> help
+	Setlog provides you with the following commands:
 
-up <n>
-    Redo the last <n> command issued.
-    If <n> is empty the last command is issued,
-    this is equivalent to `up 0`.
+	help
+	help <what>
+	Show help for <what>.
+	The argument describes the topic to give help for.
+	<what> can be one of [solve]
 
-log <mode>
-    Set the log mode to <mode>.
-    Available log mode: [none,v,vv,vvv,all].
-log file <file>
-    Set log file to <file>.
-    Default is `stdout`.
+	info
+	Display the current interpreter status.
 
-solve
-solve <formula>
-solve file <file>
-    Solve the formula, respectively, typed in stdin,
-    given as argument of this command, or read from the
-    first line of file <file> using the setlog solver.
+	up history
+	Print the whole commands history.
+	up <n>
+	Redo the last <n> command issued.
+	If <n> is empty the last command is issued,
+	this is equivalent to `up 0`.
 
-quiet <mode>
-    Set the quit mode execution.
-    Available mode: [true, false]. Default is true.
-\end{verbatim}
+	log <mode>
+	Set the log mode to <mode>.
+	Available log mode: [none,v,vv,vvv,all].
+	log file <file>
+	Set log file to <file>.
+	Default is `stdout`.
 
-Il comando \verb|help| mostra un messaggio di aiuto descrivendo i comandi offerti dalla CLI.
+	solve
+	solve <formula>
+	solve file <file>
+	Solve the formula, respectively, typed in stdin,
+	given as argument of this command, or read from the
+	first line of file <file> using the setlog solver.
+
+	quiet <mode>
+	Set the quit mode execution.
+	Available mode: [true, false]. Default is true.
+	\end{verbatim}
+
+	\caption{Esempio: comando help}
+	\label{fig:example_helpcommand}
+\end{figure}
 
 \subsection{Configurazione}
 
-\begin{verbatim}
-log> info
-Current log level: [v,vv,vvv]
-       Quiet mode: false
-         Log file: stdout
-log> log none
-log> quiet true
-log> info
-Current log level: [none]
-       Quiet mode: true
-         Log file: stdout
-\end{verbatim}
+La modalità interattiva permette una piccola configurazione del
+sistema. In particolare l'utente può scegliere
+\begin{itemize}
+	\item il livello di log che vuole visualizzare;
+	\item il file su cui scrivere i log;
+	\item se visualizzare o meno i messaggi del solver come le
+          riscritture.
+\end{itemize}
+
+Configurazioni di più basso livello sono proibite o determinate a
+tempo di compilazione, l'utente non ha quindi accesso ad esse.
+
+Esempio di configurazione in \ref{fig:example_confcommands}.
+
+\begin{figure}
+	\begin{verbatim}
+	log> info
+	Current log level: [v,vv,vvv]
+	Quiet mode: false
+	Log file: stdout
+
+	log> log none
+
+	log> quiet true
+
+	log> info
+	Current log level: []
+	Quiet mode: true
+	Log file: stdout
+	\end{verbatim}
+	\caption{Esempio: comandi di configurazione}
+	\label{fig:example_confcommands}
+\end{figure}
 
 \subsection{Risoluzione di formule}
 
-\begin{verbatim}
-log> solve                       % formula da stdin
-{log} => [ eq(X,1) ]
+La modalità interattiva offre tre procedure la risoluzione di formule,
+che differiscono dal canale di input dal quale la formula viene letta.
 
-Vars: (map)[X = 1]
-Constraints: []
+Il comando \texttt{solve} svolge appunto questa funzione, e
+\begin{itemize}
+	\item se non viene specificato nessun argomento, la formula
+          viene letta da \texttt{stdin};
+	\item se il primo argomento è \texttt{file} la formula viene
+          letta dalla prima riga del file indicato come secondo
+          argomento;
+	\item altrimenti gli argomenti vengono considerati una formula
+          e ne viene effettuato il parsing (se possibile).
+\end{itemize}
 
-Another solution? (y/n): y
-no!
-log>
-log> solve [ eq(X,1) ]           % formula come argomento del comando
-{log} => [eq(X,1)]
-Vars: (map)[X = 1]
-Constraints: []
+Si veda l'esempio in \ref{fig:example_solvecommands}
 
-Another solution? (y/n): y
-no!
-log> 
-log> solve file formula1.lset    % formula da file
-{log} => [ eq(X,1) ]
-Vars: (map)[X = 1]
-Constraints: []
+\begin{figure}
+	\begin{verbatim}
+	log> solve                       % formula da stdin
+	{log} => [ eq(X,1) ]
 
-Another solution? (y/n): y
-no!
-log> 
-\end{verbatim}
+	Vars: (map)[X = 1]
+	Constraints: []
+
+	Another solution? (y/n): y
+	no!
+	log>
+	log> solve [ eq(X,1) ]           % formula come argomento del comando
+	{log} => [eq(X,1)]
+	Vars: (map)[X = 1]
+	Constraints: []
+
+	Another solution? (y/n): y
+	no!
+	log>
+	log> solve file formula1.lset    % formula da file
+	{log} => [ eq(X,1) ]
+	Vars: (map)[X = 1]
+	Constraints: []
+
+	Another solution? (y/n): y
+	no!
+	log>
+	\end{verbatim}
+	\caption{Esempio: comando solve (e varianti)}
+	\label{fig:example_solvecommands}
+\end{figure}
 
 \section{API}
+\label{sec:use_api}
 
-L'utilizzo vero e proprio del solver solitamente non è quello da linea di comando, bensì da altri programmi che lavorano con formule e necessitano di risolvere le stesse per poter combinare i risultati in modelli teorici. E' questo il caso del linguaggio Z \cite{Cristia16}, utilizzato per descrivere formalmente la specifica di programmi. Il linguaggio Z è basato sui concetti e sulla sintassi della matematica, e in particolare della teoria degli insiemi. Le specifiche Z sono convertite in programmi eseguibili, scritti in linguaggi come il Java (si veda \cite{DeSantis17}).
+L'utilizzo vero e proprio del solver solitamente non è quello da linea
+di comando, bensì da altri programmi che lavorano con formule e
+necessitano di risolvere le stesse per poter combinare i risultati in
+modelli teorici. E' questo il caso del linguaggio Z \cite{Cristia16},
+utilizzato per descrivere formalmente la specifica di programmi. Il
+linguaggio Z è basato sui concetti e sulla sintassi della matematica,
+e in particolare della teoria degli insiemi. Le specifiche Z sono
+convertite in programmi eseguibili, scritti in linguaggi come il Java
+(si veda \cite{DeSantis17}).
 
-Per questo motivo anche l'implementazione di questo solver fornisce API tramite le quali altri programmi possono interagire con il solver. E' il caso del metodo \verb|solve/2| che come primo argomento riceve una formula e nel secondo argomento restituisce la formula risolta.
+Per questo motivo anche l'implementazione di questo solver fornisce
+API tramite le quali altri programmi possono interagire con il
+solver. E' il caso del metodo \verb|solve/2| che come primo argomento
+riceve una formula e nel secondo argomento restituisce la formula
+risolta.
 
 \paragraph{Esempio} (pseudocodice)
 \begin{verbatim}
