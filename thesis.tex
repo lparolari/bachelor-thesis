@@ -2723,290 +2723,86 @@ union(S1, S2, S3, R),
 
 \subsection{Il vincolo disj}
 
-\textit{Sintassi:} $t_1 \mid\mid t_2$.\\
-\noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1 \cap t_2 = \emptyset$.\\
-\noindent\textit{Regole di riscrittura:} \ref{fig:disj_constraints}.
-
-\begin{figure}[H]
-	\label{fig:disj_constraints}
-	
-	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
-		\setcounter{equation}{0}
-		\renewcommand{\theequation}{$\mid\mid$\textsubscript{\arabic{equation}}}
-		
-		If $t, t_i: \text{U}; A, B: \text{Set}$ then:
-		
-		\begin{equation}
-		\emptyset \mid\mid A \to true
-		\end{equation}
-		\begin{equation}
-		A \mid\mid \emptyset \to true
-		\end{equation}
-		\begin{equation}
-		\dotA \mid\mid \dotA \to \dotA = \emptyset
-		\end{equation}
-		\begin{equation}
-		\{ t \sqcup B \} \mid\mid \dotA \to t \not\in \dotA \land \dotA \mid\mid B
-		\end{equation}
-		\begin{equation}
-		\dotA \mid\mid \{ t \sqcup B \} \to t \not\in \dotA \land \dotA \mid\mid B
-		\end{equation}
-		\begin{equation}
-		\{ t_1 \sqcup A \} \mid\mid \{ t_2 \sqcup B \} \to t_1 \neq t_2 \land t_1 \not\in B \land t_2 \not\in A \land A \mid\mid B
-		\end{equation}
-		
-	\end{tcolorbox}
-	
+\begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di disgiunzione}
-\end{figure}
-
-\paragraph{Forme irriducibili}
-\begin{itemize}
-	\item $\dotA \mid\mid \dotB$, $\dotA$ e $\dotB$ variabili distinte.
-\end{itemize}
-
-\paragraph{Implementazione}
-
+	\label{alg:disj_constraints}
+\end{algorithm}
+\begin{verbatim}
 TODO
+\end{verbatim}
 
-\clearpage
 
-\subsection{Il vincolo subset}
+\section{Il vincolo subset}
 
-\textit{Sintassi:} $t_1 \subseteq t_2$.\\
-\noindent\textit{Semantica informale:} se $t_1$ e $t_2$ sono insiemi, allora $t_1$ è un sottoinsieme di $t_2$.\\
-\noindent\textit{Regole di riscrittura:} \ref{fig:subset_constraints}.
-
-\begin{figure}[H]
-	\label{fig:subset_constraints}
-	
-	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
-		\setcounter{equation}{0}
-		\renewcommand{\theequation}{\textsubscript{\arabic{equation}}}
-		
-		If $x, y: \text{U}; A, B: \text{Set}$ then:
-		
-		\begin{equation}
-		\dotA \subseteq \dotA \to true
-		\end{equation}
-		\begin{equation}
-		\emptyset \subseteq A \to true
-		\end{equation}
-		\begin{equation}
-		\dotA \subseteq \emptyset \to \dotA = \emptyset
-		\end{equation}
-		\begin{equation}
-		\{ t \sqcup A \} \subseteq \emptyset \to false
-		\end{equation}
-		\begin{equation}
-		\begin{split}
-			\{ x \sqcup A \} & \subseteq \dotB \to \\ 
-			  & \dotB = \{ x \sqcup N \} \land A \subseteq \{ x \sqcup N \}
-		\end{split}
-		\end{equation}
-		\begin{equation}
-		\begin{split}
-			\{ x \sqcup A \} & \subseteq \{ y \sqcup B \} \to \\ 
-			  & x = y \land A \subseteq \{ y \sqcup B \} \\ 
-			  & \lor x \neq y \land x \in B \land A \subseteq \{ x \sqcup B \}
-		\end{split}
-		\end{equation}
-		
-	\end{tcolorbox}
-	
-	\caption{Regole di riscrittura per vincoli di sottoinsieme}
-\end{figure}
-
-\paragraph{Forme irriducibili}
-\begin{itemize}
-	\item $\dotA \subseteq \dotB$, $\dotA$ e $\dotB$ variabili distinte;
-	\item $\dotA \subseteq \{ y | B \}$.
-\end{itemize}
-
-\paragraph{Implementazione}
-
+\begin{algorithm}[H]
+	\caption{Regole di riscrittura per vincoli di sottinsieme}
+	\label{alg:subset_constraints}
+\end{algorithm}
+\begin{verbatim}
 TODO
+\end{verbatim}
 
-\clearpage
 
-\subsection{Il vincolo inters}
+\section{Il vincolo inters}
 
-\textit{Sintassi:} $inters(t_1,t_2,t_3)$.\\
-\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 = t_1 \cap t_2$.\\
-\noindent\textit{Regole di riscrittura:} \ref{fig:intersect_constraints}.
-
-\begin{figure}[H]
-	\label{fig:intersect_constraints}
-	
-	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
-		\setcounter{equation}{7}
-		\renewcommand{\theequation}{$\cup$\textsubscript{\arabic{equation}}}
-		
-		If $x: \text{U}; A, B, C: \text{Set}$ then:
-		
-		\begin{equation}
-		inters(\dotA, \dotA, B) \to A = B
-		\end{equation}
-		\begin{equation}
-		inters(\emptyset, \dotA, C) \to C = \emptyset
-		\end{equation}
-		\begin{equation}
-		inters(\dotA, \emptyset, C) \to C = \emptyset
-		\end{equation}
-		\begin{equation}
-		inters(A,B,\emptyset) \to A \mid\mid B
-		\end{equation}
-		\begin{equation}
-		\begin{split}
-		inters & (A,B,\dotC) \to \\
-		  & A = \{ x \sqcup N_1 \} \\
-		  & \lor B = \{ x \sqcup N_2 \} \land \dotC = \{ x \sqcup N_3 \} \land inters(N_1, N_2, N_3)
-		\end{split}
-		\end{equation}
-		\begin{equation}
-		\begin{split}
-		inters & (A,B,\dotC) \to \\
-		  & A = \{ x \sqcup N_1 \} \land B = \{ x \sqcup N_2 \} \land inters(N_1, N_2, C)
-		\end{split}
-		\end{equation}
-		
-	\end{tcolorbox}
-	
+\begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di intersezione}
-\end{figure}
-
-\paragraph{Forme irriducibili}
-\begin{itemize}
-	\item $inters(\dotA, B, \dotC)$, $\dotA$ e $B$ non sono la stessa variabile;
-	\item $inters(A, \dotB, \dotC)$, $A$ e $\dotB$ non sono la stessa variabile.
-\end{itemize}
-
-\paragraph{Implementazione}
-
+	\label{alg:inters_constraints}
+\end{algorithm}
+\begin{verbatim}
 TODO
+\end{verbatim}
 
-\clearpage
+\section{Il vincolo diff}
 
-\subsection{Il vincolo diff}
-
-\textit{Sintassi:} $diff(t_1,t_2,t_3)$.\\
-\noindent\textit{Semantica informale:} se $t_1, t_2$ e $t_3$ sono insiemi, allora $t_3 = t_1 \setminus t_2$.\\
-\noindent\textit{Regole di riscrittura:} \ref{fig:difference_constraints}.
-
-\begin{figure}[H]
-	\label{fig:difference_constraints}
-	
-	\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
-		\setcounter{equation}{0}
-		\renewcommand{\theequation}{\textsubscript{\arabic{equation}}}
-		
-		If $A, B, C: \text{Set}$ then:
-		
-		\begin{equation}
-		diff(A,B,C) \to un(C,A,A) \land un(B,C,N) \land un(A,N,N)
-		\end{equation}
-		
-	\end{tcolorbox}
-	
+\begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di differenza}
-\end{figure}
-
-\paragraph{Forme irriducibili}
-\begin{itemize}
-	\item Nessuna.
-\end{itemize}
-
-\paragraph{Implementazione}
-
+	\label{alg:diff_constraints}
+\end{algorithm}
+\begin{verbatim}
 TODO
-
-
-%%% *******************************************************
-%%% Dettagli implementativi
-\chapter{Dettagli implementativi}
-
-\section{Il vincolo or}
-
-Molte regole di riscrittura integrate dal solver non contengono solo clausole in congiunzione (legate da $\land$), ma anche clausole in disgiunzione. Questa sottile differenza porta un grosso cambiamento nella gestione del controllo durante la risoluzione di formule. Da un punto di vista algoritmico, mentre le clausole congiunte si possono risolvere una dopo l'altra catturando il primo fallimento per interrompere la computazione, le clausole disgiunte non godono della stessa proprietà. Di fatto, se una clausola in disgiunzione fallisce, non è detto che le altre lo facciano, anzi, spesso non è così. Bisogna quindi essere in grado di tornare al punto in cui si è scelta una delle clausole in \emph{or} da risolvere, ripristinando lo stato del programma, per poter proseguire con la successiva.
-
-Per l'implementazione di questo meccanismo viene in aiuto il \emph{backtracking}, che simula proprio funzionamento in questione. Il backtracking è un algoritmo generale che permette di trovare tutte (o alcune) soluzioni ad un certo problema computazionale, che incrementalmente costruisce nuove soluzione abbandonando quelle che sono state decretate non essere una soluzione. Durante la risoluzione di formule insiemistiche questo si può verificare appunto prendendo una clausola in disgiunzione che non soddisfa i vincoli e provoca il fallimento. Il backtracking in questo caso scarta la soluzione, ripristina il programma al punto di scelta (\emph{choice point}\fixme{Aggiungere una descrizione sommaria di choice point in una footnote})\fixme{Aggiungere citazione a fonte: programming in prolog, altri} e prosegue con un'altra delle clausole non ancora esplorate.
-
-L'implementazione del vincolo or nel solver è costruito in due modi:
-\begin{itemize}
-\item tramite l'utilizzo di un vincolo ausiliario;
-\item sfruttando il backtracking sulla regola esatta che presenta clausole in disgiunzione.
-\end{itemize}
-
-Nel primo caso l'implementazione è simile a quella di una regola di riscrittura
-\begin{verbatim}
-%% or(List, Result) is nondet
-%
-% @desc Rewrite rule for or constraints.
-
-or([], []) => true.
-or([T|_Tr], R) ?=> R = [T].
-or([_T|Tr], R) => or(Tr, R).
-\end{verbatim}
-dove
-\begin{itemize}
-\item la prima regola gestisce il caso in cui la lista di clausole in or sia vuota, ed ha sempre successo;
-\item la seconda regola gestisce la prima riscrittura: estrae una clausola prendendola dalla testa della lista e la inserisce nel risultato;
-\item la terza regola gestisce il caso in cui la seconda regola fallisca (ovvero la clausola utilizzata non ha soddisfatto la formula) procedendo con un'altra clausola della lista.
-\end{itemize}
-
-\paragraph{Esempio}
-\begin{verbatim}
-{log} => [eq(X,1),or([eq(X,2),eq(X,1)])]
 \end{verbatim}
 
-\begin{itemize}
+\section{Il vincolo not in}
 
-\item[Step 1] Il risultato della prima riscrittura è
+\begin{algorithm}[H]
+	\caption{Regole di riscrittura per vincoli di non appartenenza}
+	\label{alg:notin_constraints}
+\end{algorithm}
 \begin{verbatim}
---- [eq(1,1),or([eq(1,2),eq(1,1)])]
-==> [eq(1,2)]
+TODO
 \end{verbatim}
-e si può notare come il vincolo \verb|eq(1,1)| sia stato risolto e rimosso dal constraint store risultate, mentre il vincolo \verb|or([eq(X,2),eq(X,1)])| sia stato riscritto in \verb|eq(1,2)|.
 
-\item[Step 2] Il risultato della seconda riscrittura è
-\begin{verbatim}
---- [eq(1,1),or([eq(1,2),eq(1,1)])]
-==> [eq(1,1)]
-\end{verbatim} 
-da cui invece è evidente il fallimento nella risoluzione di \verb|eq(1,2)|, e la riscrittura del vincolo \verb|or([eq(X,2),eq(X,1)])| in \verb|eq(1,1)|.
+\section{Il vincolo not union}
 
-\item[Step 3] Il risultato della terza riscrittura è
+\begin{algorithm}[H]
+	\caption{Regole di riscrittura per vincoli di non unione}
+	\label{alg:notun_constraints}
+\end{algorithm}
 \begin{verbatim}
---- [eq(1,1)]
-==> []
+TODO
 \end{verbatim}
-da cui si nota la risoluzione dell'ultimo vincolo rimasto.
 
-\end{itemize}
+\section{Il vincolo not disj}
 
-\section{Enumerazione delle soluzione}
-
-Il solver per ogni formula può trovare zero, una o più soluzioni, comprendendo anche un numero infinito di soluzioni. L'enumerazione di queste soluzioni è di notevole importanza per \lset{}. Per questo motivo il solver deve essere in grado di cercare altre soluzioni qualora ve ne sinao. Anche in questo caso si ricorre al backtracking.
-
-L'enumerazione di nuove soluzione è infatti implementata forzando un fallimento: tramite il bakctracking si cercano di esplorare strade alternative per la costruzione di altri risultati e se queste alternative sono infinite allora anche questo processo è infinito.
-
-\paragraph{Esempio}
+\begin{algorithm}[H]
+	\caption{Regole di riscrittura per vincoli di non disgiunzione}
+	\label{alg:notdisj_constraints}
+\end{algorithm}
 \begin{verbatim}
-{log} => [ union( [1|X], [1,2], [1,2] ) ]
+TODO
 \end{verbatim}
-ha 4 soluzioni
-\begin{itemize}
-\item \verb|X = []|;
-\item \verb|X = [1]|;
-\item \verb|X = [2]|;
-\item \verb|X = [1,2]|
-\end{itemize}
 
-\section{Predicato eq/3}
+\section{Altri vincoli negativi}
 
-Il predicato \verb|eq/3| implementa, senza sorprese, le regole di riscrittura per i vincoli di uguaglianza
+\begin{algorithm}[H]
+	\caption{Regole di riscrittura per altri vincoli negativi}
+	\label{alg:othernegatives_constraints}
+\end{algorithm}
+\begin{verbatim}
+TODO
+\end{verbatim}
 
- \fixme{Rimuovere da qui??}
 
 %%% *******************************************************
 %%% SUso del solver
