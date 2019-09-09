@@ -2210,75 +2210,30 @@ al valore previsto, e se non lo è fallisce attivando il predicato
 
 \clearpage
 
-\section{Regole di riscrittura}
 
-\subsection{Il vincolo eq}
 
-\textit{Sintassi:} $t_1 = t_2$.\\
-\noindent\textit{Semantica informale:} $t_1$ e $t_2$ sono uguali.\\
-\noindent\textit{Regole di riscrittura:} \ref{fig:eq_constraints}.
 
-\begin{figure}[H]
-\label{fig:eq_constraints}
+%%% *******************************************************
+%%% Implementazione delle regole di riscrittura
+\chapter{Implementazione delle regole di riscrittura}
+\label{ch:impl}
 
-\begin{tcolorbox}[colframe=black, colback=white, sharp corners]
-\setcounter{equation}{0}
-\renewcommand{\theequation}{=\textsubscript{\arabic{equation}}}
+\minitoc
 
-If $x, y, t, t_i, u_i: \text{U}; A,B: \text{Set}$ then:
+In questo capitolo è riportata l'implementazione in Picat delle regole
+di riscrittura descritte matematicamente in
+\ref{subsec:clpbasedlang_lset_rewriteeq},
+\ref{subsec:clpbasedlang_lset_rewriteset} e
+\ref{subsec:clpbasedlang_lset_rewriteneg}. Si può notare che la
+descrizione matematica delle regole in \cite{Rossi18} è molto vicina
+all’implementazione.\fixme{Finire la descrizione}
 
-\begin{equation}
-\dotx = \dotx \to true
-\end{equation}
-\begin{equation}
-\text{If } t \not\in \calV, t = \dotx \to \\ \dotx = t
-\end{equation}
-\begin{equation}
-\text{If} \dotA \not\in vars(t_1, \ldots, t_n), \dotA = \{ t_1, \ldots, t_n \} \to \dotA = \{ t_1, \ldots, t_n \sqcup N \}
-\end{equation}
-\begin{equation}
-\text{If} \dotx \in vars(t), \dotx = t \to false
-\end{equation}
-\begin{equation}
-\dotx = t \to \text{substitute $\dotx$ by $t$ in all others literals of the input formula}
-\end{equation}
-\begin{equation}
-\text{If} f \not\equiv g, f(t_1, \ldots, t_n) = g(t_1, \ldots, t_m) \to false
-\end{equation}
-\begin{equation}
-\begin{split}
-\{ t_1, & \ldots, t_m \sqcup \dotA \} = \{u_1, \ldots, u_n \sqcup \dotA \} \to \\
-& t_1 = u_j \land \{ t_2, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots, u_{j_1}, u_{j+1}, \ldots, u_n \sqcup \dotA \} \\
-& \lor t_1 = u_j \land \{ t_1, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots, u_{j_1}, u_{j+1}, \ldots, u_n \sqcup \dotA \} \\
-& \lor t_1 = u_j \land \{ t_2, \ldots, t_m \sqcup \dotA \} = \{ u_1, \ldots u_n \sqcup \dotA \} \\
-& \lor \dotA = \{ t_1 \sqcup N \} \land \{ t_2, \ldots, t_m \sqcup N \} = \{ u_1, \ldots, u_n \sqcup N \}
-\end{split}
-\end{equation}
-\begin{equation}
-\begin{split}
-\{ x \sqcup & A \} = \{ y \sqcup B \} \to \\
-& x = y \land A = B \\
-& \lor x = y \land \{ x \sqcup A \} = B \\
-& \lor x = y \land A = \{ y \sqcup B \} \\
-& \lor A = \{ y \sqcup N \} \land \{ x \sqcup N \} = B
-\end{split}
-\end{equation}
-\begin{equation}
-f(t_1, \ldots, t_n) = f(u_1, \ldots, u_n) \to t_1 = u_1 \land \ldots \land t_1 = u_n
-\end{equation}
+\section{Il vincolo eq}
 
-\end{tcolorbox}
-
-\caption{Regole di riscrittura per vincoli di uguaglianza}
-\end{figure}
-
-\paragraph{Forme irriducibili}
-\begin{itemize}
-	\item $\dotx = t$ e $\dotx$ non è contenuto ne in $t$ ne in altri letterali della fomula.
-\end{itemize}
-
-\paragraph{Implementazione}
-
+\begin{algorithm}[H]
+	\caption{Regole di riscrittura per vincoli di uguaglianza}
+	\label{alg:eq_constraints}
+\end{algorithm}
 \begin{verbatim}
 eq(T1, T2, R),  T1 == T2 =>                                        % 1
     log_d_vv("eq :: eq_1"),
