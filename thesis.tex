@@ -1106,7 +1106,7 @@ e dei vincoli.
 \label{sec:picat_base}
 
 \subsection{Il sistema Picat}
-\label{sec:picat_base_system}
+\label{subsec:picat_base_system}
 
 Picat è un linguaggio interpretato. I programmi Picat però, prima di
 essere eseguiti, sono compilati. Il compilatore non trasforma i
@@ -1123,7 +1123,7 @@ programmi, possibilmente anche modalità debug.
 \end{verbatim}
 
 \subsection{Tipi di dato}
-\label{sec:picat_base_datatype}
+\label{subsec:picat_base_datatype}
 
 Picat è un linguaggio tipato dinamicamente: il controllo dei tipi
 avviene a runtime. Le variabili in Picat possono avere o non avere un
@@ -1195,7 +1195,7 @@ di una variabile, convertire tipi ad altri tipi e aggiungere elementi
 ad un insieme.
 
 \subsection{Predicati}
-\label{sec:picat_base_pred}
+\label{subsec:picat_base_pred}
 
 I predicati sono una componente fondamentale di Picat. Un predicato ha
 esito positivo o negativo, a meno di eccezioni. Un predicato può
@@ -1237,7 +1237,7 @@ no
 \end{verbatim}
 
 \subsection{Funzioni}
-\label{sec:picat_base_func}
+\label{subsec:picat_base_func}
 
 Picat permette di definire delle funzioni, ovvero oggetti che hanno
 sempre esito positivo e che ritornano un solo valore. La sintassi di
@@ -1257,7 +1257,7 @@ yes
 \end{verbatim}
 
 \subsection{Assegnamenti e Cicli}
-\label{sec:picat_base_asscycle}
+\label{subsec:picat_base_asscycle}
 
 Picat cerca di agevolare notevolmente i programmatori affini a
 linguaggi imperativi. Per questo motivo offre funzionalità come
@@ -1337,7 +1337,7 @@ Picat. Anche in questo caso si raccomanda al lettore l'approfondimento
 dei dettagli in \cite{PicatGuide}.
 
 \subsection{Tabling}
-\label{sec:picat_advanced_tabling}
+\label{subsec:picat_advanced_tabling}
 
 Il tabling è un meccanismo di caching che permette di memorizzare la
 chiamata ad un predicato e relativo risultato per evitare cicli
@@ -1358,7 +1358,7 @@ Il tabling è abilitato usando la keyword \verb|table| prima della
 definizione del predicato.
 
 \subsection{Moduli}
-\label{sec:picat_advanced_modules}
+\label{subsec:picat_advanced_modules}
 
 I moduli sono una funzionalità molto utile di Picat e permettono al
 programmatore un'organizzazione comoda del codice sorgente, suddivisa
@@ -1382,7 +1382,7 @@ proibire l'utilizzo di un predicato da moduli esterni appondendo la
 keyword \verb|private| prima della definizione del predicato.
 
 \subsection{Eccezioni}
-\label{sec:picat_advanced_exceptions}
+\label{subsec:picat_advanced_exceptions}
 
 Picat fornisce un semplice sistema di gestione delle eccezioni, con
 cui è possibile gestire eventi eccezionali ed errori non previsti.
@@ -1397,7 +1397,7 @@ catch(Goal, Exception, Handler)
 \end{lstlisting}
 
 \subsection{Higher-Order Calls}
-\label{sec:picat_advanced_hoc}
+\label{subsec:picat_advanced_hoc}
 
 Un predicato o una funzione è di ordine superiore se riceve funzioni
 come argomenti. Alcuni predicati di ordine superiore \emph{built-in}
@@ -1426,7 +1426,7 @@ Z = 3
 \end{verbatim}
 
 \subsection{Action Rules}
-\label{sec:picat_advanced_actionrules}
+\label{subsec:picat_advanced_actionrules}
 
 Picat fornisce \emph{Action Rules} per descrivere attori
 event-driven. Un attore è un chiamata ad un predicato che può essere
@@ -1440,7 +1440,7 @@ notificare eventi. Un canale può avere diverse porte, che specificano
 la visiblità dell'evento per qel canale.
 
 \subsection{Mappe Globali}
-\label{sec:picat_advanced_globalmaps}
+\label{subsec:picat_advanced_globalmaps}
 
 Picat fornisce tre tipi diversi di mappe globali utilizzabili durante
 l'esecuzione: mappe \emph{heap}, mappe \emph{globali} e
@@ -1543,7 +1543,7 @@ vantaggi da questo punto di vista nell'utilizzo di Picat:
 	\item è possibile seguire un approccio OOP con costruttori e
           funzioni, integrando il concetto di visibilità dei metodi
           (con la keyword \texttt{private}, si veda
-          \ref{sec:picat_advanced_modules}) per garantire il corretto
+          \ref{subsec:picat_advanced_modules}) per garantire il corretto
           utilizzo di interfacce di programmazione progettate per
           svolgere compiti ben definiti;
 	\item non è possibile scrivere del codice ``magico'' o che
@@ -1607,7 +1607,7 @@ riportata di seguito:
           clone dei sorgenti ed esegue i test.
 	\item \texttt{src}, la cartella contenente i file sorgenti. I
           moduli che compongono il sistema sono mostrati in
-          \ref{sec:lsetpicat_architecture}.
+          \ref{subsec:lsetpicat_architecture}.
 	\item \texttt{tests}, la cartella contenente i test dei
           componenti fondamentali.
 \end{itemize}
@@ -1629,12 +1629,12 @@ Aggiungere una descrizione della corrispondenza con lset come
 nell'appendice?
 
 \subsection{Architettura}
-\label{sec:lsetpicat_architecture}
+\label{subsec:lsetpicat_architecture}
 
 L'interprete realizzato per la gestione del sistema nel suo insieme è
 suddiviso per funzionalità: grazie alle caratteristiche di Picat
 queste funzionalità sono state raggruppate e separate in \emph{moduli}
-(vedere \ref{sec:picat_advanced_modules} per ulteriori informazioni
+(vedere \ref{subsec:picat_advanced_modules} per ulteriori informazioni
 sul modulo). Ognuno di questi moduli cerca di essere il più coeso
 possibile e fornisce funzionalità ad altri moduli, incrementando
 quindi la riusabilità del codice.
@@ -1723,7 +1723,7 @@ errori.
 Di fatto questo modulo implementa un ciclo che non termina mai se non
 quanto il comando di uscita è ricevuto. Inoltre, il ciclo principale è
 racchiuso in nel predicato di ordine superiore \texttt{catch} (si veda
-\ref{sec:picat_advanced_hoc} per più informazioni sui predicati di
+\ref{subsec:picat_advanced_hoc} per più informazioni sui predicati di
 ordine superiore) che consente di catturare qualunque eccezione esca
 dalla gestione dei comandi, per evitare spiacevoli crash e consentendo
 all'utente di capire ciò che succede in caso di errore.
@@ -2063,7 +2063,7 @@ La formula finale ottenuta è semplificata e irriducibile, il che la
 rende equivalente alla formula originale.
 
 \subsection{Predicato solve/2}
-\label{sec:lsetpicat_solver_solve2}
+\label{subsec:lsetpicat_solver_solve2}
 
 Il predicato \verb|solve/2| riceve in input una formula, e restituisce
 in output la formula risolta. Questo predicato scandisce ogni termine
@@ -2130,7 +2130,7 @@ setlog_eq1_1_test => A = new_assert("setlog_eq1_1_test"), A.fail().
 \end{verbatim}
 
 \subsection{Predicato sat/2}
-\label{sec:lsetpicat_solver_sat2}
+\label{subsec:lsetpicat_solver_sat2}
 
 Il predicato \verb|sat/2| combinato con \verb|rule/2| seleziona la
 regola da applicare in base al termine dato, distinguendo se
@@ -2165,7 +2165,7 @@ rule(subset(S1, S2), R)    => subset(S1, S2, R).
 Le regole implementate sono un sottoinsieme di quelle descritte in \cite{Rossi18}.
 
 \subsection{Vincoli integrati}
-\label{sec:lsetpicat_solver_rewriterules}
+\label{subsec:lsetpicat_solver_rewriterules}
 
 Nel modulo \emph{solver}, oltre ai predicati descritti in precedenza e
 a qualche predicato ausiliario, sono presenti i predicati che
@@ -3130,6 +3130,7 @@ effettuare il parsing di frasi dando la grammatica a clausole
 definite.
 
 \chapter{Conclusione e lavori futuri}
+\label{ch:conclusion}
 TODO
 
 
@@ -3143,7 +3144,7 @@ TODO
 Per semplificare l'implementazione si è deciso di adottare alcuni
 espedienti notazionali descritti dalle sezioni
 sottostanti.\footnote{La notazione impiegata in \clpset{} è descritta
-  in \ref{sec:lang_clpset}.}. Ciò si è reso necessario per evitare di
+  in \ref{sec:clpbasedlang_lset}.}. Ciò si è reso necessario per evitare di
 affrontare problemi non direttamente legati al solver e potersi
 concentrare solamente sulla risoluzione dei vincoli insiemistici.
 
