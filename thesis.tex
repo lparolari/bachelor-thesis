@@ -57,8 +57,8 @@
 }
 \addto{\captionsitalian}{%                    % custom translations
   \renewcommand{\mtctitle}{Sommario}%
-  \renewcommand{\appendixtocname}{Appendici}%
-  \renewcommand{\appendixpagename}{Appendici}%
+  \renewcommand{\appendixtocname}{Appendice}%
+  \renewcommand{\appendixpagename}{Appendice}%
 }
 \renewcommand{\listalgorithmname}{Elenco degli algoritmi}
 \floatname{algorithm}{Algoritmo}
@@ -180,12 +180,23 @@ tubnode/.style={midway, right=2pt},
     \end{center}
 \end{titlepage}
 
-%%% Dedication
-%\begin{dedication}
-%A mio nonno.
-%\end{dedication}
 
-%%% TOC
+
+%%% *******************************************************
+%%% Dedica   **********************************************
+\thispagestyle{empty}
+\cleardoublepage
+
+\begin{dedication}
+A mio nonno.
+\end{dedication}
+
+\thispagestyle{empty}
+
+
+
+%%% *******************************************************
+%%% Table of contents   ***********************************
 \tableofcontents
 \listoffigures
 \listofalgorithms
@@ -196,9 +207,15 @@ tubnode/.style={midway, right=2pt},
 
 
 %%% *******************************************************
-%%% Introduzione   ****************************************ty}
-\lipsum[1-4]
+%%% Introduzione   ****************************************
+\chapter*{Introduzione}
+\label{ch:intro}
+\addcontentsline{toc}{chapter}{Introduzione}
+
+La ricerca scientifica è da sempre la chiave delle nuove scoperte. 
 \thispagestyle{empty}
+\thispagestyle{empty}
+
 
 
 %%% *******************************************************
@@ -3030,12 +3047,13 @@ risolta.
 import solver.
 
 my_predicate =>
-    do some operations ...
+    computazione arbitraria ...
 
-    % solve the formula F with Picat solver
+    % risoluzione della formula F con il solver
+    %  scritto in Picat
     solve(F, Result),
 
-    use the result Result ...
+    utilizzo del risultato Result ...
 \end{verbatim}
 
 
