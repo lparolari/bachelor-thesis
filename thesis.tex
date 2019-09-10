@@ -3131,7 +3131,57 @@ definite.
 
 \chapter{Conclusione e lavori futuri}
 \label{ch:conclusion}
-TODO
+
+In conclusione, tramite questo lavoro di tesi si è cercato in prima
+luogo di sperimentare e capire Picat, un linguaggio logico nuovo e
+molto innovativo, che cerca di prendere di petto tutti i problemi
+tradizionali dei linguaggi logici e risolverli, semplificando il
+compito del programmatore. Di fatto Picat possiede un sistema molto
+ricco e completo di funzionalità, che semplificano veramente alcuni
+compiti ricorrenti durante la stesura di un programma logico: in
+questo esperimento, la facilità di stesura dei moduli di corredo al
+solver è stata veramente evidente. Ad esempio, per il modulo di
+gestione della command line interface, si è riusciti a scrivere del
+codice molto leggibile, chiaro e manutenibile, grazie all'utilizzo
+combinato del paradigma imperativo e logico. La gestione dell'I/O,
+notevolmente semplificata in Picat, ha reso evidente i vantaggi che
+Picat può offrire quando il paradigma logico non è necessario. Il
+discorso è differente invece per il solo paradigma logico. Purtroppo
+(o per foruna) Picat possiede delle nette differenze da altri
+linguaggi logici come Prolog, per nominarne uno, che influiscono
+pesantemente sulla progettazione e sul comportamento del sistema. (In
+\ref{sec:picat_picatvsprolog} queste differenze sono trattate più
+approfonditamente). Differenze così pesanti complicano, e non di poco,
+l'utilizzo di Picat con il paradigma logico, che in alcuni casi si
+rivela non del tutto appropriato a risolvere questo tipo di
+problemi. Limitazioni sull'uso degli operatori e l'aggiunta di
+operatori definiti da utente e sulla sintassi dei termini trattabili
+da Picat hanno di nuovo influito sul risultato finale, forzando la
+risoluzione di alcuni problemi con workaround. Tutto sommato
+l'esperienza con Picat è stata piuttosto positiva, tolto il
+superamento degli scogli imposti dalle sue limitazioni.
+
+In secondo luogo questo lavoro mi ha permesso di capire cosa significa
+implementare un solver. Ho prima dovuto studiare a fondo il
+meccanismo, il linguaggio e l'obiettivo del linguaggio che stavo
+trattando; successivamente mi sono dovuto cimentare nella
+progettazione del sistema ed in particolare del risolutore di
+formule. Ho dovuto affrontare il problema della ``traduzione'' della
+teoria alla pratica per le regole di riscrittura e implementare i
+modelli teorici su un linguaggio logico come Picat, problema non
+banale, e anzi, molto comune per un programmatore.
+
+Per quanto riguarda i lavori futuri, un aspetto sicuramente da
+migliorare riguarda la verifica della correttezza sulla risoluzione
+delle formule. Il testing del solver non era obiettivo di questo
+lavoro di tesi, ma si è reso ovviamente necessario per capire se
+l'implementazione rispettasse la teoria, almeno sui casi presi in
+esame. I casi esaminati non sono ovviamente esaustivi e non coprono
+nemmeno tutti i casi limite che andrebbero verificati. Una futura
+espansione al solver invece potrebbe prevedere l'integrazione delle
+funzioni parziali: andando quindi a considerare l'intero linguaggio
+\lset{} e non un suo sottoinsieme.
+
 
 
 %%% *******************************************************
