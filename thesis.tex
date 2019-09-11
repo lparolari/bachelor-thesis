@@ -54,7 +54,9 @@
 \dominitoc                                    % minitoc setup
 \lstset{                                      % listing setup
   basicstyle=\ttfamily,
-  mathescape
+  mathescape,
+  columns=fullflexible,
+  keepspaces=true
 }
 \addto{\captionsitalian}{%                    % custom translations
   \renewcommand{\mtctitle}{Sommario}%
@@ -189,7 +191,7 @@ tubnode/.style={midway, right=2pt},
 \cleardoublepage
 
 \begin{dedication}
-A mio nonno.
+A mio nonno, Luigi.
 \end{dedication}
 
 \thispagestyle{empty}
@@ -316,7 +318,7 @@ di programmazione Picat \cite{PicatLang}.
 Nella sezione \ref{sec:clpbasedlang_clp} è descritto il paradigma di
 programmazione logico a vincoli in forma molto discorsiva ed
 introduttiva, mentre in \ref{sec:clpbasedlang_lset} si dà una
-presentazione di \lset{}: sintassi, semantica, il solver e regole di
+presentazione di \lset{}: sintassi, semantica, solver e regole di
 riscrittura.
 
 \section{Constraint Logic Programming}
@@ -475,7 +477,7 @@ composti) sono combinazioni $\wedge$ (and) e $\vee$ (or) di
 esempi di \calset{}-\textit{constraint} composti:
 \begin{itemize}
 	\item $1\ in\ R \land 1\ nin\ S \land un(R,S,T) \land T = \{X\}$
-	\item $(X\ in S \land X\ neq 1) \lor (X\ nin S \land X = 1)$
+	\item $(X\ in\ S \land X\ neq\ 1) \lor (X\ nin\ S \land X = 1)$
 \end{itemize}
 
 \subsection{Semantica informale}
