@@ -31,7 +31,6 @@
 ]{biblatex}                  % bib management. %bibtex
 \usepackage{minitoc}         % table of contents per chapter.
 \usepackage{listings}        % code sections, http://ctan.org/pkg/listings
-%\usepackage{showframe}      % shows page frames.
 \usepackage{titlesec}        % change titles size.
 \usepackage{algorithm}       % algorithm block.
 \usepackage{algcompatible}
@@ -41,7 +40,9 @@
 \usepackage{tcolorbox}
 %\usepackage{minted}
 \usepackage{tikz}            % flow chart.
+\usepackage{tocvsec2}        % numbering chapter fix.
 %\usepackage{subcaption}      % needed by nested figures.
+%\usepackage{showframe}      % DEBUG: shows page frames.
 
 % ****************************************************************
 %   CONFIGS
@@ -208,7 +209,10 @@ A mio nonno.
 
 %%% *******************************************************
 %%% Introduzione   ****************************************
-\chapter*{Introduzione}
+\setsecnumdepth{none}
+\chapter{Introduzione}
+\resetsecnumdepth
+
 \label{ch:intro}
 \addcontentsline{toc}{chapter}{Introduzione}
 
@@ -2813,6 +2817,8 @@ TODO
 \chapter{Uso del solver \lset{} da Picat}
 \label{ch:use}
 
+\minitoc
+
 In questa sezione vengono dati degli esempi di utilizzo del solver per
 casi d'uso comuni. Nella sezione \ref{sec:use_interactive} si mostra
 l'utilizzo del risolutore tramite la modalità interattiva, mentre in
@@ -3214,8 +3220,9 @@ funzioni parziali: andando quindi a considerare l'intero linguaggio
 
 %%% *******************************************************
 %%% *   Ringraziamenti   **********************************
-\chapter*{Ringraziamenti}
-\addcontentsline{toc}{chapter}{Ringraziamenti}  
+\setsecnumdepth{none}
+\chapter{Ringraziamenti}
+\resetsecnumdepth
 
 Vorrei spedere qualche parola per ringraziare tutti coloro che durante
 questi tre duri anni mi hanno supportato e sostenuto, mi hanno spinto
@@ -3259,14 +3266,6 @@ questo forse servirebbe un'altra tesi.
 \begin{flushright}
 	Malonno, \today
 \end{flushright}
-
-\clearpage
-
-\thispagestyle{fancy}
-\renewcommand{\headrulewidth}{0pt}
-\lhead{\thepage}
-\rhead{RINGRAZIAMENTI}
-\cfoot{}
 
 
 
