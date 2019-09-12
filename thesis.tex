@@ -1790,12 +1790,17 @@ variabili logiche (una volta sola).
 
 %\minitoc
 
-Nella sezione \ref{sec:lsetpicat_project} si dà una breve panoramica
-sull'organizzazione del progetto e delle scelte effettuate per
-strutturarne il codice, nonché qualche accenno alle notazioni e
-convenzioni adottate. In \ref{sec:lsetpicat_system} si fornisce una
-descrizione del sistema dal punto di vista generale, includendo
-l'ingegnerizzazione e la suddivisione in moduli delle
+In questo capitolo si descrive la realizzazione del constraint solver
+e del suo sistema Picat, trattando aspetti progettuali e relative
+scelte, problemi e difficoltà riscontrate sia di design che in fase di
+realizzazione e qualche caratteristica implementativa del solver.
+
+In particolare, nella sezione \ref{sec:lsetpicat_project} si dà una
+breve panoramica sull'organizzazione del progetto e delle scelte
+effettuate per strutturarne il codice, nonché qualche accenno alle
+notazioni e convenzioni adottate. In \ref{sec:lsetpicat_system} si
+fornisce una descrizione del sistema dal punto di vista generale,
+includendo l'ingegnerizzazione e la suddivisione in moduli delle
 funzionalità. Inoltre si fornisce una veloce rassegna per ogni modulo
 e se ne descrive l'interfaccia esposta. Nella sezione
 \ref{sec:lsetpicat_solver} viene approfondito il solver, il suo
@@ -1805,8 +1810,8 @@ soluzioni nell'implementazione del vincolo \texttt{or} con Picat. In
 \ref{sec:lsetpicat_solutions} si analizza il problema
 dell'enumerazione delle soluzioni in Picat. In
 \ref{sec:lsetpicat_testing} si affronta il problema del testing: un
-processo necessario e piuttosto complicato da effettuare durante la
-la stesura dell’implementazione di un solver.
+processo necessario e piuttosto complicato da effettuare durante la la
+stesura dell’implementazione di un solver.
 
 \section{Organizzazione del progetto}
 \label{sec:lsetpicat_project}
@@ -1827,10 +1832,9 @@ vantaggi da questo punto di vista nell'utilizzo di Picat:
           progetto tramite i moduli, semplificando la gestione delle
           funzionalità;
 	\item è possibile seguire un approccio OOP con costruttori e
-          funzioni, integrando il concetto di visibilità dei metodi
-          (con la keyword \texttt{private}, si veda
-          \ref{subsec:picat_advanced_modules}) per garantire il corretto
-          utilizzo di interfacce di programmazione progettate per
+          funzioni, integrando il concetto di visibilità dei
+          metodi. Ciò può essere di aiuto a garantire il corretto
+          utilizzo delle interfacce di programmazione, progettate per
           svolgere compiti ben definiti;
 	\item non è possibile scrivere del codice ``magico'' o che
           abbia comportamenti non attesi in quanto il backtracking è
@@ -1838,10 +1842,10 @@ vantaggi da questo punto di vista nell'utilizzo di Picat:
           che cambino il comportamento del programma.
 \end{itemize}
 
-Nell'organizzazione di questo progetto adotteremo la convenzione più
+Nell'organizzazione di questo progetto si adotta la convenzione più
 comune della suddivisione in file sorgenti che realizzano le
 funzionalità generali (cartella \texttt{src}) e i test (cartella
-\texttt{tests}). Come convenzione interna inoltre si è deciso che le
+\texttt{tests}). Come convenzione interna inoltre si decide che le
 funzionalità raggruppate in un singolo modulo debbano essere
 \textit{tightly coupled}\footnote{Letteralmente, \textit{tightly
     coupled} significa strettamente accoppiati. \`E un concetto che
@@ -1882,9 +1886,11 @@ Una descrizione sommaria del contenuto dei file e delle directory è
 riportata di seguito:
 \begin{itemize}
 	\item \texttt{JOURNAL.txt}, il diario di bordo. Vi sono note
-          ed evoluzione del progetto in linea temporale.
+          ed evoluzione del progetto in linea temporale. Contiene
+          un'interessante traccia di problemi riscontrati e soluzioni
+          applicate durante il lavoro.
 	\item \texttt{LICENSE.txt}, la licenza del codice sorgente.
-	\item \texttt{README.md}, la descrizione del progetto
+	\item \texttt{README.md}, la descrizione del progetto:
           contenente note per l'installazione e l'utilizzo.
 	\item \texttt{Makefile}, consente l'automatizzazione di task
           ricorrenti, evitando al programmatore l'esecuzione manuale
@@ -1972,9 +1978,8 @@ Gli insiemi in \clpset{} sono rappresentati tramite la funzione $\{
 
 L'interprete realizzato per la gestione del sistema nel suo insieme è
 suddiviso per funzionalità: grazie alle caratteristiche di Picat
-queste funzionalità sono state raggruppate e separate in \emph{moduli}
-(vedere \ref{subsec:picat_advanced_modules} per ulteriori informazioni
-sul modulo). Ognuno di questi moduli cerca di essere il più coeso
+queste funzionalità sono state raggruppate e separate in
+\emph{moduli}. Ognuno di questi moduli cerca di essere il più coeso
 possibile e fornisce funzionalità ad altri moduli, incrementando
 quindi la riusabilità del codice.
 
@@ -1993,11 +1998,10 @@ utilizzabile da qualunque programma Picat per risolvere una formula di
 Il modulo \texttt{lset} contiene l'interfaccia e l'implementazione
 degli insiemi nei termini di \lset{}. Consente di astrarre l'entità
 insieme dalla sua implementazione reale. L'approccio OOP è
-intenzionale: Picat, come detto in precedenza, favorisce la
-programmazione imperativa e la ricalca con costrutti e funzioni molto
-simili dal punto di vista logico.
+intenzionale: Picat, come detto in precedenza, favorisce l'utilizzo di
+paradigmi diversi da quello logico.
 
-L'adozione di questo meccanismo ci permette di sperimentare due
+L'adozione di questo meccanismo permette di sperimentare due
 implementazioni differenti dell'insieme di \lset{}:
 
 \begin{itemize}
@@ -2023,7 +2027,7 @@ regola in modo del tutto analogo alla descrizione matematica.
 
 \paragraph{Interfaccia}
 
-L'interfaccia di questo modulo dispone di
+L'interfaccia di questo modulo espone alcune funzioni
 \begin{itemize}
 	\item \texttt{new\textunderscore lset/0} o
           \texttt{new\textunderscore lset/1}, i costruttori,
@@ -2080,8 +2084,8 @@ La CLI all'avvio svolge, in ordine, le seguenti operazioni:
 \end{itemize}
 
 La lettura dei comandi è effettuata tramite funzioni predefinite di
-Picat per leggere l'input da \texttt{stdin} e funzioni di utilità per
-la manipolazione di stringhe nel predicato
+Picat per leggere l'input da uno \emph{stream} e funzioni di utilità
+per la manipolazione di stringhe nel predicato
 \texttt{readCommandLine/1}. La stringa letta è convertita in una lista
 di atomi e ritornata al chiamante, il quale sa per certo che nella
 lista risultato il primo elemento è sempre un comando e, se esistono,
@@ -2134,8 +2138,9 @@ di programmazione logico: il predicato distingue i casi a seconda del
 primo argomento ed è implementato per svolgere funzioni diverse
 appunto a seconda di quale sia il comando di input, per esempio:
 \begin{verbatim}
-doCommand(help, Args) => ...  doCommand(solve, Args) => ...
-  doCommand(...) => ...
+doCommand(help, Args) => ...
+doCommand(solve, Args) => ...
+doCommand(...) => ...
 \end{verbatim}
 Questo ``\textit{swtich}'' potrebbe essere effettuato in modo più
 imperativo sfruttando la presenza delle \textit{strutture di
@@ -2177,7 +2182,7 @@ variabili globali.
 
 L'implementazione corrente di questo modulo non consente la scelta
 della mappa globale utilizzata per la memorizzazione delle variabili a
-runtime, ma ciò potrebbe essere oggetto di future migliorie.
+\emph{runtime}, ma ciò potrebbe essere oggetto di future migliorie.
 
 \subsubsection{log\textunderscore h.pi}
 
@@ -2301,13 +2306,16 @@ predefinite per leggere valori booleani, stringhe, eccetera.
 \paragraph{Interfaccia}
 
 \begin{itemize}
-	\item \texttt{prompt(Q) = A}. Non implementato.
+	\item \texttt{prompt(Q) = A}. Non implementato, solleva
+          \texttt{not\textunderscore implemented\textunderscore
+            exception}.
 	\item \texttt{confirm(Q) = A}. Mostra la domanda \texttt{Q} su
-          \texttt{stdout} all'utente e ne cattura \texttt{A} la
-          risposta da \texttt{stdin} che deve essere forzatamente un
-          valore booleano (y/n).
+          \texttt{stdout} all'utente e ne cattura la risposta
+          \texttt{A} da \texttt{stdin} che deve essere uno tra i
+          valori consentiti (y/n).
 	\item \texttt{echo(P)}. Mostra la frase \texttt{P} su
-          \texttt{stdout}.
+          \texttt{stdout}, se la modalità \emph{quiet} non è
+          impostata.
 	\item \texttt{set\textunderscore quiet(B)} e
           \texttt{get\textunderscore quiet() = B} rispettivamente
           impostano e ritornano la quiet mode.
@@ -2338,8 +2346,9 @@ con quelli attuali per decretare il successo (o fallimento) del test.
           attuale (il secondo parametro) e verifica tramite
           l'uguaglianza di Picat (\texttt{==}\footnote{`E necessario
             utilizzare il doppio uguale per non consentire a Picat di
-            istanziare variabili \emph{unbound}.}) che i due valori
-          siano identici.
+            istanziare variabili \emph{unbound}: si vuole verificare
+            l'identicità di due termini.}) che i due valori siano
+          identici.
 	\item \texttt{assert\textunderscore fail/0}. Asserisce un
           fallimento. Il meccanismo in questo caso è delicato: si
           rimanda all'esempio \ref{fig:example_unittest_assertfail}.
@@ -2387,7 +2396,7 @@ con quelli attuali per decretare il successo (o fallimento) del test.
 
 L'obiettivo principale del solver \lset{} è risolvere formule. Il
 risultato può avere zero, una o più soluzioni ed il solver deve essere
-in grado di mostrarle tutte, se queste sono finite.
+in grado di calcolarle tutte.
 
 Il funzionamento del solver è quello descritto dallo pseudocodice in
 \ref{subsec:clpbasedlang_lset_solver}. Per ricapitolare, il solver
@@ -2425,16 +2434,28 @@ store $solve(CN, CC)$.
 %% solve(C, CC) is det
 
 solve(C, CC) =>
+    % nuovo constraint store
     CN = [],
+    
+    % ciclo su ogni termine della formula (congiunta)
+    % Ad esempio per
+    %   [ eq(X,1), eq(Y,2) ]
+    % viene valutato prima il termine eq(X,1) e poi eq(Y,2)
+
     foreach (T in C)
+        % procedura di risoluzione per il termine T,
+        % C1 conterrà i nuovi vincoli generati
         sat(T, C1),
+
+        % aggiungo i nuovi vincoli al constraint store
         CN := CN ++ C1,
     end,
+    
     CN := CN.flatten(),
 
     if C == CN
-    then CC = CN
-    else solve(CN, CC)
+    then CC = CN           % punto fisso
+    else solve(CN, CC)     % continuo la risoluzione partendo da CN
     end.
 \end{verbatim}
 
@@ -2486,7 +2507,6 @@ dispatching della regola giusta. Notare come il predicato
 
 sat(F, FF), F == [] => FR = [].
 sat(F, FF) => rule(F, FF).
-
 
 %% rule(F, R) is det
 
@@ -2643,6 +2663,8 @@ ha 4 soluzioni
 	\item \verb|X = [2]|;
 	\item \verb|X = [1,2]|
 \end{itemize}
+che sono costruite dal solver una dopo l'altra, simulando il
+non-determinismo.
 
 \section{Testing}
 \label{sec:lsetpicat_testing}
