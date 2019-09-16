@@ -2744,7 +2744,29 @@ codice; esiste già un'implementazione del solver in un linguaggio
 logico: \setlog{} in Prolog, che però risulta piuttosto complicata da
 capire per chi non ha familiarità con il Prolog.
 
+Le implementazioni riportate sono quelle per le regole di riscrittura
+fondamentali. Gli altri vincoli sono stati implementati in modo del
+tutto analogo.
+
 \section{Il vincolo eq}
+
+Il vincolo di uguaglianza è uno dei vincoli più importanti di \lset{}
+in quanto tratta l'unificazione insiemistica, operazione complessa e
+piuttosto delicata. Il vincolo $=$ è un vincolo binario e
+nell'implementazione è rappresentato come un predicato con tre
+argomenti: i primi due sono i due termini sui quali si applica il
+vincolo mentre il terzo è il risultato e contiene la riscrittura del
+vincolo.
+
+Le regole elencate per questo predicato rappresentano una sorta di
+``switch'': in base ai due termini di input viene selezionata la
+riscrittura corretta da applicare. Ciò, sfruttando le regole di
+pattern-matching di Picat, è effettuato tramite apposite condizioni
+che specificano l'applicabilità dei predicati.
+
+Il non determinismo è utilizzato solo per le regole con clausole in
+disiunzione, dove il fallimento della regola è contemplato, e non
+determina il fallimento dell'intera riscrittura.
 
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di uguaglianza}
@@ -2752,47 +2774,49 @@ capire per chi non ha familiarità con il Prolog.
 \end{algorithm}
 \begin{verbatim}
 eq(T1, T2, R),  T1 == T2 =>                                % 1
-        log_d_vv("eq :: eq_1"),
     R = [].
 
 eq(T1, T2, R), nonvar(T1), var(T2) =>                      % 2
-        log_d_vv("eq :: eq_2"),
     R = [ $eq(T2, T1) ].
 
 eq(T1, T2, R),
         var(T1), T2.is_lset(),
         not occur_check(T1, T2.lset_head()),
         T1 == T2.lset_rest() =>                            % 3
-   	log_d_vv("eq :: eq_3"),
+   	% costruzione di un nuovo insieme con la testa
+   	%  di T2 ed un nuovo resto N.
     YSetNew = new_lset(T2.lset_head(),_N),
     R = [ $eq(T1, YSetNew) ].
 
 eq(T1, T2, _R),
         var(T1),
         occur_check(T1, T2) =>                             % 4
-    log_d_vv("eq :: eq_4"),
     fail.  % sic.
 
 eq(T1, T2, R),
         var(T1) =>                                         % 5
-    log_d_vv("eq :: eq_5"),
-    R = [], T1 = T2.
+    % si rimuove il vincolo e si effettua 
+    % l'unificazione.
+    R = [], 
+    T1 = T2.
 
 eq(T1, T2, _R),
         struct(T1), struct(T2),
         T1.name() !== T2.name() =>                         % 6
-    log_d_vv("eq :: eq_6"),
+    % le funzioni di L_SET possono essere rappresentate
+    % da struct: $f(1,2), $g(f, X), ...
     fail.  % sic.
 
 eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
         T1.lset_rest() == T2.lset_rest() ?=>               % 7a
-    log_d_vv("eq :: eq_7a"),
+    % regola ri riscrittura 7 che implementa la prima
+    % clausola in or.
 
     YH = T2.lset_head(),                   % head of T2.
-    foreachnd_slice(YH, YElem, YSlice),    % get the j-th element nondet.
+    foreachnd_slice(YH, YElem, YSlice),    % get j-th elem nondet.
     YRest = T2.lset_rest(),                % rest of T2.
-    YSetSliced = new_lset(YSlice, YRest),  % build T2 without j-th elem.
+    YSetSliced = new_lset(YSlice, YRest),  % T2 without j-th elem.
 
     R1 = [ $eq(X, YElem) ],
     R2 = [ $eq(Xs, YSetSliced) ],
@@ -2802,12 +2826,13 @@ eq(T1@[X|Xs], T2, R),
 eq(T1@[X|_], T2, R),
         T1.is_lset(), T2.is_lset(),
         T1.lset_rest() == T2.lset_rest() ?=>               % 7b
-    log_d_vv("eq :: eq_7b"),
+    % regola ri riscrittura 7 che implementa la seconda
+    % clausola in or.
 
     YH = T2.lset_head(),                   % head of T2.
-    foreachnd_slice(YH, YElem, YSlice),    % get the j-th element nondet.
+    foreachnd_slice(YH, YElem, YSlice),    % get j-th elem nondet.
     YRest = T2.lset_rest(),                % rest of T2.
-    YSetSliced = new_lset(YSlice, YRest),  % build T2 without j-th elem.
+    YSetSliced = new_lset(YSlice, YRest),  % T2 without j-th elem.
 
     R1 = [ $eq(X, YElem) ],
     R2 = [ $eq(T1, YSetSliced) ],
@@ -2817,11 +2842,12 @@ eq(T1@[X|_], T2, R),
 eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
         T1.lset_rest() == T2.lset_rest() ?=>               % 7c
-    log_d_vv("eq :: eq_7c"),
+    % regola ri riscrittura 7 che implementa la terza
+    % clausola in or.
 
     % no slice for T2, only Y elem.
     YH = lset_head(T2),              % head of T2.
-    foreachnd_slice(YH, YElem, _),   % get the j-th element nondet.
+    foreachnd_slice(YH, YElem, _),   % get j-th elem nondet.
 
     R1 = [ $eq(X, YElem) ],
     R2 = [ $eq(Xs, T2) ],
@@ -2831,7 +2857,8 @@ eq(T1@[X|Xs], T2, R),
 eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
         T1.lset_rest() == T2.lset_rest() =>                % 7d
-    log_d_vv("eq :: eq_7d"),
+    % regola ri riscrittura 7 che implementa la quarta
+    % clausola in or.
 
     XRest = lset_rest(T1),
 
@@ -2848,22 +2875,27 @@ eq(T1@[X|Xs], T2, R),
 
 eq(T1@[X|Xs], T2@[Y|Ys], R),
         T1.is_lset(), T2.is_lset() ?=>                     % 8a
-    log_d_vv("eq :: eq_8a"),
-    R = [ $eq(X,Y), $eq(Xs, Ys) ].
+    R = [ 
+        $eq(X,Y), 
+        $eq(Xs, Ys) 
+    ].
 
 eq(T1@[X|_], T2@[Y|Ys], R),
         T1.is_lset(), T2.is_lset() ?=>                     % 8b
-    log_d_vv("eq :: eq_8b"),
-    R = [ $eq(X,Y), $eq(T1, Ys) ].
+    R = [ 
+        $eq(X,Y), 
+        $eq(T1, Ys) 
+    ].
 
 eq(T1@[X|Xs], T2@[Y|_], R),
         T1.is_lset(), T2.is_lset() ?=>                     % 8c
-    log_d_vv("eq :: eq_8c"),
-    R = [ $eq(X,Y), $eq(Xs, T2) ].
+    R = [ 
+        $eq(X,Y), 
+        $eq(Xs, T2) 
+    ].
 
 eq(T1@[X|Xs], T2@[Y|Ys], R),
         T1.is_lset(), T2.is_lset() =>                      % 8d
-    log_d_vv("eq :: eq_8d"),
     R = [
         $eq( Xs,  [Y|N] ),
         $eq( [X|N],  Ys )
@@ -2873,7 +2905,6 @@ eq(T1, T2, R),
         T1.struct(), T2.struct(),
         T1.name() == T2.name(),
         T1.arity() == T2.arity() =>                        % 9
-    log_d_vv("eq :: eq_9"),
     RR = [],
     foreach(I in 1..T1.arity())
         RR := RR ++ [  $eq( T1[I], T2[I] )  ]
@@ -2883,6 +2914,8 @@ eq(T1, T2, R),
 
 \section{Il vincolo neq}
 
+Il vincolo $neq$ rappresenta la negazione del vincolo $eq$. La negazione classica in \lset{} viene evitata: si vuole avere a disposizione un predicato positivo che rappresenti la negazione di un altro predicato (si veda \ref{subsec:clpbasedlang_lset_rewriteneg} per approfondimenti). L'algoritmo \ref{alg:neq_constraints} implementa proprio questa funzionalità.
+
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di non disuguaglianza}
 	\label{alg:neq_constraints}
@@ -2890,8 +2923,7 @@ eq(T1, T2, R),
 \begin{verbatim}
 neq(T1, T2, R),
         ground(T1), ground(T2),
-    	T1 !== T2 =>                                       % ground
-    log_d_vv("neq :: neq_ground"),
+        T1 !== T2 =>                                       % ground
     R = [].
 
 neq(T1, T2, R),
@@ -2901,14 +2933,12 @@ neq(T1, T2, R),
 
 neq(T, X, R),
        	nonvar(T), var(X) =>                               % 2
-    log_d_vv("neq :: neq_2"),
     R = [ $neq(X, T) ].
 
 neq(X, S, R),
         S.is_lset(),
         X == S.lset_rest(),
         not occur(X, S.lset_head()) =>                     % 3
-    log_d_vv("neq :: neq_3"),
     RR = [],
     foreach (T in S.lset_head)
         RR := RR ++ [$nin(T, X)]
@@ -2917,16 +2947,21 @@ neq(X, S, R),
 
 neq(X, T, R),
        	occur(X, T) =>                                     % 4
-    log_d_vv("neq :: neq_4"),
     R = [].
 
 neq([T1|A], [T2|B], R) ?=>                                 % 5a
     log_d_vv("neq :: neq_5a"),
-    R = [ $inls(N, [T1|A], $nin(N, [T2|B])) ].
+    R = [ 
+        $inls(N, [T1|A], 
+        $nin(N, [T2|B])) 
+    ].
 
 neq([T1|A], [T2|B], R) ?=>                                 % 5b
     log_d_vv("neq :: neq_5a"),
-    R = [ $nin(N, [T1|A]), $insl(N, [T2|B]) ].
+    R = [ 
+        $nin(N, [T1|A]), 
+        $insl(N, [T2|B]) 
+    ].
 
 neq(F, G, R),
         F.struct(), G.struct(),
@@ -2948,236 +2983,158 @@ neq(X, T, R),
 
 \section{Il vincolo in}
 
+Il vincolo $in$ è uno dei vincoli fondamentali che lavora su
+insiemi. Implementa in modo molto diretto l'appartenenza
+insiemistica. Il predicato \texttt{insl/3} rappresenta il vincolo $in$
+in quanto \texttt{in} è una keyword riservata di Picat. Per questo
+motivo si è deciso di introdurre il vincolo $contains$, che ha la
+stessa semantica del vincolo $in$, ma con gli argomenti invertiti. Il
+predicato \texttt{contains/3} infatti implementa le stesse regole di
+riscrittura del vincolo $in$, ma prendendo come primo argomento un
+insieme e come secondo un termine anziché il contrario.
+
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di appartenenza}
 	\label{alg:in_constraints}
 \end{algorithm}
 \begin{verbatim}
 insl(X, S, R) =>
-    log_d_vv("insl :: -> contains"),
+    % si potrebbe anche riscrivere il vincolo piuttosto
+    % che effettuare subito la chiamata al predicato che 
+    % implementa il "contains". In questo caso, comunque,
+    % il comportamento è il medesimo.
     contains(S, X, R).
 
 contains(S, X, R),
         S.is_lset(),
         S.is_emptyset() =>                                 % 1
-    log_d_vv("contains :: cont_1"),
     fail.
 
 contains(S@[Y|A], X, R),
         S.is_lset() ?=>                                    % 2a
-    log_d_vv("contains :: cont_2a"),
     R = [ $eq(X, Y) ].
 
 contains(S@[Y|A], X, R),
         S.is_lset() =>                                     % 2b
-    log_d_vv("contains :: cont_2b"),
     R = [ $contains(A, X) ].
 
 contains(A, X, R),
         var(A) =>                                          % 3
-    log_d_vv("contains :: cont_3"),
     YN = new_lset(X, N),
     R = [ $eq(A, YN) ].
 \end{verbatim}
 
 \section{Il vincolo union}
 
+Il vincolo $union$ è uno dei vincoli più importanti di \lset{}: viene
+impiegato per la realizzazione di vincoli derivati come \textit{diff}
+(differenza insiemistica). E' un vincolo piuttosto complicato in
+quanto molte delle sue regole utilizzano clausole in disgiunzione, le
+quali complicano soprattutto il debugging. L'algoritmo
+\ref{alg:in_constraints} ne riporta l'implementazione.
+
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di appartenenza}
 	\label{alg:un_constraints}
 \end{algorithm}
 \begin{verbatim}
-union(S1, S2, S3, R),
-        S1.is_lset(), S2.is_lset(), S3.is_lset(),
-        S1 == S2 =>                                        % 1
-    log_d_vv("union :: un_1"),
-    R = [$eq(S1, S3)].
+union(S1, S2, S3, R), 
+        S1 == S2 =>                                        % 1
+    R = [ $eq(S1, S3) ].
 
-union(S1, S2, S3, R),
-        S1.is_lset(), S2.is_lset(),
-        S3.is_emptyset() =>                                % 2
-    log_d_vv("union :: un_2"),
-    R = [$eq(S1, S3), $eq(S2, S3)].
-
-union(S1, S2, V, R),
-        S1.is_emptyset(),
-        S2.is_lset(),
-        var(V) =>                                          % 3
-    log_d_vv("union :: un_3"),
-    R = [$eq(V, S2)].
-
-union(S1, S2, V, R),
-        S2.is_emptyset(),
-        S1.is_lset(),
-        var(V) =>                                          % 4
-    log_d_vv("union :: un_4"),
-    R = [$eq(V, S1)].
-
-union(S@[T|C], A, B, R),
-        S.is_lset(),
-        %S2.is_lset(),
-        var(B) ?=>                                         % 5a
-    log_d_vv("union :: un_5a"),
-    R = [
-        $nin(T, A),
-        $eq(S, [T|N1]),
-        $eq(B, [T|N]),
-        $union(N1, A, N)
+union(S1, S2, S3, R),
+    S3.is_emptyset() =>                                    % 2
+    R = [
+        $eq(S1, S3), 
+        $eq(S2, S3)
     ].
 
-union(S@[T|C], A, B, R),
+union(E, A, B, R),
+        E.is_emptyset(),
+        var(B) =>                                          % 3
+    R = [ $eq(B, A) ].
+
+union(A, E, B, R),
+        E.is_emptyset(),
+        var(B) =>                                          % 4
+    R = [ $eq(B, A) ].
+
+union(S@[T|C], A, B, R),
         S.is_lset(),
-        %S2.is_lset(),
-        var(B) =>                                          % 5b
-    log_d_vv("union :: un_5b"),
-    R = [
-        $nin(T, A),
-        $eq(S, [T|N1]),
-        $eq(B, [T|N]),
-        $union(N1, A, N)
+        var(B) ?=>                                         % 5a
+    R = [ 
+        $nin(T, A), 
+        $un(N1, A, N),
+        $eq([T|C], [T|N1]), 
+        $eq(B, [T|N])
     ].
 
-union(A, S@[T|C], B, R),
+union(S@[T|C], A, B, R),
         S.is_lset(),
-        %S2.is_lset(),
-        var(B) ?=>                                         % 6a
-    log_d_vv("union :: un_6a"),
-    R = [
-        $nin(T, A),
-        $eq(S, [T|N1]),
-        $eq(B, [T|N]),
-        $union(N1, A, N)
+        var(B) =>                                          % 5b
+    R = [ 
+        $eq(A, [T|N2]),
+        $un(N1, N2, N),
+        $eq([T|C], [T|N1]), 
+        $eq(B, [T|N])
     ].
 
-union(A, S@[T|C], B, R),
+union(A, S@[T|C], B, R),
         S.is_lset(),
-        %S2.is_lset(),
-        var(B) =>                                          % 6b
-    log_d_vv("union :: un_6b"),
-    R = [
-        $nin(T, A),
-        $eq(S, [T|N1]),
-        $eq(B, [T|N]),
-        $union(N1, A, N)
+        var(B) ?=>                                         % 6a
+    R = [ 
+        $nin(T, A), 
+        $un(N1, A, N),
+        $eq([T|C], [T|N1]), 
+        $eq(B, [T|N])
     ].
 
-union(S1, S2, S3@[Z|Zs], R),
-        S1.is_lset(),
-        S2.is_lset(),
-        S3.is_lset() ?=>                                   % 7a
-    log_d_vv("union :: un_7a"),
-    R1 = [ $eq(S1,[Z|N1]), $union(N1,B2,N) ],
-    R4 = [ $eq(S3,[Z|N]) ],
+union(A, S@[T|C], B, R),
+S.is_lset(),
+        var(B) =>                                          % 6b
+    R = [ 
+        $eq(A, [T|N2]),
+        $un(N1, N2, N),
+        $eq([T|C], [T|N1]), 
+        $eq(B, [T|N])
+    ].
 
-    R = R1 ++ R4.
+union(A, B, S@[T|C], R),
+        S.is_lset() ?=>                                    % 7a
+    R1 = [ 
+        $eq(A, [T|N1]), 
+        $un(N1, B2, N)
+    ],
+    R4 = [ $eq([T|C], [T|N]) ],
 
-union(S1, S2, S3@[Z|Zs], R),
-        S1.is_lset(),
-        S2.is_lset(),
-        S3.is_lset() ?=>                                   % 7b
-    log_d_vv("union :: un_7b"),
-    R2 = [ $eq(S2,[Z|N1]), $union(S1,N1,N) ],
-    R4 = [ $eq(S3,[Z|N]) ],
+    R = R1 ++ R4.
 
-    R = R2 ++ R4.
+union(A, B, S@[T|C], R),
+        S.is_lset() ?=>                                    % 7b
+    R2 = [ 
+        $eq(B, [T|N1]), 
+        $un(A, N1, N) 
+    ],
+    R4 = [ $eq([T|C], [T|N]) ],
 
-union(S1, S2, S3@[Z|Zs], R),
-        S1.is_lset(),
-        S2.is_lset(),
-        S3.is_lset() =>                                    % 7c
-    log_d_vv("union :: un_7c"),
-    R3 = [ $eq(S1,[Z|N1]), $eq(S2,[Z|N2]), $union(N1,N2,N) ],
-    R4 = [ $eq(S3,[Z|N]) ],
+    R = R2 ++ R4.
 
-    R = R3 ++ R4.
+union(A, B, S@[T|C], R),
+        S.is_lset() =>                                     % 7c
+    R3 = [ 
+        $eq(A, [T|N1]), 
+        $eq(B, [T|N2]), 
+        $un(N1, N2, N) 
+    ],
+    R4 = [ $eq([T|C], [T|N]) ],
 
-union(S1, S2, S3, R),
-        var(S1), var(S2), var(S3),
-        S1 !== S2 =>                                       % irr
-    log_d_vv("union :: un_irr"),
-    R = [ $union(S1, S2, S3) ].
-\end{verbatim}
+    R = R3 ++ R4.
 
-\section{Il vincolo disj}
+union(S1, S2, S3, R),
+        var(S1), var(S2), var(S3),
+        S1 !== S2 =>                                       % irr
+    R = [ $un(S1, S2, S3) ].
 
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di disgiunzione}
-	\label{alg:disj_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-
-\section{Il vincolo subset}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di sottinsieme}
-	\label{alg:subset_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-
-\section{Il vincolo inters}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di intersezione}
-	\label{alg:inters_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Il vincolo diff}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di differenza}
-	\label{alg:diff_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Il vincolo not in}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di non appartenenza}
-	\label{alg:notin_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Il vincolo not union}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di non unione}
-	\label{alg:notun_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Il vincolo not disj}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di non disgiunzione}
-	\label{alg:notdisj_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Altri vincoli negativi}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per altri vincoli negativi}
-	\label{alg:othernegatives_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
 \end{verbatim}
 
 
