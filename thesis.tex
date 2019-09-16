@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper,openright]{book} % oneside
+\documentclass[12pt,a4paper,openright]{book}  % oneside  % openright
 
 % ****************************************************************
 %   PACKAGES
@@ -10,6 +10,7 @@
 \usepackage{amsmath}         % math features.
 \usepackage{amsthm}          % math theorems.
 \usepackage{amssymb}         % math symbols.
+\usepackage{amsbsy}			 % math bold.
 \usepackage{listings}        % embed programming language in latex.
 \usepackage{stmaryrd}        % symbols for theoretical computer science.
 \usepackage{hhline}          % better horizontal lines in tabulars and arrays.
@@ -111,7 +112,6 @@ tuborg/.style={decorate},
 tubnode/.style={midway, right=2pt},
 }
 
-
 % ****************************************************************
 %   RESOURCES
 \subfile{prooftree}
@@ -119,11 +119,14 @@ tubnode/.style={midway, right=2pt},
 \addbibresource{biblio.bib}
 
 
-% **********************************************
-% **********************************************
+
+% ****************************************************************
+% @@@@@@                     DOCUMENT                       @@@@@@
+% ****************************************************************
 \begin{document}
 
-%%% First page
+%%% *******************************************************
+%%% Opening page   ****************************************
 \begin{titlepage}
     \begin{center}
         \includegraphics[width=0.4\textwidth]{img/logo_unipr.png}
@@ -201,9 +204,6 @@ A mio nonno, Luigi.
 %%% *******************************************************
 %%% Table of contents   ***********************************
 \tableofcontents
-
-%\lhead[\fancyplain{}{}]{\fancyplain{}{\leftmark}} \chead{}
-%\rhead{\thepage} \lfoot{} \cfoot{} \rfoot{}
 
 
 
@@ -559,12 +559,8 @@ soddisfacibile; al contrario, se nessuno dei vincoli in $C$ viene
 riscritto a $false$ allora ogni soluzione generata da \satset{} è una
 soluzione per $C$ e viceversa.
 
-\subsection{Regole di riscrittura per vincoli di eguaglianza}
+\subsection{Regole di riscrittura per vincoli di uguaglianza}
 \label{subsec:clpbasedlang_lset_rewriteeq}
-
- \fixme{Almeno un esempio di riscrittura di un vincolo composto
-   (semplice); ad esempio: {1,2}={X,Y} and X neq 1 oppure 1 in X and 1
-   nin X}
 
 Nelle sezioni successive sono riportate le regole di riscrittura
 descritte in \cite{Rossi18}, trattate durante la realizzazione del
@@ -646,7 +642,7 @@ Esempio di riscrittura del vincolo composto $\{1,2\} = \{X,Y\} \land X \neq 1$.
 Di seguito sono riportate le riscritture compiute per giungere al risultato.
 
 \begin{itemize}
-	\item Viene applicata la regola $eq_8(a)$\\ 
+	\item Viene applicata la regola $eq_8$\\ 
 	  \[
 	  \begin{split}
 	    \{ 1, 2 \} &= \{ X, Y \} \land X \neq 1 \to \\
@@ -2130,6 +2126,7 @@ veda l'esempio \ref{fig:example_commandshistory}).
 	\label{fig:example_commandshistory}
 \end{figure}
 
+{\tolerance= 3000\relax
 L'esecuzione di un comando valido viene attivata tramite il predicato
 \texttt{doCommand/2} che riceve come primo argomento il comando e come
 secondo argomento una lista (possibilmente vuota) di
@@ -2137,6 +2134,7 @@ argomenti. L'implementazione di questo predicato segue molto lo stile
 di programmazione logico: il predicato distingue i casi a seconda del
 primo argomento ed è implementato per svolgere funzioni diverse
 appunto a seconda di quale sia il comando di input, per esempio:
+\par}
 \begin{verbatim}
 doCommand(help, Args) => ...
 doCommand(solve, Args) => ...
@@ -3551,8 +3549,8 @@ questo forse servirebbe un'altra tesi.
 
 %%% *******************************************************
 %%% *   List of Figures/Algorithms   **********************
-\listoffigures
-\listofalgorithms
+%\listoffigures
+%\listofalgorithms
 
 
 
