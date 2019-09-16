@@ -772,6 +772,35 @@ Algoritmo \ref{alg:neq_constraints}
 \paragraph{Implementazione}
 Algoritmo \ref{alg:in_constraints}
 
+\paragraph{Esempio}
+Esempio di riscrittura del vincolo composto $1 \in X \land 1 \not\in
+X$. Di seguito sono riportate le riscritture compiute per giungere al
+risultato.
+
+\begin{itemize}
+	\item Viene applicata la regola $\in_3$ e la regola
+          ``irriducibile'' per $\not\in$.\\
+	  \[
+	  \begin{split}
+	    1 \in X &\land 1 \not\in X \to \\ & X = \{ 1 \sqcup N \}
+              \\ & \land 1 \not\in X
+	  \end{split}
+	  \]
+	\item Viene applicata la regola $eq_5$ ed $X viene unificato a
+          \{ 1 \sqcup N\}$, quindi
+	  \[
+	    \begin{split}
+	      X = \{ 1 \sqcup N \} \land 1 \not\in X \to 1 \not\in \{1 \sqcup N\}
+	    \end{split}
+	  \]
+	\item Viene applicata la regola $in_5$
+	  \[
+	    1 \not\in \{1 \sqcup N\} \to 1 \neq 1 \land 1 \not\in N
+	  \]
+	\item $1 \neq 1$, provoca il fallimento: la formula non è
+          soddisfacibile.
+\end{itemize}
+
 \subsubsection{Il vincolo union}
 
 \textit{Sintassi:} $un(t_1, t_2, t_3)$.\\
@@ -880,8 +909,8 @@ Algoritmo \ref{alg:un_constraints}
 	\item $\dotA \mid\mid \dotB$, $\dotA$ e $\dotB$ variabili distinte.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:disj_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:disj_constraints}
 
 \subsubsection{Il vincolo subset}
 
@@ -934,8 +963,8 @@ Algoritmo \ref{alg:disj_constraints}
 	\item $\dotA \subseteq \{ y | B \}$.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:subset_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:subset_constraints}
 
 \subsubsection{Il vincolo inters}
 
@@ -988,8 +1017,8 @@ Algoritmo \ref{alg:subset_constraints}
 	\item $inters(A, \dotB, \dotC)$, $A$ e $\dotB$ non sono la stessa variabile.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:inters_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:inters_constraints}
 
 \subsubsection{Il vincolo diff}
 
@@ -1019,8 +1048,8 @@ Algoritmo \ref{alg:inters_constraints}
 	\item Nessuna.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:diff_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:diff_constraints}
 
 \subsection{Regole di riscrittura per vincoli negativi su insiemi}
 \label{subsec:clpbasedlang_lset_rewriteneg}
@@ -1065,8 +1094,8 @@ t_n)$ che ne rappresenta la negazione.
 	\item $t \not\in \dotA$, e $\dotA$ non occorre in $t$.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:notin_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:notin_constraints}
 
 \subsubsection{Il vincolo not union}
 
@@ -1101,8 +1130,8 @@ Algoritmo \ref{alg:notin_constraints}
 	\item Nessuna.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:notun_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:notun_constraints}
 
 \subsubsection{Il vincolo not disjoint}
 
@@ -1132,8 +1161,8 @@ Algoritmo \ref{alg:notun_constraints}
 	\item Nessuna.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:notdisj_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:notdisj_constraints}
 
 \subsubsection{Altri vincoli negativi}
 
@@ -1175,8 +1204,8 @@ Algoritmo \ref{alg:notdisj_constraints}
 	\item Nessuna.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:othernegatives_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:othernegatives_constraints}
 
 
 
