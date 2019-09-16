@@ -2054,10 +2054,12 @@ regola in modo del tutto analogo alla descrizione matematica.
 
 L'interfaccia di questo modulo espone alcune funzioni
 \begin{itemize}
-	\item \texttt{new\textunderscore lset/0} o
-          \texttt{new\textunderscore lset/1}, i costruttori,
-          utilizzati rispettivamente per creare un insieme vuoto o un
-          insieme a partire da una lista;
+	\item \texttt{new\textunderscore lset/0},
+          \texttt{new\textunderscore lset/1},
+          \texttt{new\textunderscore lset/2}, i costruttori,
+          utilizzati rispettivamente per creare un insieme vuoto, un
+          insieme a partire da una lista o un insieme partendo da
+          testa e resto;
 	\item \texttt{lset\textunderscore head/1}, un metodo per
           recuperare la testa dell'insieme;
 	\item \texttt{lset\textunderscore rest/1}, un metodo per
@@ -2070,7 +2072,8 @@ I metodi di questo modulo sono facilmente usabili come in un
 linguaggio OOP:
 \begin{verbatim}
 Picat> X = new_lset()         % crea un insieme vuoto
-Picat> Y = new_lset([1,2|A])  % crea un insieme costituito da 1 e resto A
+Picat> Y = new_lset([1,2|A])  % crea un insieme costituito 
+                              %  da 1 e resto A
 
 % restutuisce in YHead il resto dell'insieme Y
 Picat> YHead = Y.lset_head()
@@ -2391,14 +2394,15 @@ con quelli attuali per decretare il successo (o fallimento) del test.
 
 	    A = new_assert("test")
 
-	    % solve è il predicato da testare, di cui è atteso il fallimento.
+	    % solve è il predicato da testare, 
+	    % di cui è atteso il fallimento.
 
 	    solve(F, FF),
 
 	    % se il controllo riesce a raggiungere questo punto della
-	    %  computazione significa che il predicato di cui era atteso
-	    %  il fallimento non è fallito, e ciò è da segnalare con un
-	    %  errore tramite A.fail()
+	    % computazione significa che il predicato di cui era atteso
+	    % il fallimento non è fallito, e ciò è da segnalare con un
+	    % errore tramite A.fail()
 
 	    A.fail().
 
@@ -2406,11 +2410,12 @@ con quelli attuali per decretare il successo (o fallimento) del test.
 
 	    A = new_assert("test"),
 
-	    % se invece il predicato solve fallisce, il predicato test effettua
-	    %  il backtracking, scatenando la computazione di questa regola.
-	    %  Ciò, a meno di fallimenti durante la creazione dell'aserzione o
-	    %  all'esecuzione di metodi dell'asserzione, ci garantisce che il
-	    %  test ha successo.
+	    % se invece il predicato solve fallisce, il predicato
+	    % test effettua il backtracking, scatenando la 
+	    % computazione di questa regola.
+	    % Ciò, a meno di fallimenti durante la creazione 
+	    % dell'aserzione o all'esecuzione di metodi 
+	    % dell'asserzione, ci garantisce che il test ha successo.
 
 	    A.assert_fail().
 	\end{verbatim}
