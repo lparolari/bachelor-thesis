@@ -215,46 +215,40 @@ A mio nonno, Luigi.
 
 \label{ch:intro}
 
-L'ambito dei linguaggi basati su insiemi è da sempre un ambito
+L’ambito dei linguaggi basati su insiemi è da sempre un ambito
 affascinante nonché di particolare rilevanza per la risoluzione di
-certe classi di problemi. Con \clpset{} ed il suo linguaggio derivato
-a vincoli basato su insiemi \lset{}, le potenzialità dell'insieme sono
-state spinte ad un livello notevole: sono forniti all'utente una forma
-molto generale di insiemi, detti \textit{untyped hereditarily finite
-  hybrid sets} (letteralmente, insiemi ibridi finiti ereditari non
-tipizzati).
+certe classi di problemi. Avere strumenti in grado di trattare in modo
+automatico operazioni su insiemi (incluse relazioni binarie e funzioni
+parziali, che sono comunque un tipo particolare di insiemi) è di ovvio
+interesse in vari settori: dalla dimostrazione di teoremi alla
+programmazione con vincoli.
 
-Le relazioni binarie sono insiemi di coppie ordinate e le funzioni
-parziali sono un sottoinsieme delle relazioni binarie, di conseguenza
-risulta naturale provare a codificare questi due elementi in termini
-di insiemi. In \cite{Rossi18} è stato mostrato come codificare
-relazioni binarie e funzioni parziali in termini di insiemi su
-\clpset{}, un linguaggio CLP dotato di una procedura decisionale in
-grado di risolvere le formule del primo ordine senza quantificatori su
-un universo di insiemi finiti. Lavori successivi hanno mostrato come
-estendere \clpset{} in modo tale che relazioni e funzioni parziali
-siano entità primitive del linguaggio. Il linguaggio che ne è
-risultato, denominato \lbr{}, offre insiemi, relazioni binarie e
-funzioni parziali, con le relative operazioni di base su essi.
+Una proposta in tal senso è quella di \clpset{} \cite{Dovier00}, con
+il suo linguaggio a vincoli basato su insiemi \lset{}. \clpset{}
+fornisce all’utente una forma molto generale di insiemi, detti
+\emph{untyped hereditarily finite hybrid sets} (letteralmente, insiemi
+ibridi ereditariamente finiti non tipizzati). \clpset{} è dotato di un
+solver (denominato \satset{}) che implementa una procedura decisionale
+in grado di risolvere le formule del primo ordine senza quantificatori
+su un universo di insiemi ereditariamente finiti. Lavori successivi
+hanno mostrato come estendere \clpset{} in modo tale che relazioni e
+funzioni parziali siano entità primitive del linguaggio. Il linguaggio
+che ne è risultato, denominato \lbr{}, offre insiemi, relazioni
+binarie e funzioni parziali, con le relative operazioni di base su
+essi \cite{Rossi18}.
 
-In questo lavoro di tesi non verrà trattata l'esensione di \clpset{}
-su relazioni binarie e funzioni parziali (\lbr{}), bensì il linguaggio
-\lset{} che offre come entità primitive del linguaggio gli insiemi.
+Attualmente \lset{} , con le sue estensioni introdotte in \lbr{}, è
+implementato in Prolog, all’interno dello strumento di programmazione
+logica {log} \cite{SetLog}.
 
-Avere strumenti in grado di trattare in modo automatico operazioni su
-insiemi, relazioni binarie e funzioni parziali è di ovvio interesse in
-vari settori: dalla dimostrazione di teoremi alla programmazione con
-vincoli.
+L’obiettivo di questo lavoro di tesi è la realizzazione del solver
+\satset{} per \lset{}, utilizzando il linguaggio di programmazione
+Picat.
 
-L'esperimento di questo lavoro introduce un nuovo giocatore sul campo:
-Picat. Picat è un linguaggio logico piuttosto innovativo che ricalca
-nel \textit{core} il funzionamento di un linguaggio logico, ma
-possiede alcune raffinatezze che lo rendono un candidato ideale per
-sperimentare l'implementazione del solver per \lset{}.
-
-L'obiettivo finale di questo esperimento è infatti la realizzazione
-del solver \satset{} per \lset{}, implementando la sua procedura di
-risoluzione sfruttando le regole di riscrittura.
+Picat \cite{PicatLang} è un linguaggio logico piuttosto innovativo che
+ricalca nel core il funzionamento di un linguaggio logico, ma possiede
+alcune caratteristiche che lo rendono un candidato ideale per
+sperimentare l’implementazione del solver per \lset{}.
 
 \bigskip
 
@@ -264,27 +258,28 @@ segue.
 	\item Il capitolo \ref{ch:clpbasedlang} presenta la sintassi e
           la semantica del linguaggio \lset{}, con la procedura di
           risoluzione del solver \satset{}. A corredo viene data una
-          panoramica generale della CLP (Constraint Logic
+          panoramica generale del CLP (Constraint Logic
           Programming). Successivamente si descrivono le regole di
-          riscrittura, ampiamente trattate per la realizzazione del
-          solver.
+          riscrittura, utilizzate dal solver per la risoluzione dei
+          vincoli di \lset{}.
 	\item Il capitolo \ref{ch:picat} descrive Picat in forma
           generale: sono trattate le sue caratteristiche e
           funzionalità (di base ed avanzate), finendo con una
           descrizione delle differenze tra Picat e Prolog, il più
           diffuso linguaggio logico.
 	\item Il capitolo \ref{ch:lsetpicat} descrive la realizzazione
-          del solver e del suo sitema in Picat, trattando aspetti
-          progettuali, problemi riscontrati e caratteristiche
-          implementative.
-	\item Nel capitolo \ref{ch:impl} viene dato un dettaglio
-          sull'implementazione delle regole di riscrittura, mostrando
-          come la teoria è tradotta in un programma Picat.
+          del solver in Picat, trattando aspetti progettuali, problemi
+          riscontrati e caratteristiche implementative.
+	\item Nel capitolo \ref{ch:impl} viene data una descrizione
+          più dettagliata dell'implementazione delle regole di
+          riscrittura utilizzate dal solver, mostrando come la
+          descrizione astratta di \lset{} venga tradotta in un
+          programma Picat.
 	\item Il capitolo \ref{ch:use} mostra come è possibile
           utilizzare il solver realizzato: tramite modalità
           interattiva o tramite API.
 	\item Il capitolo \ref{ch:conclusion} fornisce una panoramica
-          del lavoro a ragion veduta e possibili lavori futuri.
+          del lavoro svolto e accenna a possibili lavori futuri.
 \end{itemize}
 
 \thispagestyle{fancy}
@@ -3444,10 +3439,10 @@ di \lset{} non è stato possibile adottare la rappresentazione delle
 formule di \lset{} adottata in {log} a causa delle citate limitazioni
 di Picat rispetto al Prolog sulla forma sintattica dei termini. Si è
 quindi utilizzato per il momento una sintassi nettamente più vicina
-alla rappresentazione interna di Picat, descritta all’appendice A. Lo
-schema sottostante riassume la condizione ottimale in cui la formula
-non ha bisogno di alcuna traduzione per essere elaborata dal
-solver. La soluzione al problema è riassumibile dallo schema seguente
+alla rappresentazione interna di Picat. Lo schema sottostante riassume
+la condizione ottimale in cui la formula non ha bisogno di alcuna
+traduzione per essere elaborata dal solver. La soluzione al problema è
+riassumibile dallo schema seguente
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}
