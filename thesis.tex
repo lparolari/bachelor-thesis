@@ -1,3 +1,4 @@
+% !TeX spellcheck = it_IT
 \documentclass[12pt,a4paper,openright]{book}  % oneside  % openright
 
 % ****************************************************************
@@ -491,7 +492,7 @@ seguente:
 	\item il predicato \textit{in} rappresenta la relazione di
           appartenenza;
 	\item il predicato \textit{un} rappresenta la relazione di
-          unione; insiemistica definita come: $un(r,s,t) = true
+          unione insiemistica definita come $un(r,s,t) = true
           \Longleftrightarrow t = r \cup s$;
 	\item il predicato \textit{disj} rappresenta la relazione di
           disgiunzione insiemistica definita come $disj(r,s) = true
@@ -505,7 +506,7 @@ seguente:
 \label{subsec:clpbasedlang_lset_solver}
 
 La procedura \satset{} risolve i vincoli e rappresenta il solver del
-linguaggio \lset{}. Il seguente algoritmo ne descrive la struttura:
+linguaggio \lset{}. Il seguente algoritmo ne descrive la struttura.
 
 \begin{algorithm}
 	\caption{Procedura \satset{}}
@@ -538,7 +539,7 @@ Essenzialmente \satset{$(C)$} utilizza tre procedure:
 	\item \textbf{\texttt{STEP}}: applica speciali \textit{regole
           di riscrittura} alla formula $C$ corrente e ritorna
           \textit{false} oppure la formula modificata. L'esecuzione di
-          $STEP$ viene iterata fino ad arrivare ad ottenere una
+          $STEP$ viene iterata fino ad arrivare a ottenere una
           formula in forma irriducibile. Notare che $STEP$ ritorna
           $false$ se almeno uno dei vincoli in $C$ viene riscritto a
           $false$. Anche $STEP(false)$ ritorna $false$.
@@ -1238,7 +1239,7 @@ dalle lettere del suo nome:
 \item \textbf{P}attern-matching. Un \emph{predicato} definisce una
   relazione e può avere zero, una o più soluzioni. Picat è un
   linguaggio basato su regole. I predicati e le funzioni sono definiti
-  tramite regole di pattern-matching.
+  tramite pattern-matching.
 \item \textbf{I}ntuitive. Picat fornisce comandi come l'assegnamento
   e i loop, che vengono comunemente usati nei linguaggi imperativi,
   rendendo di fatto più semplice la scrittura di programmi non logici.
@@ -1255,7 +1256,7 @@ dalle lettere del suo nome:
 \end{itemize}
 
 Inoltre, Picat supporta le principali caratteristiche dei linguaggi
-logici, obbligando però il programmatore ad usarle in modo esplicito,
+logici, obbligando però il programmatore a usarle in modo esplicito,
 come per il caso dell'unificazione, del non determinismo, del tabling
 e dei vincoli.
 
@@ -1269,7 +1270,7 @@ Picat è un linguaggio interpretato. I programmi Picat però, prima di
 essere eseguiti, sono compilati in \textbf{byte-code}. Il compilatore
 non trasforma i sorgenti in codice macchina, ma depura il programma da
 tutto quello che non è necessario per l'esecuzione, compie vari
-controlli statici e riscrive alcuni costrutti sintatticamente (e.g. i
+controlli statici e riscrive alcuni costrutti sintatticamente (e.g., i
 cicli).
 
 Tramite l'interprete Picat è possibile caricare, compilare ed eseguire
@@ -1312,18 +1313,18 @@ memoria persistente).
 Picat è un linguaggio \textbf{dinamicamente tipato}: il controllo dei
 tipi avviene a runtime. Le variabili in Picat possono avere o non
 avere un valore. Una variabile è libera fintanto che non viene
-vincolata ad un valore (operazione di bounding), e può avere degli
+vincolata a un valore (operazione di bounding), e può avere degli
 attributi rappresentati come mappa chiave-valore.\footnote{Gli
   attributi di una variabile sono spesso utilizzati dai risolutori di
-  vincoli integrati in moduli predefiniti di Picat per memorizzare
+  vincoli integrati nei moduli predefiniti di Picat per memorizzare
   informazioni riguardanti vincoli su variabili.}
 
 I tipi primitivi di Picat sono il numero intero, reale e l'atomo. Un
 atomo è un nome iniziante con lettera minuscola o una stringa quotata
 da apici singoli.
 
-I tipi composti invece sono le liste \verb|[|$t_1, \ldots,
-t_n$\verb|]| e le strutture \verb|$s(|$t_1, \ldots, t_n$\verb|)|, dove
+I tipi composti invece sono le liste $[t_1, \ldots,
+t_n]$ e le strutture $\$s(t_1, \ldots, t_n)$, dove
 $s$ è il nome della struct, ed $n$ è l'arità. Il dollaro viene
 impiegato per distinguere una chiamata di funzione da una
 struct. Picat inoltre mette a disposizione tipi composti speciali come
@@ -1386,10 +1387,9 @@ rimuovere elementi da una struttura dati.
 \subsection{Predicati}
 \label{subsec:picat_base_pred}
 
-I predicati sono una componente fondamentale di Picat. Un predicato ha
-esito positivo o negativo, a meno di eccezioni. Un predicato può
-esplorare tutte le soluzioni tramite il backtracking implementato in
-Picat.
+I predicati sono una componente fondamentale di Picat: essi
+definiscono una relazione che può avere zero, una o più soluzioni,
+terminando in modo positivo o negativo, a meno di eccezioni.
 
 In Picat i predicati sono definiti con regole di pattern-matching. Le
 regole utilizzabili per la definizione di un predicato sono 
@@ -1405,6 +1405,15 @@ applicabile, Picat riscrive $C$ in $Body$. Se la regola usata è
 \emph{non-backtrackable} allora la riscrittura è permanente,
 altrimenti il programma farà backtracking su $C$ se $Body$ fallisce e
 verrà provata la regola successiva.
+
+Un predicato è detto essere \emph{deterministico} se è definito
+solamente da regole non-backtrackable, \emph{non-deterministico}
+invece se nella definizione del predicato compare almeno una regola
+backtrackable. Inoltre, si dice \emph{globalmente deterministico} un
+predicato deterministico che in $Body$ contiene solo chiamate a
+predicati globalmente deterministici. Per questo motivo, un
+predicato deterministico può avere più di una soluzione, mentre
+uno globalmente deterministico al massimo una.
 
 \paragraph{Esempio} Regola non backtrackable.
 \begin{verbatim}
@@ -1586,14 +1595,14 @@ approfondimenti si possono trovare in \cite{PicatGuide}.
 \label{subsec:picat_advanced_tabling}
 
 Il tabling è un meccanismo di caching che permette di memorizzare la
-chiamata ad un predicato e relativo risultato per evitare cicli
+chiamata a un predicato e relativo risultato per evitare cicli
 infiniti o per ridurre il costo computazione dovuto alla grossa
 ridondanza dei calcoli.
 
 \paragraph{Esempio}\
 \begin{lstlisting}
 table
-fib(0) = 1.
+fib(0) = 0.
 fib(1) = 1.
 fib(N) = fib(N-1)+fib(N-2).
 \end{lstlisting}
@@ -1682,6 +1691,7 @@ quanto prende come primo e terzo parametro un altro predicato.
 \paragraph{Esempio}
 
 \begin{verbatim}
+%%% file pericolo.pi
 pericolo => X = 5 // 0.   % divisione per zero, solleva
                           % eccezione zero_divisor
 
@@ -1691,7 +1701,8 @@ main =>
         Exception, 
         (print("Eccezione catturata: "), println(Exception)).
 
-$ Eccezione catturata: error(zero_divisor,/ / 2)
+$ picat pericolo.pi
+Eccezione catturata: error(zero_divisor,/ / 2)
 \end{verbatim}
 
 \subsection{Higher-Order Calls}
@@ -1706,7 +1717,7 @@ ritornare un valore. Il predicato \verb|find_all| invece trova tutte
 le soluzioni della chiamata per la funzione in input.
 
 Picat fornisce altri predicati di ordine superiore per la gestione
-delle eccezioni, l'esecuzione e alte utilità.
+delle eccezioni, l'esecuzione e altre utilità.
 
 \paragraph{Esempio}
 \begin{verbatim}
@@ -1727,9 +1738,10 @@ Z = 3
 \label{subsec:picat_advanced_actionrules}
 
 Picat fornisce \emph{Action Rules} per descrivere attori
-event-driven. Un attore è un chiamata ad un predicato che può essere
+event-driven. Un attore è un chiamata a un predicato che può essere
 differita rispetto alla normale esecuzione ed è attivabile da
-eventi. Queste regole hanno sintassi $Head, Cond, \{Event\} => Body$,
+eventi. Queste regole hanno sintassi 
+\[ Head, Cond, \{Event\} => Body \]
 dove $Event$ è un insieme non vuoto di eventi separati da virgola.
 
 Gli attori possono essere assegnati a canali sui quali sono notificati
@@ -1775,8 +1787,8 @@ variabili logiche (una volta sola).
   più leggera rispetto all'unificazione.
 \item[Backtracking.] Anche Picat supporta nativamente il
   backtracking. In Prolog però ogni regola è implicitamente
-  \emph{backtrackable} e si usa l'operatore \emph{cut} \verb|!| per
-  controllarne il comportamento. In Picat invece una regola è
+  \emph{backtrackable} e si usa l'operatore \emph{cut} (\texttt{!}) 
+  per controllarne il comportamento. In Picat invece una regola è
   \emph{backtrackable} solo se esplicitamente dichiarato. Ciò permette
   al programmatore di capire a colpo d'occhio l'intenzione di una
   regola.
@@ -1835,8 +1847,11 @@ stesura dell'implementazione di un solver.
 \section{Organizzazione del progetto}
 \label{sec:lsetpicat_project}
 
-L'organizzazione del progetto e dei file sorgente è da subito stata
-una priorità. Soprattutto nell'ambito dei linguaggi logici esistono
+L'organizzazione del progetto e dei file sorgente è di particolare
+rilevanza: permette una miglior stesura del codice, facilità
+di lettura e manutenzione, creazione dei test e consente a futuri
+collaboratori di lavorare sul software in modo ordinato e preciso.
+Soprattutto nell'ambito dei linguaggi logici esistono
 poche linee guida e strutture convenzionali per l'organizzazione dei
 sorgenti. Ciò, unito alla complessità intrinseca dei linguaggi logici,
 complica notevolmente la manutenibilità del software e lo rende molto
@@ -1904,10 +1919,6 @@ La struttura che ne risulta è elencata in figura
 Una descrizione sommaria del contenuto dei file e delle directory è
 riportata di seguito:
 \begin{itemize}
-	\item \texttt{JOURNAL.txt}, il diario di bordo. Vi sono note
-          ed evoluzione del progetto in linea temporale. Contiene
-          un'interessante traccia di problemi riscontrati e soluzioni
-          applicate durante il lavoro.
 	\item \texttt{LICENSE.txt}, la licenza del codice sorgente.
 	\item \texttt{README.md}, la descrizione del progetto:
           contenente note per l'installazione e l'utilizzo.
@@ -2065,9 +2076,13 @@ L'interfaccia di questo modulo espone alcune funzioni
 I metodi di questo modulo sono facilmente usabili come in un
 linguaggio OOP:
 \begin{verbatim}
-Picat> X = new_lset()         % crea un insieme vuoto
-Picat> Y = new_lset([1,2|A])  % crea un insieme costituito 
-                              %  da 1 e resto A
+Picat> X = new_lset()          % crea un insieme vuoto
+
+% entrambi i costruttori creano un insieme costituito da
+%  testa [1, 2] e resto A.
+Picat> Y = new_lset([1,2|A])
+Picat> Z = new_lset([1,2], A)
+
 
 % restituisce in YHead il resto dell'insieme Y
 Picat> YHead = Y.lset_head()
@@ -2087,8 +2102,8 @@ fornisce messaggi di aiuto, cerca di effettuare controlli
 sull'input e una sapiente gestione degli errori.
 
 Di fatto questo modulo implementa un ciclo che non termina mai se non
-quanto il comando di uscita è ricevuto. Inoltre, il ciclo principale è
-racchiuso in nel predicato di ordine superiore \texttt{catch} (si veda
+quando il comando di uscita è ricevuto. Inoltre, il ciclo principale è
+racchiuso nel predicato di ordine superiore \texttt{catch} (si veda
 \ref{subsec:picat_advanced_hoc} per più informazioni sui predicati di
 ordine superiore) che consente di catturare qualunque eccezione esca
 dalla gestione dei comandi, per evitare spiacevoli crash e consentendo
@@ -2099,7 +2114,7 @@ La CLI all'avvio svolge, in ordine, le seguenti operazioni:
 	\item inizializza le variabili globali necessarie con i valori
           predefiniti;
 	\item mostra un messaggio di introduzione contenente qualche
-          piccona nota sulla garanzia, copyright e mostra i comandi di
+          piccola nota sulla garanzia, copyright e mostra i comandi di
           aiuto principali, nonché uno stato delle variabili
           inizializzate;
 	\item si mette in attesa di un comando.
@@ -2184,7 +2199,7 @@ gestione del solver (\texttt{doSolve/2}).
 \subsubsection{global.pi}
 
 Il modulo \texttt{global} gestisce le variabili globali. Aiuta il
-programmatore ad effettuare operazioni sulle variabili globali senza
+programmatore a effettuare operazioni sulle variabili globali senza
 conoscere il tipo di mappa globale utilizzata e senza effettuare
 manipolazione diretta della mappa stessa.
 
@@ -2236,7 +2251,7 @@ Il modulo fornisce le seguenti caratteristiche.
 	I tre livelli di verbosità predefiniti sono volutamente
         implementati con ereditarietà (e.g., il livello di verbosità
         \texttt{vvv} mostra i log anche dei livelli \texttt{vv} e
-        \texttt{v} oltre ad i propri). Comunque, il modulo permette di
+        \texttt{v} oltre ai propri). Comunque, il modulo permette di
         specificare altri livelli di verbosità qualora ve ne sia
         necessità e di darne un'implementazione ereditaria (vedere
         esempio \ref{fig:example_loglevel_noinheritance} e
@@ -2247,7 +2262,7 @@ Il modulo fornisce le seguenti caratteristiche.
           da utilizzare nel caso in cui il tipo del messaggio
           differisca. Il tipo non è determinante per il canale di
           output su cui il messaggio verrà loggato, ma è utilizzato
-          per distinguere a colpo d'occhio il tipo dei log. Ad ogni
+          per distinguere a colpo d'occhio il tipo dei log. A ogni
           messaggio di log viene aggiunto un prefisso, rispettivamente
           \texttt{D:}, \texttt{E:} o \texttt{I:}.
 
@@ -2330,17 +2345,20 @@ predefinite per leggere valori booleani, stringhe, eccetera.
 \paragraph{Interfaccia}
 
 \begin{itemize}
-	\item \texttt{prompt(Q) = A}. Non implementato, solleva
+	\item \texttt{prompt(Q) = A}. Mostra la domanda \texttt{Q} su
+	      \texttt{stdout} all'utente e ne cattura una risposta arbitraria \texttt{A} da \texttt{stdin}.
+	      Attualmente non implementato, solleva
           \texttt{not\textunderscore implemented\textunderscore
-            exception}.
-	\item \texttt{confirm(Q) = A}. Mostra la domanda \texttt{Q} su
+            exception} (predisposto nell'interfaccia per utilizzi
+            futuri).
+    \item \texttt{confirm(Q) = A}. Mostra la domanda \texttt{Q} su
           \texttt{stdout} all'utente e ne cattura la risposta
           \texttt{A} da \texttt{stdin} che deve essere uno tra i
           valori consentiti (y/n).
-	\item \texttt{echo(P)}. Mostra la frase \texttt{P} su
+    \item \texttt{echo(P)}. Mostra la frase \texttt{P} su
           \texttt{stdout}, se la modalità \emph{quiet} non è
           impostata.
-	\item \texttt{set\textunderscore quiet(B)} e
+    \item \texttt{set\textunderscore quiet(B)} e
           \texttt{get\textunderscore quiet() = B} rispettivamente
           impostano e ritornano la quiet mode.
 \end{itemize}
@@ -2587,7 +2605,7 @@ programma, per poter proseguire con la successiva.
 Per l'implementazione di questo meccanismo viene in aiuto il
 \emph{backtracking}, che simula proprio il funzionamento in
 questione. Il backtracking è un algoritmo generale che permette di
-trovare tutte (o alcune) soluzioni ad un certo problema
+trovare tutte (o alcune) soluzioni a un certo problema
 computazionale, che incrementalmente costruisce nuove soluzioni
 abbandonando quelle che sono state decretate non essere una
 soluzione. Durante la risoluzione di formule insiemistiche questo si
@@ -3172,7 +3190,7 @@ picat> load(main.pi)
 picat> compile(main.pi)
 picat> main.
 \end{verbatim}
-oppure, grazie ad una forma più concisa, in 
+oppure, grazie a una forma più concisa, in 
 \texttt{picat main.pi} (vedere
 esempio \ref{fig:example_interpreterstart}).
 
@@ -3225,44 +3243,44 @@ comando \texttt{help} (esempio in figura
 e la loro descrizione.
 
 \begin{figure}
-	\begin{verbatim}
-	log> help
-	Setlog provides you with the following commands:
+\begin{verbatim}
+log> help
+Setlog provides you with the following commands:
 
-	help
-	help <what>
-	Show help for <what>.
-	The argument describes the topic to give help for.
-	<what> can be one of [solve]
+help
+help <what>
+    Show help for <what>.
+    The argument describes the topic to give help for.
+    <what> can be one of [solve]
 
-	info
-	Display the current interpreter status.
+info
+    Display the current interpreter status.
 
-	up history
-	Print the whole commands history.
-	up <n>
-	Redo the last <n> command issued.
-	If <n> is empty the last command is issued,
-	this is equivalent to `up 0`.
+up history
+    Print the whole commands history.
+up <n>
+    Redo the last <n> command issued.
+    If <n> is empty the last command is issued,
+    this is equivalent to `up 0`.
 
-	log <mode>
-	Set the log mode to <mode>.
-	Available log mode: [none,v,vv,vvv,all].
-	log file <file>
-	Set log file to <file>.
-	Default is `stdout`.
+log <mode>
+    Set the log mode to <mode>.
+    Available log mode: [none,v,vv,vvv,all].
+log file <file>
+    Set log file to <file>.
+    Default is `stdout`.
 
-	solve
-	solve <formula>
-	solve file <file>
-	Solve the formula, respectively, typed in stdin,
-	given as argument of this command, or read from the
-	first line of file <file> using the setlog solver.
+solve
+solve <formula>
+solve file <file>
+    Solve the formula, respectively, typed in stdin,
+    given as argument of this command, or read from the
+    first line of file <file> using the setlog solver.
 
-	quiet <mode>
-	Set the quit mode execution.
-	Available mode: [true, false]. Default is true.
-	\end{verbatim}
+quiet <mode>
+    Set the quit mode execution.
+    Available mode: [true, false]. Default is true.
+\end{verbatim}
 
 	\caption{Esempio: comando help}
 	\label{fig:example_helpcommand}
@@ -3273,14 +3291,15 @@ e la loro descrizione.
 La modalità interattiva permette una piccola configurazione del
 sistema. In particolare l'utente può scegliere
 \begin{itemize}
-	\item il livello di log che vuole visualizzare;
+	\item il livello di log da visualizzare;
 	\item il file su cui scrivere i log;
-	\item se visualizzare o meno i messaggi del solver (ad esempio, 
+	\item di visualizzare o meno i messaggi del solver (ad esempio, 
 	      i passaggi delle riscritture).
 \end{itemize}
 
-Configurazioni di basso livello sono proibite o determinate a
-tempo di compilazione, l'utente non ha quindi accesso ad esse.
+Configurazioni di basso livello sul sistema o sul solver
+sono proibite o determinate a tempo di compilazione, all'utente
+non è quindi permessa la modifica.
 
 Un esempio di configurazione è mostrato in figura
 \ref{fig:example_confcommands}.
@@ -3352,7 +3371,7 @@ Si veda l'esempio in \ref{fig:example_solvecommands}
 	no!
 	log>
 	\end{verbatim}
-	\caption{Esempio: comando solve (e varianti)}
+	\caption{Esempio: comando solve (e varianti) della modalità interattiva}
 	\label{fig:example_solvecommands}
 \end{figure}
 
@@ -3436,13 +3455,11 @@ un'implementazione funzionante di \lset{} in Picat, e, di fatto, sono
 stati tralasciati numerosi dettagli.  Uno dei dettagli non considerati
 è stato la rappresentazione delle formule. Nell'implementazione Picat
 di \lset{} non è stato possibile adottare la rappresentazione delle
-formule di \lset{} adottata in {log} a causa delle citate limitazioni
-di Picat rispetto al Prolog sulla forma sintattica dei termini. Si è
-quindi utilizzato per il momento una sintassi nettamente più vicina
-alla rappresentazione interna di Picat. Lo schema sottostante riassume
-la condizione ottimale in cui la formula non ha bisogno di alcuna
-traduzione per essere elaborata dal solver. La soluzione al problema è
-riassumibile dallo schema seguente
+formule di \lset{} adottata in \setlog{} a causa delle citate
+limitazioni di Picat rispetto al Prolog sulla forma sintattica dei
+termini.  Si è quindi utilizzato per il momento una sintassi
+nettamente più vicina alla rappresentazione interna di Picat. La
+soluzione a questo problema è riassumibile dallo schema seguente
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}
@@ -3452,27 +3469,25 @@ riassumibile dallo schema seguente
 	\node[punktchain, join] (c) {Solver};
 	\end{tikzpicture}
 \end{figure}
-che aggiunge un livello, il parsing delle formule, appunto. In questo
-modo il solver non ha bisogno di modifiche, in quanto il lavoro è
-effettuato ad un livello intermedio, manipolando la sintassi delle
-formule.
-
-Così facendo inoltre, si può decidere di non realizzare il
-preprocessor in Picat, ma in Prolog ad esempio, sfruttando il modulo
-DCG \cite{MetalevelDCG} (Definite Clause Grammar) che consente di
-effettuare il parsing di frasi dando la grammatica a clausole
-definite.
+che aggiunge un livello: il parsing delle formule \lset{}.  In questo
+modo il solver non ha bisogno di modifiche: le formule manipolate sono
+sempre rappresentate con una sintassi vicina a quella di Picat, ma
+l'utente (sia umano che non) può lavorare con formule \lset{}.  Così
+facendo, inoltre, si può decidere di realizzare questo livello
+intermedio in un linguaggio diverso da Picat. Possiamo citare Prolog,
+ad esempio, con il modulo DCG \cite{MetalevelDCG} (Definite Clause
+Grammar) che consente di effettuare il parsing di frasi dando la
+grammatica a clausole definite.
 
 Un altro aspetto sicuramente da migliorare riguarda la verifica della
 correttezza sulla risoluzione delle formule. Il testing del solver non
-era obiettivo di questo lavoro di tesi, ma si è reso ovviamente
-necessario per capire se l'implementazione rispettasse la teoria,
-almeno sui casi presi in esame. I casi esaminati non sono ovviamente
-esaustivi e non coprono nemmeno tutti i casi limite che andrebbero
-verificati.
+era obiettivo di questo lavoro di tesi, ma si è reso necessario per
+capire, almeno indicativamente, l'aderenza dell'implementazione alla
+teoria. I casi esaminati non sono ovviamente esaustivi e non coprono
+nemmeno tutti i casi limite che andrebbero verificati.
 
 Una futura espansione al solver invece potrebbe prevedere
-l'integrazione delle funzioni parziali: andando quindi a considerare
+l'integrazione delle funzioni parziali, andando quindi a considerare
 l'intero linguaggio attualmente supportato da \setlog{} e \jsetl{} e
 non un suo sottoinsieme.
 
@@ -3521,7 +3536,7 @@ l'accompagnamento dal punto di vista professionale e lavorativo.
 \bigskip
 
 Ringrazio tutti quelli che in un modo o nell'altro mi hanno dedicato
-un aiuto, un ``buona fortuna'' ad un esame o una risata,
+un aiuto, un ``buona fortuna'' a un esame o una risata,
 accompagnandomi in questo percorso.
 
 \bigskip
