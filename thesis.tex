@@ -1,4 +1,5 @@
-\documentclass[12pt,a4paper,openright]{book} % oneside
+% !TeX spellcheck = it_IT
+\documentclass[12pt,a4paper,openright]{book}  % oneside  % openright
 
 % ****************************************************************
 %   PACKAGES
@@ -10,6 +11,7 @@
 \usepackage{amsmath}         % math features.
 \usepackage{amsthm}          % math theorems.
 \usepackage{amssymb}         % math symbols.
+\usepackage{amsbsy}			 % math bold.
 \usepackage{listings}        % embed programming language in latex.
 \usepackage{stmaryrd}        % symbols for theoretical computer science.
 \usepackage{hhline}          % better horizontal lines in tabulars and arrays.
@@ -41,20 +43,23 @@
 %\usepackage{minted}
 \usepackage{tikz}            % flow chart.
 \usepackage{tocvsec2}        % numbering chapter fix.
+\usepackage{enumitem}        % enums.
 %\usepackage{subcaption}      % needed by nested figures.
 %\usepackage{showframe}      % DEBUG: shows page frames.
 
 % ****************************************************************
 %   CONFIGS
-\hypersetup{                                  % hyperlinks color
-  colorlinks=true,
-  urlcolor=blue,
-  linkcolor=blue
-}
+%\hypersetup{                                  % hyperlinks color
+%  colorlinks=true,
+%  urlcolor=blue,
+%  linkcolor=blue
+%}
 \dominitoc                                    % minitoc setup
 \lstset{                                      % listing setup
   basicstyle=\ttfamily,
-  mathescape
+  mathescape,
+  columns=fullflexible,
+  keepspaces=true
 }
 \addto{\captionsitalian}{%                    % custom translations
   \renewcommand{\mtctitle}{Sommario}%
@@ -109,7 +114,6 @@ tuborg/.style={decorate},
 tubnode/.style={midway, right=2pt},
 }
 
-
 % ****************************************************************
 %   RESOURCES
 \subfile{prooftree}
@@ -117,11 +121,14 @@ tubnode/.style={midway, right=2pt},
 \addbibresource{biblio.bib}
 
 
-% **********************************************
-% **********************************************
+
+% ****************************************************************
+% @@@@@@                     DOCUMENT                       @@@@@@
+% ****************************************************************
 \begin{document}
 
-%%% First page
+%%% *******************************************************
+%%% Opening page   ****************************************
 \begin{titlepage}
     \begin{center}
         \includegraphics[width=0.4\textwidth]{img/logo_unipr.png}
@@ -130,8 +137,8 @@ tubnode/.style={midway, right=2pt},
 
 		% *** university details
 		\Large
-        \textsc{Dipartimento di Scienze Matematiche\\
-        Fisiche ed Informatiche}
+        \textsc{Dipartimento di Scienze Matematiche,\\
+        Fisiche e Informatiche}
 
         \vspace{0.5cm}
 
@@ -161,15 +168,15 @@ tubnode/.style={midway, right=2pt},
 		\begin{minipage}{0.4\textwidth}
 			\begin{flushleft}
 				\large
-				\textit{Candidato}\\
-				Luca \textsc{Parolari}
+				\textit{Relatore}\\
+				Prof. Gianfranco \textsc{Rossi}
 			\end{flushleft}
 		\end{minipage}
 		\begin{minipage}{0.4\textwidth}
 			\begin{flushright}
 				\large
-				\textit{Relatore}\\
-				Gianfranco \textsc{Rossi}
+				\textit{Candidato}\\
+				Luca \textsc{Parolari}
 			\end{flushright}
 		\end{minipage}
 
@@ -189,7 +196,7 @@ tubnode/.style={midway, right=2pt},
 \cleardoublepage
 
 \begin{dedication}
-A mio nonno.
+A mio nonno, Luigi.
 \end{dedication}
 
 \thispagestyle{empty}
@@ -199,9 +206,6 @@ A mio nonno.
 %%% *******************************************************
 %%% Table of contents   ***********************************
 \tableofcontents
-
-%\lhead[\fancyplain{}{}]{\fancyplain{}{\leftmark}} \chead{}
-%\rhead{\thepage} \lfoot{} \cfoot{} \rfoot{}
 
 
 
@@ -215,44 +219,38 @@ A mio nonno.
 
 L'ambito dei linguaggi basati su insiemi è da sempre un ambito
 affascinante nonché di particolare rilevanza per la risoluzione di
-certe classi di problemi. Con \clpset{} ed il suo linguaggio derivato
-a vincoli basato su insiemi \lset{}, le potenzialità dell'insieme sono
-state spinte ad un livello notevole: sono forniti all'utente una forma
-molto generale di insiemi, detti \textit{untyped hereditarily finite
-  hybrid sets} (letteralmente, insiemi ibridi finiti ereditari non
-tipizzati).
+certe classi di problemi. Avere strumenti in grado di trattare in modo
+automatico operazioni su insiemi (incluse relazioni binarie e funzioni
+parziali, che sono comunque un tipo particolare di insiemi) è di ovvio
+interesse in vari settori: dalla dimostrazione di teoremi alla
+programmazione con vincoli.
 
-Le relazioni binarie sono insiemi di coppie ordinate e le funzioni
-parziali sono un sottoinsieme delle relazioni binarie, di conseguenza
-risulta naturale provare a codificare questi due elementi in termini
-di insiemi. In \cite{Rossi18} è stato mostrato come codificare
-relazioni binarie e funzioni parziali in termini di insiemi su
-\clpset{}, un linguaggio CLP dotato di una procedura decisionale in
-grado di risolvere le formule del primo ordine senza quantificatori su
-un universo di insiemi finiti. Lavori successivi hanno mostrato come
-estendere \clpset{} in modo tale che relazioni e funzioni parziali
-siano entità primitive del linguaggio. Il linguaggio che ne è
-risultato, denominato \lbr{}, offre insiemi, relazioni binarie e
-funzioni parziali, con le relative operazioni di base su essi.
+Una proposta in tal senso è quella di \clpset{} \cite{Dovier00}, con
+il suo linguaggio a vincoli basato su insiemi \lset{}. \clpset{}
+fornisce all'utente una forma molto generale di insiemi, detti
+\emph{untyped hereditarily finite hybrid sets} (letteralmente, insiemi
+ibridi ereditariamente finiti non tipizzati). \clpset{} è dotato di un
+solver (denominato \satset{}) che implementa una procedura decisionale
+in grado di risolvere le formule del primo ordine senza quantificatori
+su un universo di insiemi ereditariamente finiti. Lavori successivi
+hanno mostrato come estendere \clpset{} in modo tale che relazioni e
+funzioni parziali siano entità primitive del linguaggio. Il linguaggio
+che ne è risultato, denominato \lbr{}, offre insiemi, relazioni
+binarie e funzioni parziali, con le relative operazioni di base su
+essi \cite{Rossi18}.
 
-In questo lavoro di tesi non verrà trattata l'esensione di \clpset{}
-su relazioni binarie e funzioni parziali (\lbr{}), bensì il linguaggio
-\lset{} che offre come entità primitive del linguaggio gli insiemi.
+Attualmente \lset{} , con le sue estensioni introdotte in \lbr{}, è
+implementato in Prolog, all'interno dello strumento di programmazione
+logica \setlog{} \cite{SetLog}.
 
-Avere strumenti in grado di trattare in modo automatico operazioni su
-insiemi, relazioni binarie e funzioni parziali è di ovvio interesse in
-vari settori: dalla dimostrazione di teoremi alla programmazione con
-vincoli.
+L'obiettivo di questo lavoro di tesi è la realizzazione del solver
+\satset{} per \lset{}, utilizzando il linguaggio di programmazione
+Picat.
 
-L'esperimento di questo lavoro introduce un nuovo giocatore sul campo:
-Picat. Picat è un linguaggio logico piuttosto innovativo che ricalca
-nel \textit{core} il funzionamento di un linguaggio logico, ma
-possiede alcune raffinatezze che lo rendono un candidato ideale per
+Picat \cite{PicatLang} è un linguaggio logico piuttosto innovativo che
+ricalca nel core il funzionamento di un linguaggio logico, ma possiede
+alcune caratteristiche che lo rendono un candidato ideale per
 sperimentare l'implementazione del solver per \lset{}.
-
-L'obiettivo finale di questo esperimento è infatti la realizzazione
-del solver \satset{} per \lset{}, implementando la sua procedura di
-risoluzione sfruttando le regole di riscrittura.
 
 \bigskip
 
@@ -262,27 +260,28 @@ segue.
 	\item Il capitolo \ref{ch:clpbasedlang} presenta la sintassi e
           la semantica del linguaggio \lset{}, con la procedura di
           risoluzione del solver \satset{}. A corredo viene data una
-          panoramica generale della CLP (Constraint Logic
+          panoramica generale del CLP (Constraint Logic
           Programming). Successivamente si descrivono le regole di
-          riscrittura, ampiamente trattate per la realizzazione del
-          solver.
+          riscrittura, utilizzate dal solver per la risoluzione dei
+          vincoli di \lset{}.
 	\item Il capitolo \ref{ch:picat} descrive Picat in forma
           generale: sono trattate le sue caratteristiche e
-          funzionalità (di base ed avanzate), finendo con una
+          funzionalità (di base e avanzate), finendo con una
           descrizione delle differenze tra Picat e Prolog, il più
           diffuso linguaggio logico.
 	\item Il capitolo \ref{ch:lsetpicat} descrive la realizzazione
-          del solver e del suo sitema in Picat, trattando aspetti
-          progettuali, problemi riscontrati e caratteristiche
-          implementative.
-	\item Nel capitolo \ref{ch:impl} viene dato un dettaglio
-          sull'implementazione delle regole di riscrittura, mostrando
-          come la teoria è tradotta in un programma Picat.
+          del solver in Picat, trattando aspetti progettuali, problemi
+          riscontrati e caratteristiche implementative.
+	\item Nel capitolo \ref{ch:impl} viene data una descrizione
+          più dettagliata dell'implementazione delle regole di
+          riscrittura utilizzate dal solver, mostrando come la
+          descrizione astratta di \lset{} venga tradotta in un
+          programma Picat.
 	\item Il capitolo \ref{ch:use} mostra come è possibile
           utilizzare il solver realizzato: tramite modalità
           interattiva o tramite API.
 	\item Il capitolo \ref{ch:conclusion} fornisce una panoramica
-          del lavoro a ragion veduta e possibili lavori futuri.
+          del lavoro svolto e accenna a possibili lavori futuri.
 \end{itemize}
 
 \thispagestyle{fancy}
@@ -310,13 +309,13 @@ Programming, abbreviato CLP) \clpset{} \cite{Dovier00}.
 implementato in Prolog nello strumento \setlog{} \cite{SetLog};
 inoltre \lset{} è stato implementato in Java come parte della libreria
 \jsetl{} \cite{JSetL}. Obiettivo principale di questo lavoro di tesi è
-quello di dare un’implementazione di \lset{} utilizzando il linguaggio
+quello di dare un'implementazione di \lset{} utilizzando il linguaggio
 di programmazione Picat \cite{PicatLang}.
 
 Nella sezione \ref{sec:clpbasedlang_clp} è descritto il paradigma di
-programmazione logico a vincoli in forma molto discorsiva ed
+programmazione logico a vincoli in forma molto discorsiva e
 introduttiva, mentre in \ref{sec:clpbasedlang_lset} si dà una
-presentazione di \lset{}: sintassi, semantica, il solver e regole di
+presentazione di \lset{}: sintassi, semantica, solver e regole di
 riscrittura.
 
 \section{Constraint Logic Programming}
@@ -380,7 +379,7 @@ composta da
 Ogni dominio $D_i$ specifica un insieme di valori possibili per la
 variabile $X_i$. Dato che i CSP sono parametrici rispetto al dominio
 dei vincoli, anche il supporto alla risolzuione lo diventa: da qui il
-nome \clpset{}. Si utilizzerà per la loro risoluzione un’opportuna
+nome \clpset{}. Si utilizzerà per la loro risoluzione un'opportuna
 istanza dello schema generale CLP. Ad esempio se il dominio è quello
 degli insiemi allora si potrebbe utilizzare \clpset{}.
 
@@ -399,7 +398,7 @@ operazioni, in quanto la nozione di \emph{set} è una componente comune
 nella progettazione di programmi, ma sono pochi i linguaggi che
 forniscono gli insiemi come struttura dati elementare.  Sempre in
 \cite{Dovier00} vengono menzionate alcune eccezioni di linguaggi che
-si basano su insiemi: SETL, B ed il linguaggio Z, utilizzato per
+si basano su insiemi: SETL, B e il linguaggio Z, utilizzato per
 descrivere la specifica formale di programmi. Qualche eccezione esiste
 anche nel campo dei \emph{database deduttivi} e, più recentemente,
 anche come \emph{general purpose programming language}. Ad ogni modo,
@@ -414,8 +413,8 @@ predefiniti invece sono visti come vincoli predefiniti del linguaggio,
 gestiti con procedure di risoluzione di vincoli. La classe di insiemi
 considerata vuole essere molto generale: gli insiemi possono essere
 annidati e/o parzialmente specificati. Gli insiemi parzialmente
-specificati possono contenere variabili come elementi dell’insieme o
-come parte dell’insieme stesso.
+specificati possono contenere variabili come elementi dell'insieme o
+come parte dell'insieme stesso.
 
 Di seguito si forniscono le specifiche di \lset{} definendone prima la
 sintassi (\ref{subsec:clpbasedlang_lset_sintax}) e poi la semantica
@@ -475,7 +474,7 @@ composti) sono combinazioni $\wedge$ (and) e $\vee$ (or) di
 esempi di \calset{}-\textit{constraint} composti:
 \begin{itemize}
 	\item $1\ in\ R \land 1\ nin\ S \land un(R,S,T) \land T = \{X\}$
-	\item $(X\ in S \land X\ neq 1) \lor (X\ nin S \land X = 1)$
+	\item $(X\ in\ S \land X\ neq\ 1) \lor (X\ nin\ S \land X = 1)$
 \end{itemize}
 
 \subsection{Semantica informale}
@@ -485,7 +484,7 @@ La semantica intuitiva dei vari simboli in $\sum_{\mathcal{SET}}$ è la
 seguente:
 
 \begin{itemize}
-	\item $\emptyset$ rappresenta l’insieme vuoto;
+	\item $\emptyset$ rappresenta l'insieme vuoto;
 	\item $\{\cdot\mid\cdot\}$ rappresenta il costruttore di
           insiemi definito come $\{t\mid s\} = \{t\}\ \cup s$;
 	\item il predicato $=$ rappresenta la relazione di
@@ -493,7 +492,7 @@ seguente:
 	\item il predicato \textit{in} rappresenta la relazione di
           appartenenza;
 	\item il predicato \textit{un} rappresenta la relazione di
-          unione; insiemistica definita come: $un(r,s,t) = true
+          unione insiemistica definita come $un(r,s,t) = true
           \Longleftrightarrow t = r \cup s$;
 	\item il predicato \textit{disj} rappresenta la relazione di
           disgiunzione insiemistica definita come $disj(r,s) = true
@@ -507,7 +506,7 @@ seguente:
 \label{subsec:clpbasedlang_lset_solver}
 
 La procedura \satset{} risolve i vincoli e rappresenta il solver del
-linguaggio \lset{}. Il seguente algoritmo ne descrive la struttura:
+linguaggio \lset{}. Il seguente algoritmo ne descrive la struttura.
 
 \begin{algorithm}
 	\caption{Procedura \satset{}}
@@ -540,7 +539,7 @@ Essenzialmente \satset{$(C)$} utilizza tre procedure:
 	\item \textbf{\texttt{STEP}}: applica speciali \textit{regole
           di riscrittura} alla formula $C$ corrente e ritorna
           \textit{false} oppure la formula modificata. L'esecuzione di
-          $STEP$ viene iterata fino ad arrivare ad ottenere una
+          $STEP$ viene iterata fino ad arrivare a ottenere una
           formula in forma irriducibile. Notare che $STEP$ ritorna
           $false$ se almeno uno dei vincoli in $C$ viene riscritto a
           $false$. Anche $STEP(false)$ ritorna $false$.
@@ -557,12 +556,8 @@ soddisfacibile; al contrario, se nessuno dei vincoli in $C$ viene
 riscritto a $false$ allora ogni soluzione generata da \satset{} è una
 soluzione per $C$ e viceversa.
 
-\subsection{Regole di riscrittura per vincoli di eguaglianza}
+\subsection{Regole di riscrittura per vincoli di uguaglianza}
 \label{subsec:clpbasedlang_lset_rewriteeq}
-
- \fixme{Almeno un esempio di riscrittura di un vincolo composto
-   (semplice); ad esempio: {1,2}={X,Y} and X neq 1 oppure 1 in X and 1
-   nin X}
 
 Nelle sezioni successive sono riportate le regole di riscrittura
 descritte in \cite{Rossi18}, trattate durante la realizzazione del
@@ -633,7 +628,7 @@ L'implementazione di queste regole in Picat è riportata nel capitolo
 \paragraph{Forme irriducibili}
 \begin{itemize}
 	\item $\dotx = t$ e $\dotx$ non è contenuto ne in $t$ ne in
-          altri letterali della fomula.
+          altri letterali della formula.
 \end{itemize}
 
 \paragraph{Implementazione}
@@ -644,7 +639,7 @@ Esempio di riscrittura del vincolo composto $\{1,2\} = \{X,Y\} \land X \neq 1$.
 Di seguito sono riportate le riscritture compiute per giungere al risultato.
 
 \begin{itemize}
-	\item Viene applicata la regola $eq_8(a)$\\ 
+	\item Viene applicata la regola $eq_8$\\ 
 	  \[
 	  \begin{split}
 	    \{ 1, 2 \} &= \{ X, Y \} \land X \neq 1 \to \\
@@ -743,7 +738,7 @@ Algoritmo \ref{alg:neq_constraints}
 \subsubsection{Il vincolo in}
 
 \textit{Sintassi:} $t_1 \in t_2$.\\
-\noindent\textit{Semantica informale:} se $t_2$ è un insime, $t_1$ è un membro di $t_2$.\\
+\noindent\textit{Semantica informale:} se $t_2$ è un insieme, $t_1$ è un membro di $t_2$.\\
 \noindent\textit{Regole di riscrittura:} Figura \ref{fig:in_constraints}.
 
 \begin{figure}
@@ -773,6 +768,35 @@ Algoritmo \ref{alg:neq_constraints}
 
 \paragraph{Implementazione}
 Algoritmo \ref{alg:in_constraints}
+
+\paragraph{Esempio}
+Esempio di riscrittura del vincolo composto $1 \in X \land 1 \not\in
+X$. Di seguito sono riportate le riscritture compiute per giungere al
+risultato.
+
+\begin{itemize}
+	\item Viene applicata la regola $\in_3$ e la regola
+          ``irriducibile'' per $\not\in$.\\
+	  \[
+	  \begin{split}
+	    1 \in X &\land 1 \not\in X \to \\ & X = \{ 1 \sqcup N \}
+              \\ & \land 1 \not\in X
+	  \end{split}
+	  \]
+	\item Viene applicata la regola $eq_5$ e $X$ viene unificato a
+          $\{ 1 \sqcup N\}$, quindi
+	  \[
+	    \begin{split}
+	      X = \{ 1 \sqcup N \} \land 1 \not\in X \to 1 \not\in \{1 \sqcup N\}
+	    \end{split}
+	  \]
+	\item Viene applicata la regola $in_5$
+	  \[
+	    1 \not\in \{1 \sqcup N\} \to 1 \neq 1 \land 1 \not\in N
+	  \]
+	\item $1 \neq 1$, provoca il fallimento: la formula non è
+          soddisfacibile.
+\end{itemize}
 
 \subsubsection{Il vincolo union}
 
@@ -882,8 +906,8 @@ Algoritmo \ref{alg:un_constraints}
 	\item $\dotA \mid\mid \dotB$, $\dotA$ e $\dotB$ variabili distinte.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:disj_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:disj_constraints}
 
 \subsubsection{Il vincolo subset}
 
@@ -936,8 +960,8 @@ Algoritmo \ref{alg:disj_constraints}
 	\item $\dotA \subseteq \{ y | B \}$.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:subset_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:subset_constraints}
 
 \subsubsection{Il vincolo inters}
 
@@ -990,8 +1014,8 @@ Algoritmo \ref{alg:subset_constraints}
 	\item $inters(A, \dotB, \dotC)$, $A$ e $\dotB$ non sono la stessa variabile.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:inters_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:inters_constraints}
 
 \subsubsection{Il vincolo diff}
 
@@ -1021,8 +1045,8 @@ Algoritmo \ref{alg:inters_constraints}
 	\item Nessuna.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:diff_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:diff_constraints}
 
 \subsection{Regole di riscrittura per vincoli negativi su insiemi}
 \label{subsec:clpbasedlang_lset_rewriteneg}
@@ -1067,8 +1091,8 @@ t_n)$ che ne rappresenta la negazione.
 	\item $t \not\in \dotA$, e $\dotA$ non occorre in $t$.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:notin_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:notin_constraints}
 
 \subsubsection{Il vincolo not union}
 
@@ -1103,8 +1127,8 @@ Algoritmo \ref{alg:notin_constraints}
 	\item Nessuna.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:notun_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:notun_constraints}
 
 \subsubsection{Il vincolo not disjoint}
 
@@ -1134,8 +1158,8 @@ Algoritmo \ref{alg:notun_constraints}
 	\item Nessuna.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:notdisj_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:notdisj_constraints}
 
 \subsubsection{Altri vincoli negativi}
 
@@ -1177,8 +1201,8 @@ Algoritmo \ref{alg:notdisj_constraints}
 	\item Nessuna.
 \end{itemize}
 
-\paragraph{Implementazione}
-Algoritmo \ref{alg:othernegatives_constraints}
+%\paragraph{Implementazione}
+%Algoritmo \ref{alg:othernegatives_constraints}
 
 
 
@@ -1215,12 +1239,11 @@ dalle lettere del suo nome:
 \item \textbf{P}attern-matching. Un \emph{predicato} definisce una
   relazione e può avere zero, una o più soluzioni. Picat è un
   linguaggio basato su regole. I predicati e le funzioni sono definiti
-  tramite regole di pattern-matching.
+  tramite pattern-matching.
 \item \textbf{I}ntuitive. Picat fornisce comandi come l'assegnamento
-  ed i loop, che vengono usati nei comuni linguaggi imperativi,
-  rendendolo di fatto più affine per la scrittura di programmi
-  "comuni".
-\item \textbf{C}onstraints. Picat supporta la programmazione con
+  e i loop, che vengono comunemente usati nei linguaggi imperativi,
+  rendendo di fatto più semplice la scrittura di programmi non logici.
+\item \textbf{C}onstraints. Picat supporta nativamente la programmazione con
   vincoli. Nasce infatti con quattro moduli per la risoluzione di
   vincoli: \verb|cp|, \verb|sat|, \verb|smt| e \verb|mip|.
 \item \textbf{A}ctors. Viene fornito il supporto a chiamate
@@ -1233,7 +1256,7 @@ dalle lettere del suo nome:
 \end{itemize}
 
 Inoltre, Picat supporta le principali caratteristiche dei linguaggi
-logici, obbligando però il programmatore ad usarle in modo esplicito,
+logici, obbligando però il programmatore a usarle in modo esplicito,
 come per il caso dell'unificazione, del non determinismo, del tabling
 e dei vincoli.
 
@@ -1244,10 +1267,10 @@ e dei vincoli.
 \label{subsec:picat_base_system}
 
 Picat è un linguaggio interpretato. I programmi Picat però, prima di
-essere eseguiti, sono compilati in byte-code. Il compilatore non
-trasforma i sorgenti in codice macchina, ma depura il programma da
-tutto quello che non è necessario per l'esecuzione, esegue alcuni
-controlli statici e riscrive alcuni costrutti sintatticamente (e.g. i
+essere eseguiti, sono compilati in \textbf{byte-code}. Il compilatore
+non trasforma i sorgenti in codice macchina, ma depura il programma da
+tutto quello che non è necessario per l'esecuzione, compie vari
+controlli statici e riscrive alcuni costrutti sintatticamente (e.g., i
 cicli).
 
 Tramite l'interprete Picat è possibile caricare, compilare ed eseguire
@@ -1255,24 +1278,53 @@ programmi, eventualmente anche modalità debug.
 
 \paragraph{Esempio}\
 \begin{verbatim}
-> picat Picat> compile(program) Picat> load(program) Picat> main.
+$ picat 
+
+Picat> compile(hello_world)
+Compiling::hello_world.pi
+hello_world.pi compiled in 1 milliseconds
+
+yes
+
+Picat> load(hello_world)
+loading...hello_world.qi
+
+yes
+
+Picat> main
+Hello, World!
+
+yes
 \end{verbatim}
+
+Dall'esempio riportato sopra è possibile notare che la compilazione
+del file sorgente \texttt{.pi} produce un file compilato in byte-code
+con estensione \texttt{.qi}, che viene poi caricato dall'interprete
+Picat al comando \texttt{load}. Picat mette a disposizione anche il
+comando \texttt{cl($\cdot$)} (compile and load), che permette di
+eseguire compilazione e caricamento in modo rapido e senza la
+generazione di file intermedi (il byte-code generato è caricato
+istantaneamente dall'interprete, senza bisogno di essere salvato su
+memoria persistente).
 
 \subsection{Tipi di dato}
 \label{subsec:picat_base_datatype}
 
-Picat è un linguaggio tipato dinamicamente: il controllo dei tipi
-avviene a runtime. Le variabili in Picat possono avere o non avere un
-valore. Una variabile è libera fintanto che non viene vincolata ad un
-valore (operazione di bounding), e può avere degli attributi
-rappresentati come mappa chiave-valore.
+Picat è un linguaggio \textbf{dinamicamente tipato}: il controllo dei
+tipi avviene a runtime. Le variabili in Picat possono avere o non
+avere un valore. Una variabile è libera fintanto che non viene
+vincolata a un valore (operazione di bounding), e può avere degli
+attributi rappresentati come mappa chiave-valore.\footnote{Gli
+  attributi di una variabile sono spesso utilizzati dai risolutori di
+  vincoli integrati nei moduli predefiniti di Picat per memorizzare
+  informazioni riguardanti vincoli su variabili.}
 
 I tipi primitivi di Picat sono il numero intero, reale e l'atomo. Un
 atomo è un nome iniziante con lettera minuscola o una stringa quotata
 da apici singoli.
 
-I tipi composti invece sono le liste \verb|[|$t_1, \ldots,
-t_n$\verb|]| e le strutture \verb|$s(|$t_1, \ldots, t_n$\verb|)|, dove
+I tipi composti invece sono le liste $[t_1, \ldots,
+t_n]$ e le strutture $\$s(t_1, \ldots, t_n)$, dove
 $s$ è il nome della struct, ed $n$ è l'arità. Il dollaro viene
 impiegato per distinguere una chiamata di funzione da una
 struct. Picat inoltre mette a disposizione tipi composti speciali come
@@ -1285,7 +1337,7 @@ Picat> V1 = X1, V2 = _ab, V3 = _       % variabili
 
 Picat> N1 = 12, N2 = 0xf3, N3 = 1.0e8  % numeri
 
-Picat> A1 = x1, A2 = ’_AB’, A3 = ''    % atomi
+Picat> A1 = x1, A2 = '_AB', A3 = ''    % atomi
 
 Picat> L = [a,b,c,d]                   % liste
 
@@ -1306,14 +1358,16 @@ Picat> S = $point(1.0,2.0)             % struttura
 
 Picat> S = new_struct(point,3)
 S = point(_3b0,_3b4,_3b8)              % creazione di una struttura
+                                       % con arità 3
 
 Picat> A = {a,b,c,d}                   % array
 
 Picat> A = new_array(3)
-A = {_3b0,_3b4,_3b8}                   % creazione di un array
+A = {_3b0,_3b4,_3b8}                   % creazione di un array 
+                                       % di 3 elementi
 
 Picat> M = new_map([one=1,two=2])
-M = (map)[two = 2,one = 1]             % creazione di una map
+M = (map)[two = 2,one = 1]             % creazione di una mappa
 
 Picat> M = new_set([one,two,three])
 M = (map)[two,one,three]               % creazione di un insieme
@@ -1327,20 +1381,21 @@ X = [1,2,3,4,5]
 
 Picat possiede una ricca libreria di funzioni di utilità sui tipi di
 dato che permettono, tra le altre cose, di verificare qual è il tipo
-di una variabile, convertire tipi ad altri tipi e aggiungere elementi
-ad un insieme.
+di una variabile, convertire tipi ad altri tipi e aggiungere o
+rimuovere elementi da una struttura dati.
 
 \subsection{Predicati}
 \label{subsec:picat_base_pred}
 
-I predicati sono una componente fondamentale di Picat. Un predicato ha
-esito positivo o negativo, a meno di eccezioni. Un predicato può
-esplorare tutte le soluzioni tramite il backtracking implementato in
-Picat.
+I predicati sono una componente fondamentale di Picat: essi
+definiscono una relazione che può avere zero, una o più soluzioni,
+terminando in modo positivo o negativo, a meno di eccezioni.
 
 In Picat i predicati sono definiti con regole di pattern-matching. Le
-regole utilizzabili per la definizione di un predicato sono $Head,
-Cond => Body$ e $Head, Cond\ ?=> Body$ che rappresentano
+regole utilizzabili per la definizione di un predicato sono 
+\[ Head, Cond => Body \]
+e
+\[Head, Cond\ ?=> Body \] che rappresentano
 rispettivamente la regola \emph{non-backtrackable} e
 \emph{backtrackable}. La testa $Head$ del predicato è $p(t_1, \ldots,
 t_n)$ con $p$ il nome del predicato e $n$ l'arità. Le condizioni
@@ -1350,6 +1405,15 @@ applicabile, Picat riscrive $C$ in $Body$. Se la regola usata è
 \emph{non-backtrackable} allora la riscrittura è permanente,
 altrimenti il programma farà backtracking su $C$ se $Body$ fallisce e
 verrà provata la regola successiva.
+
+Un predicato è detto essere \emph{deterministico} se è definito
+solamente da regole non-backtrackable, \emph{non-deterministico}
+invece se nella definizione del predicato compare almeno una regola
+backtrackable. Inoltre, si dice \emph{globalmente deterministico} un
+predicato deterministico che in $Body$ contiene solo chiamate a
+predicati globalmente deterministici. Per questo motivo, un
+predicato deterministico può avere più di una soluzione, mentre
+uno globalmente deterministico al massimo una.
 
 \paragraph{Esempio} Regola non backtrackable.
 \begin{verbatim}
@@ -1372,13 +1436,67 @@ X = 3;
 no
 \end{verbatim}
 
+Picat inoltre permette la definizione di \emph{fatti} della forma
+$p(t_1, \ldots, t_n)$ nelle definizioni di predicati. I fatti sono
+tradotti in regole di pattern-matching prima della compilazione. Una
+definizione di predicato costituita da fatti può essere preceduta da
+una \emph{index declaration} della forma $index (M_{11}, \ldots,
+M_{1n}) \ldots (M_{m1}, \ldots, M_{mn})$ dove ogni $M_{ij}$ può essere
+o $+$ (indicizzato) o $-$ (non indicizzato). Per ogni pattern
+indicizzato $(M_{i1}, \ldots, M_{in})$, il compilatore genera una
+versione del predicato che indicizza tutti gli argomenti
+contrassegnati da $+$. Ciò è fatto per ragioni di efficienza.
+
+\paragraph{Esempio}
+
+Supponendo di voler rappresentare la seguente figura tramite fatti in
+Picat
+\begin{center}
+\begin {tikzpicture}[-latex ,auto ,node distance =4 cm and 5cm ,on grid ,
+semithick ,
+state/.style ={ circle ,top color =white , bottom color = white ,
+	draw, black , text=black , minimum width =1 cm}]
+\node[state] (A) {a};
+\node[state] (B) [right=of A] {b};
+\node[state] (C) [below =of A] {c};
+\path (A) edge (B);
+\path (A) edge (C);
+\path (C) edge [bend left =15] (B);
+\path (B) edge [bend left =15] (C);
+\end{tikzpicture}
+\end{center}
+la rappresentazione potrebbe essere
+\begin{verbatim}
+index (+,-) (-,+)
+spigolo(a,b).
+spigolo(a,c).
+spigolo(b,c).
+spigolo(c,b).
+\end{verbatim}
+che grazie all'indicizzazione vengono poi tradotti nelle regole che
+seguono
+\begin{verbatim}
+spigolo(a,Y) ?=> Y=b.
+spigolo(a,Y) =>  Y=c.
+spigolo(b,Y) =>  Y=c.
+spigolo(c,Y) =>  Y=b.
+spigolo(X,b) ?=> X=a.
+spigolo(X,c) ?=> X=a.
+spigolo(X,c) =>  X=b.
+spigolo(X,b) =>  X=c.
+\end{verbatim}
+
 \subsection{Funzioni}
 \label{subsec:picat_base_func}
 
 Picat permette di definire delle funzioni, ovvero oggetti che hanno
 sempre esito positivo e che ritornano un solo valore. La sintassi di
-una funzione è $Head, Cond = Result => Body$. Le funzioni in Picat
-sono uno zucchero sintattico per un predicato cos' formato:
+una funzione è
+\[
+  Head, Cond = Result => Body
+\]
+Le funzioni in Picat
+sono uno zucchero sintattico per un predicato così formato:
 $HeadResult, Cond => Body$ dove $HeadResult = p(t_1, \ldots, t_n, r)$.
 
 \paragraph{Esempio}
@@ -1406,7 +1524,7 @@ la ricorsione.
 Anche l'assegnamento, come altri comandi, è uno zucchero
 sintattico. Un assegnamento in Picat $X := Y$ viene gestito a tempo di
 compilazione creando nuovi nomi di variabile. Le nuove variabili
-conterranno il nuovo valore dopo l'assegnamento e verranno usati nella
+conterranno il nuovo valore dopo l'assegnamento e verranno usate nella
 porzione di programma successiva all'assegnamento al posto della
 vecchia variabile.
 
@@ -1423,9 +1541,9 @@ avente anch'esso output $2$.
 \subsubsection{Cicli}
 
 Picat supporta tre tipi di cicli: \verb|foreach|, \verb|while| e
-\verb|do-while|. Il \verb|foreach| viene usato per implementare un
-particolare tipo di ciclo su liste denominato \emph{list
-  comprehension}.
+\verb|do-while|. Il \verb|foreach| viene anche impiegato per
+implementare un particolare tipo di ciclo su liste denominato
+\emph{list comprehension}.
 
 \paragraph{Esempio}\
 \begin{lstlisting}
@@ -1453,9 +1571,7 @@ while (J <= 5).
 Mentre per i tipi di cicli più comuni la semantica è piuttosto ovvia,
 per le list comprehension la cosa è più interessante. Le list
 comprehension sono funzioni che servono a costruire una lista iterando
-valori di altre liste.
-
-La list comprehension ha la seguente sintassi
+valori di altre list. La sintassi per esprimerle è la seguente
 \begin{lstlisting}
 [T : $E_1$ in $D_1$, $Cond_1$ , $\ldots$, $E_n$ in $D_n$ , $Cond_n$]
 \end{lstlisting}
@@ -1469,26 +1585,30 @@ L = [(a , 1),(a , 2),(b , 1),(b , 2)]
 \section{Funzionalità avanzate}
 \label{sec:picat_advanced}
 
-In questa sezione si dà una panoramica delle funzionalità avanzate in
-Picat. Eventuali approfondimenti si possono trovare in \cite{PicatGuide}.
+In questa sezione si dà una panoramica delle funzionalità avanzate di
+Picat come il tabling, i moduli, le eccezioni, le high-order calls, le
+action rules e le mappe globali. Questi strumenti rendono Picat un
+linguaggio veramente ricco e unico nel suo genere. Eventuali
+approfondimenti si possono trovare in \cite{PicatGuide}.
 
 \subsection{Tabling}
 \label{subsec:picat_advanced_tabling}
 
 Il tabling è un meccanismo di caching che permette di memorizzare la
-chiamata ad un predicato e relativo risultato per evitare cicli
+chiamata a un predicato e relativo risultato per evitare cicli
 infiniti o per ridurre il costo computazione dovuto alla grossa
 ridondanza dei calcoli.
 
 \paragraph{Esempio}\
 \begin{lstlisting}
 table
-fib(0) = 1.
+fib(0) = 0.
 fib(1) = 1.
 fib(N) = fib(N-1)+fib(N-2).
 \end{lstlisting}
 Senza tabling \verb|fib(N)| ha costo esponenziale in \verb|N|, con il
-tabling invece il costo è lineare.
+tabling invece il costo è lineare in quanto non vi è la necessità del
+ricalcolo di risultati intermedi.
 
 Il tabling è abilitato usando la keyword \verb|table| prima della
 definizione del predicato.
@@ -1500,22 +1620,50 @@ I moduli sono una funzionalità molto utile di Picat e permettono al
 programmatore un'organizzazione comoda del codice sorgente, suddivisa
 su più file (moduli, appunto).
 
-Un modulo è un file sorgente con estensione \verb|.pi|. Un modulo
-inizia con la dichiarazione di se stesso nella forma \verb|module|
-$Name$, dove $Name$ corrisponde al nome del file.
+Un modulo è un file sorgente con estensione \texttt{.pi}, e
+inizia con la dichiarazione di se stesso nella forma 
+\[
+\texttt{module}\ Name.
+\]
+dove $Name$ corrisponde al nome del file. Se il modulo non inizia con
+la dichiarazione del modulo stesso, esso è assunto appartenere al
+modulo globale e tutte le funzioni e predicati dichiarati sono resi
+visibili a tutti gli altri moduli, nonchè all'interprete Picat.
 
 Picat fornisce un sistema molto semplice di import, consentendo così
 di accedere a funzionalità di altri file sorgente. La sintassi per
 l'import è
-\begin{lstlisting}
-import $Name_1, \ldots, Name_n$.
-\end{lstlisting}
+\[
+\texttt{import}\ Name_1, \ldots, Name_n.
+\]
 
-E' possibile chiamare predicati di un modulo specificando
-completamente il nome del predicato con \verb|m.p()|, dove \verb|m| è
-il nome del modulo e \verb|p| è il nome del predicato. E' consentito
-proibire l'utilizzo di un predicato da moduli esterni apponendo la
-keyword \verb|private| prima della definizione del predicato.
+Un predicato pubblico può essere acceduto anche specificandone
+completamente il nome tramite \texttt{m.p()}, dove \texttt{m} è il
+nome del modulo e \texttt{p} è il nome del predicato. Il modulo va
+comunque importato. E' consentito modificare la visibilità di un
+predicato ai moduli esterni (poibendone quindi l'utilizzo)
+semplicemente antecedendo la keyword \texttt{private} alla definizione
+del predicato.
+
+\paragraph{Esempio}
+
+\begin{verbatim}
+%%% file somma.pi
+module somma.
+
+somma(L)=Sum =>
+    somma_aux(L,0,Sum).
+private
+somma_aux([],Sum0,Sum) => Sum=Sum0.
+somma_aux([X|L],Sum0,Sum) => sum_aux(L,X+Sum0,Sum).
+
+%%% file test_somma.pi
+module test_somma.
+import somma.
+
+go =>
+    writeln(somma([1,2,3,4])).
+\end{verbatim}
 
 \subsection{Eccezioni}
 \label{subsec:picat_advanced_exceptions}
@@ -1531,6 +1679,31 @@ mentre la cattura e la gestione dell'eccezione si effettua tramite
 \begin{lstlisting}
 catch(Goal, Exception, Handler)
 \end{lstlisting}
+con ovvia semantica: $Goal$ è il predicato dal quale si catturano le
+eccezioni; $Exception$ è l'eccezione che si vuole catturare, da
+unificare con l'eccezione lanciata ($Exception$ può essere anche una
+variabile libera); mentre $Handler$ è il predicato che si esegue una
+volta catturata l'eccezione.
+
+Si noti che il predicato \texttt{catch} è di ordine superiore in
+quanto prende come primo e terzo parametro un altro predicato.
+
+\paragraph{Esempio}
+
+\begin{verbatim}
+%%% file pericolo.pi
+pericolo => X = 5 // 0.   % divisione per zero, solleva
+                          % eccezione zero_divisor
+
+main =>
+    catch(
+        pericolo, 
+        Exception, 
+        (print("Eccezione catturata: "), println(Exception)).
+
+$ picat pericolo.pi
+Eccezione catturata: error(zero_divisor,/ / 2)
+\end{verbatim}
 
 \subsection{Higher-Order Calls}
 \label{subsec:picat_advanced_hoc}
@@ -1544,7 +1717,7 @@ ritornare un valore. Il predicato \verb|find_all| invece trova tutte
 le soluzioni della chiamata per la funzione in input.
 
 Picat fornisce altri predicati di ordine superiore per la gestione
-delle eccezioni, l'esecuzione e alte utilità.
+delle eccezioni, l'esecuzione e altre utilità.
 
 \paragraph{Esempio}
 \begin{verbatim}
@@ -1557,7 +1730,7 @@ no
 Picat> L=findall(X,member(X,[1,2,3])).
 L = [1,2,3]
 
-Picat> Z=apply(’+’,1,2)
+Picat> Z=apply('+',1,2)
 Z = 3
 \end{verbatim}
 
@@ -1565,28 +1738,29 @@ Z = 3
 \label{subsec:picat_advanced_actionrules}
 
 Picat fornisce \emph{Action Rules} per descrivere attori
-event-driven. Un attore è un chiamata ad un predicato che può essere
+event-driven. Un attore è un chiamata a un predicato che può essere
 differita rispetto alla normale esecuzione ed è attivabile da
-eventi. Queste regole hanno sintassi $Head, Cond, \{Event\} => Body$,
+eventi. Queste regole hanno sintassi 
+\[ Head, Cond, \{Event\} => Body \]
 dove $Event$ è un insieme non vuoto di eventi separati da virgola.
 
 Gli attori possono essere assegnati a canali sui quali sono notificati
 gli eventi. Un canale è una variabile con degli attributi in grado di
-notificare eventi. Un canale può avere diverse porte, che specificano
+notificare eventi e può avere diverse porte, che specificano
 la visibilità dell'evento per quel canale.
 
 \subsection{Mappe Globali}
 \label{subsec:picat_advanced_globalmaps}
 
-Picat fornisce tre tipi diversi di mappe globali utilizzabili durante
+Picat fornisce tre tipi diversi di mappe utilizzabili durante
 l'esecuzione: mappe \emph{heap}, mappe \emph{globali} e
 \emph{tabelle}.
 
-Queste mappe sono create non appena il sistema Picat si avvia. Possono
-essere consultate richiedendo a Picat una mappa e fornendo un
-\emph{ID} per la stessa. Le tre mappe differiscono per la modaltà di
-memorizzazione degli elementi e per il numero di mappe che possono
-essere richieste.
+Queste mappe sono create non appena il sistema Picat si avvia. 
+Possono essere consultate e modificate richiedendone un riferimento
+al sistema, specificando tipologia e codice identificativo.
+Le tre mappe differiscono per la modalità di memorizzazione
+degli elementi e per il numero di mappe che possono essere richieste.
 
 Queste mappe sono accessibili durante tutta l'esecuzione e sono quindi
 molto utili per memorizzare variabili globali.
@@ -1606,15 +1780,15 @@ variabili logiche (una volta sola).
   di base sia in Picat che in Prolog per effettuare il bound delle
   variabili a termini. Ma mentre in Prolog l'unificazione viene
   utilizzata anche nella risoluzione delle regole, in Picat viene
-  impiegato il pattern-matching per dicidere se una regola è
+  impiegato il pattern-matching per decidere se una regola è
   applicabile o meno. Ciò comporta alcune divergenze tra l'esecuzione
-  della stessa regola in Prolog e in Picat.  Inoltre, l'operazione di
-  pattern-matching sulle regole è molto più leggera rispetto
-  all'unificazione.
+  della stessa regola in Prolog e in Picat.  Inoltre, in termini di
+  efficienza, l'operazione di pattern-matching sulle regole è molto
+  più leggera rispetto all'unificazione.
 \item[Backtracking.] Anche Picat supporta nativamente il
   backtracking. In Prolog però ogni regola è implicitamente
-  \emph{backtrackable} e si usa l'operatore \emph{cut} \verb|!| per
-  controllarne il comportamento. In Picat invece una regola è
+  \emph{backtrackable} e si usa l'operatore \emph{cut} (\texttt{!}) 
+  per controllarne il comportamento. In Picat invece una regola è
   \emph{backtrackable} solo se esplicitamente dichiarato. Ciò permette
   al programmatore di capire a colpo d'occhio l'intenzione di una
   regola.
@@ -1623,13 +1797,19 @@ variabili logiche (una volta sola).
   l'esecuzione, dando di fatto più flessibilità al linguaggio.
 \item[Operatori definiti da utente.] In Picat non è possibile definire
   nessun operatore, mentre in Prolog è possibile estendere il set di
-  operatore aggiungendone di nuovi.
+  operatore aggiungendone di nuovi. Questa caratteristica è stata
+  particolarmente sfruttata nello strumento \setlog per dare un senso
+  di naturalezza e vicinanza alla rappresentazione matematica delle
+  formule.
 \item[Costrutti.] Una delle differenze più evidenti tra i due
   linguaggi sono i costrutti. Picat infatti fornisce molti costrutti
   per svolgere operazioni comuni quali assegnamenti, cicli e salti
   condizionali. Non mancano inoltre un buon numero di tipi di dato
   predefiniti con relative operazioni, che per attività di scripting e
-  modellazione rendono Picat più conveniente rispetto al Prolog.
+  modellazione rendono Picat più conveniente rispetto al Prolog. In
+  Prolog è fornita solo qualche struttura elementare come l'\emph{if}
+  con una sintassi particolare, spesso difficile da leggere e capire
+  durante la manutenzione del codice.
 \end{description}
 
 
@@ -1641,29 +1821,37 @@ variabili logiche (una volta sola).
 
 %\minitoc
 
-Nella sezione \ref{sec:lsetpicat_project} si dà una breve panoramica
-sull'organizzazione del progetto e delle scelte effettuate per
-strutturarne il codice, nonché qualche accenno alle notazioni e
-convenzioni adottate. In \ref{sec:lsetpicat_system} si fornisce una
-descrizione del sistema dal punto di vista generale, includendo
-l'ingegnerizzazione e la suddivisione in moduli delle
+In questo capitolo si descrive la realizzazione del constraint solver
+e del suo sistema Picat, trattando aspetti progettuali e relative
+scelte, problemi e difficoltà riscontrate sia di design che in fase di
+realizzazione e qualche caratteristica implementativa del solver.
+
+In particolare, nella sezione \ref{sec:lsetpicat_project} si dà una
+breve panoramica sull'organizzazione del progetto e delle scelte
+effettuate per strutturarne il codice, nonché qualche accenno alle
+notazioni e convenzioni adottate. In \ref{sec:lsetpicat_system} si
+fornisce una descrizione del sistema dal punto di vista generale,
+includendo l'ingegnerizzazione e la suddivisione in moduli delle
 funzionalità. Inoltre si fornisce una veloce rassegna per ogni modulo
 e se ne descrive l'interfaccia esposta. Nella sezione
 \ref{sec:lsetpicat_solver} viene approfondito il solver, il suo
-funzionamento ed i predicati implementati. La sezione
+funzionamento e i predicati implementati. La sezione
 \ref{sec:lsetpicat_or} approfondisce i problemi affrontati e relative
 soluzioni nell'implementazione del vincolo \texttt{or} con Picat. In
 \ref{sec:lsetpicat_solutions} si analizza il problema
 dell'enumerazione delle soluzioni in Picat. In
 \ref{sec:lsetpicat_testing} si affronta il problema del testing: un
-processo necessario e piuttosto complicato da effettuare durante la
-la stesura dell’implementazione di un solver.
+processo necessario e piuttosto complicato da effettuare durante la la
+stesura dell'implementazione di un solver.
 
 \section{Organizzazione del progetto}
 \label{sec:lsetpicat_project}
 
-L'organizzazione del progetto e dei file sorgente è da subito stata
-una priorità. Soprattutto nell'ambito dei linguaggi logici esistono
+L'organizzazione del progetto e dei file sorgente è di particolare
+rilevanza: permette una miglior stesura del codice, facilità
+di lettura e manutenzione, creazione dei test e consente a futuri
+collaboratori di lavorare sul software in modo ordinato e preciso.
+Soprattutto nell'ambito dei linguaggi logici esistono
 poche linee guida e strutture convenzionali per l'organizzazione dei
 sorgenti. Ciò, unito alla complessità intrinseca dei linguaggi logici,
 complica notevolmente la manutenibilità del software e lo rende molto
@@ -1678,10 +1866,9 @@ vantaggi da questo punto di vista nell'utilizzo di Picat:
           progetto tramite i moduli, semplificando la gestione delle
           funzionalità;
 	\item è possibile seguire un approccio OOP con costruttori e
-          funzioni, integrando il concetto di visibilità dei metodi
-          (con la keyword \texttt{private}, si veda
-          \ref{subsec:picat_advanced_modules}) per garantire il corretto
-          utilizzo di interfacce di programmazione progettate per
+          funzioni, integrando il concetto di visibilità dei
+          metodi. Ciò può essere di aiuto a garantire il corretto
+          utilizzo delle interfacce di programmazione, progettate per
           svolgere compiti ben definiti;
 	\item non è possibile scrivere del codice ``magico'' o che
           abbia comportamenti non attesi in quanto il backtracking è
@@ -1689,15 +1876,15 @@ vantaggi da questo punto di vista nell'utilizzo di Picat:
           che cambino il comportamento del programma.
 \end{itemize}
 
-Nell'organizzazione di questo progetto adotteremo la convenzione più
+Nell'organizzazione di questo progetto si adotta la convenzione più
 comune della suddivisione in file sorgenti che realizzano le
 funzionalità generali (cartella \texttt{src}) e i test (cartella
-\texttt{tests}). Come convenzione interna inoltre si è deciso che le
+\texttt{tests}). Come convenzione interna inoltre si decide che le
 funzionalità raggruppate in un singolo modulo debbano essere
 \textit{tightly coupled}\footnote{Letteralmente, \textit{tightly
     coupled} significa strettamente accoppiati. \`E un concetto che
   riferito ai componenti di un sistema ne esprime la forte relazione
-  ed interconnesione.}, mentre le funzionalità \textit{loosely
+  e interconnessione.}, mentre le funzionalità \textit{loosely
   coupled} siano dipendenze da funzionalità di moduli diversi.
 
 La struttura che ne risulta è elencata in figura
@@ -1732,10 +1919,8 @@ La struttura che ne risulta è elencata in figura
 Una descrizione sommaria del contenuto dei file e delle directory è
 riportata di seguito:
 \begin{itemize}
-	\item \texttt{JOURNAL.txt}, il diario di bordo. Vi sono note
-          ed evoluzione del progetto in linea temporale.
 	\item \texttt{LICENSE.txt}, la licenza del codice sorgente.
-	\item \texttt{README.md}, la descrizione del progetto
+	\item \texttt{README.md}, la descrizione del progetto:
           contenente note per l'installazione e l'utilizzo.
 	\item \texttt{Makefile}, consente l'automatizzazione di task
           ricorrenti, evitando al programmatore l'esecuzione manuale
@@ -1762,7 +1947,7 @@ non vengono seguite in modo rigido.
 \label{subsec:lsetpicat_concretelang}
 
 Il linguaggio definito in \lset{} per le formule non è realizzabile in
-Picat senza elaborazioni sofisticate, che esulano dall’obiettivo di
+Picat senza elaborazioni sofisticate, che esulano dall'obiettivo di
 questo lavoro di tesi. Definiremo pertanto un linguaggio concreto
 ad-hoc per descrivere le formule di input per il solver, che risulti
 il più vicino possibile al linguaggio di \lset{}, rimanendo facilmente
@@ -1796,11 +1981,11 @@ seguente:
 dove gli operatori binari di \lset{} hanno la ovvia traduzione in
 forma scritta: $=$ diventa $eq(\cdot, \cdot)$, $\neq$ diventa
 $neq(\cdot, \cdot)$, $\in$ diventa $in(\cdot, \cdot)$\footnote{Più
-  precisamente, in Picat questo simbolo è operatore è stato
-  trasformato in $insl$, in quanto il predicato \texttt{in} è presende
+  precisamente, in Picat questo simbolo è stato
+  trasformato in \texttt{insl}, in quanto il predicato \texttt{in} è presente
   nativamente in Picat e non può essere ridefinito. Per evitare
   ambiguità è stato definito il predicato \texttt{contains} che ha la
-  stessa semantica di \texttt{in} con gli argomenti ribaltati.},
+  stessa semantica di \texttt{in} con gli argomenti ``ribaltati''.},
 $\not\in$ diventa $nin(\cdot, \cdot)$, e così via. La convenzione di
 \lset{} prevede che la forma negata di questi operatori sia
 rappresentata dal prefisso $n$ prima del nome. Ad esempio: $nunion$,
@@ -1823,9 +2008,8 @@ Gli insiemi in \clpset{} sono rappresentati tramite la funzione $\{
 
 L'interprete realizzato per la gestione del sistema nel suo insieme è
 suddiviso per funzionalità: grazie alle caratteristiche di Picat
-queste funzionalità sono state raggruppate e separate in \emph{moduli}
-(vedere \ref{subsec:picat_advanced_modules} per ulteriori informazioni
-sul modulo). Ognuno di questi moduli cerca di essere il più coeso
+queste funzionalità sono state raggruppate e separate in
+\emph{moduli}. Ognuno di questi moduli cerca di essere il più coeso
 possibile e fornisce funzionalità ad altri moduli, incrementando
 quindi la riusabilità del codice.
 
@@ -1844,11 +2028,10 @@ utilizzabile da qualunque programma Picat per risolvere una formula di
 Il modulo \texttt{lset} contiene l'interfaccia e l'implementazione
 degli insiemi nei termini di \lset{}. Consente di astrarre l'entità
 insieme dalla sua implementazione reale. L'approccio OOP è
-intenzionale: Picat, come detto in precedenza, favorisce la
-programmazione imperativa e la ricalca con costrutti e funzioni molto
-simili dal punto di vista logico.
+intenzionale: Picat, come detto in precedenza, favorisce l'utilizzo di
+paradigmi diversi da quello logico.
 
-L'adozione di questo meccanismo ci permette di sperimentare due
+L'adozione di questo meccanismo permette di sperimentare due
 implementazioni differenti dell'insieme di \lset{}:
 
 \begin{itemize}
@@ -1861,7 +2044,7 @@ implementazioni differenti dell'insieme di \lset{}:
           rappresentazione \emph{lista-resto} prevede di trattare un
           insieme come una lista in cui gli elementi dell'insieme
           completamente specificati vengono elencati all'inizio della
-          lista, ed il resto dell'insieme corrisponde al resto della
+          lista, e il resto dell'insieme corrisponde al resto della
           lista.
 \end{itemize}
 
@@ -1874,12 +2057,14 @@ regola in modo del tutto analogo alla descrizione matematica.
 
 \paragraph{Interfaccia}
 
-L'interfaccia di questo modulo dispone di
+L'interfaccia di questo modulo espone alcune funzioni
 \begin{itemize}
-	\item \texttt{new\textunderscore lset/0} o
-          \texttt{new\textunderscore lset/1}, i costruttori,
-          utilizzati rispettivamente per creare un insieme vuoto o un
-          insieme a partire da una lista;
+	\item \texttt{new\textunderscore lset/0},
+          \texttt{new\textunderscore lset/1},
+          \texttt{new\textunderscore lset/2}, i costruttori,
+          utilizzati rispettivamente per creare un insieme vuoto, un
+          insieme a partire da una lista o un insieme partendo da
+          testa e resto;
 	\item \texttt{lset\textunderscore head/1}, un metodo per
           recuperare la testa dell'insieme;
 	\item \texttt{lset\textunderscore rest/1}, un metodo per
@@ -1891,14 +2076,19 @@ L'interfaccia di questo modulo dispone di
 I metodi di questo modulo sono facilmente usabili come in un
 linguaggio OOP:
 \begin{verbatim}
-Picat> X = new_lset()         % crea un insieme vuoto
-Picat> Y = new_lset([1,2|A])  % crea un insieme costituito da 1 e resto A
+Picat> X = new_lset()          % crea un insieme vuoto
 
-% restutuisce in YHead il resto dell'insieme Y
+% entrambi i costruttori creano un insieme costituito da
+%  testa [1, 2] e resto A.
+Picat> Y = new_lset([1,2|A])
+Picat> Z = new_lset([1,2], A)
+
+
+% restituisce in YHead il resto dell'insieme Y
 Picat> YHead = Y.lset_head()
 YHead = [1,2]
 
-% restutuisce in YRest il resto dell'insieme Y
+% restituisce in YRest il resto dell'insieme Y
 Picat> YRest = Y.lset_rest()
 YRest = A
 \end{verbatim}
@@ -1907,32 +2097,32 @@ YRest = A
 \subsubsection{commands.pi}
 
 Il modulo \texttt{commands} gestisce l'interfaccia utente. Implementa
-una CLI orientata all'usabilità utente: fornisce messaggi di aiuto,
-cerca di effettuare controlli sull'input e una sapiente gestione degli
-errori.
+una CLI (Command Line Interface) orientata all'usabilità utente:
+fornisce messaggi di aiuto, cerca di effettuare controlli 
+sull'input e una sapiente gestione degli errori.
 
 Di fatto questo modulo implementa un ciclo che non termina mai se non
-quanto il comando di uscita è ricevuto. Inoltre, il ciclo principale è
-racchiuso in nel predicato di ordine superiore \texttt{catch} (si veda
+quando il comando di uscita è ricevuto. Inoltre, il ciclo principale è
+racchiuso nel predicato di ordine superiore \texttt{catch} (si veda
 \ref{subsec:picat_advanced_hoc} per più informazioni sui predicati di
 ordine superiore) che consente di catturare qualunque eccezione esca
 dalla gestione dei comandi, per evitare spiacevoli crash e consentendo
 all'utente di capire ciò che succede in caso di errore.
 
 La CLI all'avvio svolge, in ordine, le seguenti operazioni:
-\begin{itemize}
+\begin{enumerate}[label=\arabic*)]
 	\item inizializza le variabili globali necessarie con i valori
           predefiniti;
 	\item mostra un messaggio di introduzione contenente qualche
-          piccona nota sulla garanzia, copyright e mostra i comandi di
+          piccola nota sulla garanzia, copyright e mostra i comandi di
           aiuto principali, nonché uno stato delle variabili
           inizializzate;
 	\item si mette in attesa di un comando.
-\end{itemize}
+\end{enumerate}
 
 La lettura dei comandi è effettuata tramite funzioni predefinite di
-Picat per leggere l'input da \texttt{stdin} e funzioni di utilità per
-la manipolazione di stringhe nel predicato
+Picat per leggere l'input da uno \emph{stream} e funzioni di utilità
+per la manipolazione di stringhe nel predicato
 \texttt{readCommandLine/1}. La stringa letta è convertita in una lista
 di atomi e ritornata al chiamante, il quale sa per certo che nella
 lista risultato il primo elemento è sempre un comando e, se esistono,
@@ -1977,6 +2167,7 @@ veda l'esempio \ref{fig:example_commandshistory}).
 	\label{fig:example_commandshistory}
 \end{figure}
 
+{\tolerance= 3000\relax
 L'esecuzione di un comando valido viene attivata tramite il predicato
 \texttt{doCommand/2} che riceve come primo argomento il comando e come
 secondo argomento una lista (possibilmente vuota) di
@@ -1984,9 +2175,11 @@ argomenti. L'implementazione di questo predicato segue molto lo stile
 di programmazione logico: il predicato distingue i casi a seconda del
 primo argomento ed è implementato per svolgere funzioni diverse
 appunto a seconda di quale sia il comando di input, per esempio:
+\par}
 \begin{verbatim}
-doCommand(help, Args) => ...  doCommand(solve, Args) => ...
-  doCommand(...) => ...
+doCommand(help, Args) => ...
+doCommand(solve, Args) => ...
+doCommand(...) => ...
 \end{verbatim}
 Questo ``\textit{swtich}'' potrebbe essere effettuato in modo più
 imperativo sfruttando la presenza delle \textit{strutture di
@@ -2006,7 +2199,7 @@ gestione del solver (\texttt{doSolve/2}).
 \subsubsection{global.pi}
 
 Il modulo \texttt{global} gestisce le variabili globali. Aiuta il
-programmatore ad effettuare operazioni sulle variabili globali senza
+programmatore a effettuare operazioni sulle variabili globali senza
 conoscere il tipo di mappa globale utilizzata e senza effettuare
 manipolazione diretta della mappa stessa.
 
@@ -2021,14 +2214,14 @@ variabili globali.
           associata a nessun valore l'eccezione
           \texttt{existence\textunderscore error/2} è sollevata.
 	\item \texttt{set\textunderscore global/2}, prende in input
-          una chiave \emph{key} e un valore \emph{value} ed imposta in
+          una chiave \emph{key} e un valore \emph{value} e imposta in
           una mappa globale la variabile \emph{key} con valore
           \emph{value}.
 \end{itemize}
 
 L'implementazione corrente di questo modulo non consente la scelta
 della mappa globale utilizzata per la memorizzazione delle variabili a
-runtime, ma ciò potrebbe essere oggetto di future migliorie.
+\emph{runtime}, ma ciò potrebbe essere oggetto di future migliorie.
 
 \subsubsection{log\textunderscore h.pi}
 
@@ -2055,10 +2248,10 @@ Il modulo fornisce le seguenti caratteristiche.
 		\item \texttt{all}, comprende tutti i livelli di
                   verbosità.
 	\end{itemize}
-	I tre livelli di verbostià predefiniti sono volutamente
+	I tre livelli di verbosità predefiniti sono volutamente
         implementati con ereditarietà (e.g., il livello di verbosità
         \texttt{vvv} mostra i log anche dei livelli \texttt{vv} e
-        \texttt{v} oltre ad i propri). Comunque, il modulo permette di
+        \texttt{v} oltre ai propri). Comunque, il modulo permette di
         specificare altri livelli di verbosità qualora ve ne sia
         necessità e di darne un'implementazione ereditaria (vedere
         esempio \ref{fig:example_loglevel_noinheritance} e
@@ -2069,7 +2262,7 @@ Il modulo fornisce le seguenti caratteristiche.
           da utilizzare nel caso in cui il tipo del messaggio
           differisca. Il tipo non è determinante per il canale di
           output su cui il messaggio verrà loggato, ma è utilizzato
-          per distinguere a colpo d'occhio il tipo dei log. Ad ogni
+          per distinguere a colpo d'occhio il tipo dei log. A ogni
           messaggio di log viene aggiunto un prefisso, rispettivamente
           \texttt{D:}, \texttt{E:} o \texttt{I:}.
 
@@ -2127,7 +2320,7 @@ L'interfaccia offerta da questo modulo consiste nei seguenti metodi
 	\item \texttt{log\textunderscore d/2},
           \texttt{log\textunderscore e/2}, \texttt{log\textunderscore
             i/2} verificano che il secondo argomento (il livello di
-          log) sia tra quelli impostati ed in caso lanciano la
+          log) sia tra quelli impostati e in caso lanciano la
           scrittura del log;
 	\item \texttt{log\textunderscore mode/1} imposta il log mode
           scegliendo tra una delle modalità implementate;
@@ -2152,14 +2345,20 @@ predefinite per leggere valori booleani, stringhe, eccetera.
 \paragraph{Interfaccia}
 
 \begin{itemize}
-	\item \texttt{prompt(Q) = A}. Non implementato.
-	\item \texttt{confirm(Q) = A}. Mostra la domanda \texttt{Q} su
-          \texttt{stdout} all'utente e ne cattura \texttt{A} la
-          risposta da \texttt{stdin} che deve essere forzatamente un
-          valore booleano (y/n).
-	\item \texttt{echo(P)}. Mostra la frase \texttt{P} su
-          \texttt{stdout}.
-	\item \texttt{set\textunderscore quiet(B)} e
+	\item \texttt{prompt(Q) = A}. Mostra la domanda \texttt{Q} su
+	      \texttt{stdout} all'utente e ne cattura una risposta arbitraria \texttt{A} da \texttt{stdin}.
+	      Attualmente non implementato, solleva
+          \texttt{not\textunderscore implemented\textunderscore
+            exception} (predisposto nell'interfaccia per utilizzi
+            futuri).
+    \item \texttt{confirm(Q) = A}. Mostra la domanda \texttt{Q} su
+          \texttt{stdout} all'utente e ne cattura la risposta
+          \texttt{A} da \texttt{stdin} che deve essere uno tra i
+          valori consentiti (y/n).
+    \item \texttt{echo(P)}. Mostra la frase \texttt{P} su
+          \texttt{stdout}, se la modalità \emph{quiet} non è
+          impostata.
+    \item \texttt{set\textunderscore quiet(B)} e
           \texttt{get\textunderscore quiet() = B} rispettivamente
           impostano e ritornano la quiet mode.
 \end{itemize}
@@ -2187,10 +2386,11 @@ con quelli attuali per decretare il successo (o fallimento) del test.
 	\item \texttt{assert\textunderscore equal/2}. Confronta il
           risultato atteso (il primo parametro) con il risultato
           attuale (il secondo parametro) e verifica tramite
-          l'uguaglianza di Picat (\texttt{==}\footnote{`E necessario
+          l'uguaglianza di Picat (\texttt{==}\footnote{\`E necessario
             utilizzare il doppio uguale per non consentire a Picat di
-            istanziare variabili \emph{unbound}.}) che i due valori
-          siano identici.
+            istanziare variabili \emph{unbound}: si vuole verificare
+            l'identicità di due termini.}) che i due valori siano
+          identici.
 	\item \texttt{assert\textunderscore fail/0}. Asserisce un
           fallimento. Il meccanismo in questo caso è delicato: si
           rimanda all'esempio \ref{fig:example_unittest_assertfail}.
@@ -2206,14 +2406,15 @@ con quelli attuali per decretare il successo (o fallimento) del test.
 
 	    A = new_assert("test")
 
-	    % solve è il predicato da testare, di cui è atteso il fallimento.
+	    % solve è il predicato da testare, 
+	    % di cui è atteso il fallimento.
 
 	    solve(F, FF),
 
 	    % se il controllo riesce a raggiungere questo punto della
-	    %  computazione significa che il predicato di cui era atteso
-	    %  il fallimento non è fallito, e ciò è da segnalare con un
-	    %  errore tramite A.fail()
+	    % computazione significa che il predicato di cui era atteso
+	    % il fallimento non è fallito, e ciò è da segnalare con un
+	    % errore tramite A.fail()
 
 	    A.fail().
 
@@ -2221,11 +2422,12 @@ con quelli attuali per decretare il successo (o fallimento) del test.
 
 	    A = new_assert("test"),
 
-	    % se invece il predicato solve fallisce, il predicato test effettua
-	    %  il backtracking, scatenando la computazione di questa regola.
-	    %  Ciò, a meno di fallimenti durante la creazione dell'aserzione o
-	    %  all'esecuzione di metodi dell'asserzione, ci garantisce che il
-	    %  test ha successo.
+	    % se invece il predicato solve fallisce, il predicato
+	    % test effettua il backtracking, scatenando la 
+	    % computazione di questa regola.
+	    % Ciò, a meno di fallimenti durante la creazione 
+	    % dell'asserzione o all'esecuzione di metodi 
+	    % dell'asserzione, ci garantisce che il test ha successo.
 
 	    A.assert_fail().
 	\end{verbatim}
@@ -2237,8 +2439,8 @@ con quelli attuali per decretare il successo (o fallimento) del test.
 \label{sec:lsetpicat_solver}
 
 L'obiettivo principale del solver \lset{} è risolvere formule. Il
-risultato può avere zero, una o più soluzioni ed il solver deve essere
-in grado di mostrarle tutte, se queste sono finite.
+risultato può avere zero, una o più soluzioni e il solver deve essere
+in grado di calcolarle tutte.
 
 Il funzionamento del solver è quello descritto dallo pseudocodice in
 \ref{subsec:clpbasedlang_lset_solver}. Per ricapitolare, il solver
@@ -2250,8 +2452,7 @@ svolge queste tre azioni:
           applicando le regole di riscrittura corrette;
 	\item elimina gli insiemi che coinvolgono disuguaglianze.
 \end{itemize}
-La formula finale ottenuta è semplificata e irriducibile, il che la
-rende equivalente alla formula originale.
+La formula finale ottenuta è semplificata, irriducibile ed equivalente alla forma originale.
 
 \subsection{Predicato solve/2}
 \label{subsec:lsetpicat_solver_solve2}
@@ -2276,16 +2477,28 @@ store $solve(CN, CC)$.
 %% solve(C, CC) is det
 
 solve(C, CC) =>
+    % nuovo constraint store
     CN = [],
+    
+    % ciclo su ogni termine della formula (congiunta)
+    % Ad esempio per
+    %   [ eq(X,1), eq(Y,2) ]
+    % viene valutato prima il termine eq(X,1) e poi eq(Y,2)
+
     foreach (T in C)
+        % procedura di risoluzione per il termine T,
+        % C1 conterrà i nuovi vincoli generati
         sat(T, C1),
+
+        % aggiungo i nuovi vincoli al constraint store
         CN := CN ++ C1,
     end,
+    
     CN := CN.flatten(),
 
     if C == CN
-    then CC = CN
-    else solve(CN, CC)
+    then CC = CN           % punto fisso
+    else solve(CN, CC)     % continuo la risoluzione partendo da CN
     end.
 \end{verbatim}
 
@@ -2308,7 +2521,7 @@ doSolve(_) => println("no!").
 \end{verbatim}
 
 Il predicato \verb|solve/2| visto come API è utile anche
-nell'effetuare gli \emph{unit tests}. L'esempio riportato, seppur poco
+nell'effettuare gli \emph{unit tests}. L'esempio riportato, seppur poco
 interessante dal punto di vista della formula, mostra l'utilizzo di
 \verb|solve/2| per verificare la correttezza della risoluzione.
 \begin{verbatim}
@@ -2337,7 +2550,6 @@ dispatching della regola giusta. Notare come il predicato
 
 sat(F, FF), F == [] => FR = [].
 sat(F, FF) => rule(F, FF).
-
 
 %% rule(F, R) is det
 
@@ -2393,7 +2605,7 @@ programma, per poter proseguire con la successiva.
 Per l'implementazione di questo meccanismo viene in aiuto il
 \emph{backtracking}, che simula proprio il funzionamento in
 questione. Il backtracking è un algoritmo generale che permette di
-trovare tutte (o alcune) soluzioni ad un certo problema
+trovare tutte (o alcune) soluzioni a un certo problema
 computazionale, che incrementalmente costruisce nuove soluzioni
 abbandonando quelle che sono state decretate non essere una
 soluzione. Durante la risoluzione di formule insiemistiche questo si
@@ -2424,7 +2636,7 @@ or([_T|Tr], R) => or(Tr, R).
 dove
 \begin{itemize}
 	\item la prima regola gestisce il caso in cui la lista di
-          clausole in or sia vuota, ed ha sempre successo;
+          clausole in or sia vuota, e ha sempre successo;
 	\item la seconda regola gestisce la prima riscrittura: estrae
           una clausola prendendola dalla testa della lista e la
           inserisce nel risultato;
@@ -2494,14 +2706,16 @@ ha 4 soluzioni
 	\item \verb|X = [2]|;
 	\item \verb|X = [1,2]|
 \end{itemize}
+che sono costruite dal solver una dopo l'altra, simulando il
+non-determinismo.
 
 \section{Testing}
 \label{sec:lsetpicat_testing}
 
 La stesura dei test per verificare la correttezza dell'implementazione
-è un’operazione necessaria al fine di incrementare la qualità del
+è un'operazione necessaria al fine di incrementare la qualità del
 software prodotto. Per questo motivo sono stati realizzati predicati
-che prendono in esame casi semplici ma cercano di esploare i casi
+che prendono in esame casi semplici ma cercano di esplorare i casi
 limite.
 
 I test realizzati fanno uso del modulo \verb|assert| che mette a
@@ -2535,13 +2749,35 @@ di riscrittura descritte con notazione matematica in
 \ref{subsec:clpbasedlang_lset_rewriteset} e
 \ref{subsec:clpbasedlang_lset_rewriteneg}. Si può notare che la
 descrizione matematica delle regole in \cite{Rossi18} è molto vicina
-all’implementazione. L'implementazione di queste regole è stata fatta
-con un occhio di riguardo alla leggibilità ed alla semplicità del
+all'implementazione. L'implementazione di queste regole è stata fatta
+con un occhio di riguardo alla leggibilità e alla semplicità del
 codice; esiste già un'implementazione del solver in un linguaggio
 logico: \setlog{} in Prolog, che però risulta piuttosto complicata da
 capire per chi non ha familiarità con il Prolog.
 
+Le implementazioni riportate sono quelle per le regole di riscrittura
+fondamentali. Gli altri vincoli sono stati implementati in modo del
+tutto analogo.
+
 \section{Il vincolo eq}
+
+Il vincolo di uguaglianza è uno dei vincoli più importanti di \lset{}
+in quanto tratta l'unificazione insiemistica, operazione complessa e
+piuttosto delicata. Il vincolo $=$ è un vincolo binario e
+nell'implementazione è rappresentato come un predicato con tre
+argomenti: i primi due sono i due termini sui quali si applica il
+vincolo mentre il terzo è il risultato e contiene la riscrittura del
+vincolo.
+
+Le regole elencate per questo predicato rappresentano una sorta di
+``switch'': in base ai due termini di input viene selezionata la
+riscrittura corretta da applicare. Ciò, sfruttando le regole di
+pattern-matching di Picat, è effettuato tramite apposite condizioni
+che specificano l'applicabilità dei predicati.
+
+Il non determinismo è utilizzato solo per le regole con clausole in
+disgiunzione, dove il fallimento della regola è contemplato, e non
+determina il fallimento dell'intera riscrittura.
 
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di uguaglianza}
@@ -2549,47 +2785,49 @@ capire per chi non ha familiarità con il Prolog.
 \end{algorithm}
 \begin{verbatim}
 eq(T1, T2, R),  T1 == T2 =>                                % 1
-        log_d_vv("eq :: eq_1"),
     R = [].
 
 eq(T1, T2, R), nonvar(T1), var(T2) =>                      % 2
-        log_d_vv("eq :: eq_2"),
     R = [ $eq(T2, T1) ].
 
 eq(T1, T2, R),
         var(T1), T2.is_lset(),
         not occur_check(T1, T2.lset_head()),
         T1 == T2.lset_rest() =>                            % 3
-   	log_d_vv("eq :: eq_3"),
+   	% costruzione di un nuovo insieme con la testa
+   	%  di T2 e un nuovo resto N.
     YSetNew = new_lset(T2.lset_head(),_N),
     R = [ $eq(T1, YSetNew) ].
 
 eq(T1, T2, _R),
         var(T1),
         occur_check(T1, T2) =>                             % 4
-    log_d_vv("eq :: eq_4"),
     fail.  % sic.
 
 eq(T1, T2, R),
         var(T1) =>                                         % 5
-    log_d_vv("eq :: eq_5"),
-    R = [], T1 = T2.
+    % si rimuove il vincolo e si effettua 
+    % l'unificazione.
+    R = [], 
+    T1 = T2.
 
 eq(T1, T2, _R),
         struct(T1), struct(T2),
         T1.name() !== T2.name() =>                         % 6
-    log_d_vv("eq :: eq_6"),
+    % le funzioni di L_SET possono essere rappresentate
+    % da struct: $f(1,2), $g(f, X), ...
     fail.  % sic.
 
 eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
         T1.lset_rest() == T2.lset_rest() ?=>               % 7a
-    log_d_vv("eq :: eq_7a"),
+    % regola ri riscrittura 7 che implementa la prima
+    % clausola in or.
 
     YH = T2.lset_head(),                   % head of T2.
-    foreachnd_slice(YH, YElem, YSlice),    % get the j-th element nondet.
+    foreachnd_slice(YH, YElem, YSlice),    % get j-th elem nondet.
     YRest = T2.lset_rest(),                % rest of T2.
-    YSetSliced = new_lset(YSlice, YRest),  % build T2 without j-th elem.
+    YSetSliced = new_lset(YSlice, YRest),  % T2 without j-th elem.
 
     R1 = [ $eq(X, YElem) ],
     R2 = [ $eq(Xs, YSetSliced) ],
@@ -2599,12 +2837,13 @@ eq(T1@[X|Xs], T2, R),
 eq(T1@[X|_], T2, R),
         T1.is_lset(), T2.is_lset(),
         T1.lset_rest() == T2.lset_rest() ?=>               % 7b
-    log_d_vv("eq :: eq_7b"),
+    % regola ri riscrittura 7 che implementa la seconda
+    % clausola in or.
 
     YH = T2.lset_head(),                   % head of T2.
-    foreachnd_slice(YH, YElem, YSlice),    % get the j-th element nondet.
+    foreachnd_slice(YH, YElem, YSlice),    % get j-th elem nondet.
     YRest = T2.lset_rest(),                % rest of T2.
-    YSetSliced = new_lset(YSlice, YRest),  % build T2 without j-th elem.
+    YSetSliced = new_lset(YSlice, YRest),  % T2 without j-th elem.
 
     R1 = [ $eq(X, YElem) ],
     R2 = [ $eq(T1, YSetSliced) ],
@@ -2614,11 +2853,12 @@ eq(T1@[X|_], T2, R),
 eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
         T1.lset_rest() == T2.lset_rest() ?=>               % 7c
-    log_d_vv("eq :: eq_7c"),
+    % regola ri riscrittura 7 che implementa la terza
+    % clausola in or.
 
     % no slice for T2, only Y elem.
     YH = lset_head(T2),              % head of T2.
-    foreachnd_slice(YH, YElem, _),   % get the j-th element nondet.
+    foreachnd_slice(YH, YElem, _),   % get j-th elem nondet.
 
     R1 = [ $eq(X, YElem) ],
     R2 = [ $eq(Xs, T2) ],
@@ -2628,7 +2868,8 @@ eq(T1@[X|Xs], T2, R),
 eq(T1@[X|Xs], T2, R),
         T1.is_lset(), T2.is_lset(),
         T1.lset_rest() == T2.lset_rest() =>                % 7d
-    log_d_vv("eq :: eq_7d"),
+    % regola ri riscrittura 7 che implementa la quarta
+    % clausola in or.
 
     XRest = lset_rest(T1),
 
@@ -2645,22 +2886,27 @@ eq(T1@[X|Xs], T2, R),
 
 eq(T1@[X|Xs], T2@[Y|Ys], R),
         T1.is_lset(), T2.is_lset() ?=>                     % 8a
-    log_d_vv("eq :: eq_8a"),
-    R = [ $eq(X,Y), $eq(Xs, Ys) ].
+    R = [ 
+        $eq(X,Y), 
+        $eq(Xs, Ys) 
+    ].
 
 eq(T1@[X|_], T2@[Y|Ys], R),
         T1.is_lset(), T2.is_lset() ?=>                     % 8b
-    log_d_vv("eq :: eq_8b"),
-    R = [ $eq(X,Y), $eq(T1, Ys) ].
+    R = [ 
+        $eq(X,Y), 
+        $eq(T1, Ys) 
+    ].
 
 eq(T1@[X|Xs], T2@[Y|_], R),
         T1.is_lset(), T2.is_lset() ?=>                     % 8c
-    log_d_vv("eq :: eq_8c"),
-    R = [ $eq(X,Y), $eq(Xs, T2) ].
+    R = [ 
+        $eq(X,Y), 
+        $eq(Xs, T2) 
+    ].
 
 eq(T1@[X|Xs], T2@[Y|Ys], R),
         T1.is_lset(), T2.is_lset() =>                      % 8d
-    log_d_vv("eq :: eq_8d"),
     R = [
         $eq( Xs,  [Y|N] ),
         $eq( [X|N],  Ys )
@@ -2670,7 +2916,6 @@ eq(T1, T2, R),
         T1.struct(), T2.struct(),
         T1.name() == T2.name(),
         T1.arity() == T2.arity() =>                        % 9
-    log_d_vv("eq :: eq_9"),
     RR = [],
     foreach(I in 1..T1.arity())
         RR := RR ++ [  $eq( T1[I], T2[I] )  ]
@@ -2680,6 +2925,8 @@ eq(T1, T2, R),
 
 \section{Il vincolo neq}
 
+Il vincolo $neq$ rappresenta la negazione del vincolo $eq$. La negazione classica in \lset{} viene evitata: si vuole avere a disposizione un predicato positivo che rappresenti la negazione di un altro predicato (si veda \ref{subsec:clpbasedlang_lset_rewriteneg} per approfondimenti). L'algoritmo \ref{alg:neq_constraints} implementa proprio questa funzionalità.
+
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di non disuguaglianza}
 	\label{alg:neq_constraints}
@@ -2687,8 +2934,7 @@ eq(T1, T2, R),
 \begin{verbatim}
 neq(T1, T2, R),
         ground(T1), ground(T2),
-    	T1 !== T2 =>                                       % ground
-    log_d_vv("neq :: neq_ground"),
+        T1 !== T2 =>                                       % ground
     R = [].
 
 neq(T1, T2, R),
@@ -2698,14 +2944,12 @@ neq(T1, T2, R),
 
 neq(T, X, R),
        	nonvar(T), var(X) =>                               % 2
-    log_d_vv("neq :: neq_2"),
     R = [ $neq(X, T) ].
 
 neq(X, S, R),
         S.is_lset(),
         X == S.lset_rest(),
         not occur(X, S.lset_head()) =>                     % 3
-    log_d_vv("neq :: neq_3"),
     RR = [],
     foreach (T in S.lset_head)
         RR := RR ++ [$nin(T, X)]
@@ -2714,16 +2958,21 @@ neq(X, S, R),
 
 neq(X, T, R),
        	occur(X, T) =>                                     % 4
-    log_d_vv("neq :: neq_4"),
     R = [].
 
 neq([T1|A], [T2|B], R) ?=>                                 % 5a
     log_d_vv("neq :: neq_5a"),
-    R = [ $inls(N, [T1|A], $nin(N, [T2|B])) ].
+    R = [ 
+        $inls(N, [T1|A], 
+        $nin(N, [T2|B])) 
+    ].
 
 neq([T1|A], [T2|B], R) ?=>                                 % 5b
     log_d_vv("neq :: neq_5a"),
-    R = [ $nin(N, [T1|A]), $insl(N, [T2|B]) ].
+    R = [ 
+        $nin(N, [T1|A]), 
+        $insl(N, [T2|B]) 
+    ].
 
 neq(F, G, R),
         F.struct(), G.struct(),
@@ -2745,39 +2994,55 @@ neq(X, T, R),
 
 \section{Il vincolo in}
 
+Il vincolo $in$ è uno dei vincoli fondamentali che lavora su
+insiemi. Implementa in modo molto diretto l'appartenenza
+insiemistica. Il predicato \texttt{insl/3} rappresenta il vincolo $in$
+in quanto \texttt{in} è una keyword riservata di Picat. Per questo
+motivo si è deciso di introdurre il vincolo $contains$, che ha la
+stessa semantica del vincolo $in$, ma con gli argomenti invertiti. Il
+predicato \texttt{contains/3} infatti implementa le stesse regole di
+riscrittura del vincolo $in$, ma prendendo come primo argomento un
+insieme e come secondo un termine anziché il contrario.
+
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di appartenenza}
 	\label{alg:in_constraints}
 \end{algorithm}
 \begin{verbatim}
 insl(X, S, R) =>
-    log_d_vv("insl :: -> contains"),
+    % si potrebbe anche riscrivere il vincolo piuttosto
+    % che effettuare subito la chiamata al predicato che 
+    % implementa il "contains". In questo caso, comunque,
+    % il comportamento è il medesimo.
     contains(S, X, R).
 
 contains(S, X, R),
         S.is_lset(),
         S.is_emptyset() =>                                 % 1
-    log_d_vv("contains :: cont_1"),
     fail.
 
 contains(S@[Y|A], X, R),
         S.is_lset() ?=>                                    % 2a
-    log_d_vv("contains :: cont_2a"),
     R = [ $eq(X, Y) ].
 
 contains(S@[Y|A], X, R),
         S.is_lset() =>                                     % 2b
-    log_d_vv("contains :: cont_2b"),
     R = [ $contains(A, X) ].
 
 contains(A, X, R),
         var(A) =>                                          % 3
-    log_d_vv("contains :: cont_3"),
     YN = new_lset(X, N),
     R = [ $eq(A, YN) ].
 \end{verbatim}
 
 \section{Il vincolo union}
+
+Il vincolo $union$ è uno dei vincoli più importanti di \lset{}: viene
+impiegato per la realizzazione di vincoli derivati come \textit{diff}
+(differenza insiemistica). E' un vincolo piuttosto complicato in
+quanto molte delle sue regole utilizzano clausole in disgiunzione, le
+quali complicano soprattutto il debugging. L'algoritmo
+\ref{alg:in_constraints} ne riporta l'implementazione.
 
 \begin{algorithm}[H]
 	\caption{Regole di riscrittura per vincoli di appartenenza}
@@ -2785,196 +3050,101 @@ contains(A, X, R),
 \end{algorithm}
 \begin{verbatim}
 union(S1, S2, S3, R),
-        S1.is_lset(), S2.is_lset(), S3.is_lset(),
         S1 == S2 =>                                        % 1
-    log_d_vv("union :: un_1"),
-    R = [$eq(S1, S3)].
+    R = [ $eq(S1, S3) ].
 
 union(S1, S2, S3, R),
-        S1.is_lset(), S2.is_lset(),
         S3.is_emptyset() =>                                % 2
-    log_d_vv("union :: un_2"),
-    R = [$eq(S1, S3), $eq(S2, S3)].
+    R = [
+        $eq(S1, S3),
+        $eq(S2, S3)
+    ].
 
-union(S1, S2, V, R),
-        S1.is_emptyset(),
-        S2.is_lset(),
-        var(V) =>                                          % 3
-    log_d_vv("union :: un_3"),
-    R = [$eq(V, S2)].
+union(E, A, B, R),
+        E.is_emptyset(),
+        var(B) =>                                          % 3
+    R = [ $eq(B, A) ].
 
-union(S1, S2, V, R),
-        S2.is_emptyset(),
-        S1.is_lset(),
-        var(V) =>                                          % 4
-    log_d_vv("union :: un_4"),
-    R = [$eq(V, S1)].
+union(A, E, B, R),
+        E.is_emptyset(),
+        var(B) =>                                          % 4
+    R = [ $eq(B, A) ].
 
 union(S@[T|C], A, B, R),
         S.is_lset(),
-        %S2.is_lset(),
         var(B) ?=>                                         % 5a
-    log_d_vv("union :: un_5a"),
     R = [
         $nin(T, A),
-        $eq(S, [T|N1]),
-        $eq(B, [T|N]),
-        $union(N1, A, N)
+        $un(N1, A, N),
+        $eq([T|C], [T|N1]),
+        $eq(B, [T|N])
     ].
 
 union(S@[T|C], A, B, R),
         S.is_lset(),
-        %S2.is_lset(),
         var(B) =>                                          % 5b
-    log_d_vv("union :: un_5b"),
     R = [
-        $nin(T, A),
-        $eq(S, [T|N1]),
-        $eq(B, [T|N]),
-        $union(N1, A, N)
+        $eq(A, [T|N2]),
+        $un(N1, N2, N),
+        $eq([T|C], [T|N1]),
+        $eq(B, [T|N])
     ].
 
 union(A, S@[T|C], B, R),
         S.is_lset(),
-        %S2.is_lset(),
         var(B) ?=>                                         % 6a
-    log_d_vv("union :: un_6a"),
     R = [
         $nin(T, A),
-        $eq(S, [T|N1]),
-        $eq(B, [T|N]),
-        $union(N1, A, N)
+        $un(N1, A, N),
+        $eq([T|C], [T|N1]),
+        $eq(B, [T|N])
     ].
 
 union(A, S@[T|C], B, R),
         S.is_lset(),
-        %S2.is_lset(),
         var(B) =>                                          % 6b
-    log_d_vv("union :: un_6b"),
     R = [
-        $nin(T, A),
-        $eq(S, [T|N1]),
-        $eq(B, [T|N]),
-        $union(N1, A, N)
+        $eq(A, [T|N2]),
+        $un(N1, N2, N),
+        $eq([T|C], [T|N1]),
+        $eq(B, [T|N])
     ].
 
-union(S1, S2, S3@[Z|Zs], R),
-        S1.is_lset(),
-        S2.is_lset(),
-        S3.is_lset() ?=>                                   % 7a
-    log_d_vv("union :: un_7a"),
-    R1 = [ $eq(S1,[Z|N1]), $union(N1,B2,N) ],
-    R4 = [ $eq(S3,[Z|N]) ],
+union(A, B, S@[T|C], R),
+        S.is_lset() ?=>                                    % 7a
+    R1 = [
+        $eq(A, [T|N1]),
+        $un(N1, B2, N)
+    ],
+    R4 = [ $eq([T|C], [T|N]) ],
 
     R = R1 ++ R4.
 
-union(S1, S2, S3@[Z|Zs], R),
-        S1.is_lset(),
-        S2.is_lset(),
-        S3.is_lset() ?=>                                   % 7b
-    log_d_vv("union :: un_7b"),
-    R2 = [ $eq(S2,[Z|N1]), $union(S1,N1,N) ],
-    R4 = [ $eq(S3,[Z|N]) ],
+union(A, B, S@[T|C], R),
+        S.is_lset() ?=>                                    % 7b
+    R2 = [
+        $eq(B, [T|N1]),
+        $un(A, N1, N)
+    ],
+    R4 = [ $eq([T|C], [T|N]) ],
 
     R = R2 ++ R4.
 
-union(S1, S2, S3@[Z|Zs], R),
-        S1.is_lset(),
-        S2.is_lset(),
-        S3.is_lset() =>                                    % 7c
-    log_d_vv("union :: un_7c"),
-    R3 = [ $eq(S1,[Z|N1]), $eq(S2,[Z|N2]), $union(N1,N2,N) ],
-    R4 = [ $eq(S3,[Z|N]) ],
+union(A, B, S@[T|C], R),
+        S.is_lset() =>                                     % 7c
+    R3 = [
+        $eq(A, [T|N1]),
+        $eq(B, [T|N2]),
+        $un(N1, N2, N)
+    ],
+    R4 = [ $eq([T|C], [T|N]) ],
 
     R = R3 ++ R4.
 
 union(S1, S2, S3, R),
         var(S1), var(S2), var(S3),
         S1 !== S2 =>                                       % irr
-    log_d_vv("union :: un_irr"),
-    R = [ $union(S1, S2, S3) ].
-\end{verbatim}
-
-\section{Il vincolo disj}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di disgiunzione}
-	\label{alg:disj_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-
-\section{Il vincolo subset}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di sottinsieme}
-	\label{alg:subset_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-
-\section{Il vincolo inters}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di intersezione}
-	\label{alg:inters_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Il vincolo diff}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di differenza}
-	\label{alg:diff_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Il vincolo not in}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di non appartenenza}
-	\label{alg:notin_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Il vincolo not union}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di non unione}
-	\label{alg:notun_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Il vincolo not disj}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per vincoli di non disgiunzione}
-	\label{alg:notdisj_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
-\end{verbatim}
-
-\section{Altri vincoli negativi}
-
-\begin{algorithm}[H]
-	\caption{Regole di riscrittura per altri vincoli negativi}
-	\label{alg:othernegatives_constraints}
-\end{algorithm}
-\begin{verbatim}
-TODO
+    R = [ $un(S1, S2, S3) ].
 \end{verbatim}
 
 
@@ -2995,8 +3165,10 @@ l'utilizzo del risolutore tramite la modalità interattiva, mentre in
 \label{sec:use_interactive}
 
 La modalità interattiva consente l'uso del solver da CLI, tramite
-interazione da linea di comando (o, in ambienti più evoluti, tramite
-GUI). Questa modalità è utilizzata per scopi fine a sè stessi, come il
+interazione da linea di comando (possibili evoluzioni potrebbero
+sostituire la CLI con una interfaccia utente più evoluta, come 
+una GUI).
+Questa modalità è utilizzata per scopi fine a se stessi, come il
 testing del sistema e la risoluzione isolata di formule.
 
 \subsection{Avvio dell'interprete}
@@ -3011,15 +3183,15 @@ L'interprete di \lset{} è avviato tramite alcuni semplici passi:
 	\item esecuzione della procedura iniziale.
 \end{enumerate}
 
-Questi step nella pratica si traducono in \texttt{picat main.pi}
-oppure in
+Questi step nella pratica si traducono in
 \begin{verbatim}
 $ Picat
 picat> load(main.pi)
 picat> compile(main.pi)
 picat> main.
 \end{verbatim}
-oppure grazie ad una forma più concisa \texttt{picat main.pi} (vedere
+oppure, grazie a una forma più concisa, in 
+\texttt{picat main.pi} (vedere
 esempio \ref{fig:example_interpreterstart}).
 
 \begin{figure}
@@ -3061,7 +3233,7 @@ sistema tramite dei comandi. I comandi disponibili sono
           file sul quale scrivere i log;
 	\item \texttt{solve}, risolve una formula leggendola da
           diversi canali di input;
-	\item \texttt{quite}, imposta la modalità silenziosa per le
+	\item \texttt{quiet}, imposta la modalità silenziosa per le
           interazioni utente.
 \end{itemize}
 
@@ -3071,44 +3243,44 @@ comando \texttt{help} (esempio in figura
 e la loro descrizione.
 
 \begin{figure}
-	\begin{verbatim}
-	log> help
-	Setlog provides you with the following commands:
+\begin{verbatim}
+log> help
+Setlog provides you with the following commands:
 
-	help
-	help <what>
-	Show help for <what>.
-	The argument describes the topic to give help for.
-	<what> can be one of [solve]
+help
+help <what>
+    Show help for <what>.
+    The argument describes the topic to give help for.
+    <what> can be one of [solve]
 
-	info
-	Display the current interpreter status.
+info
+    Display the current interpreter status.
 
-	up history
-	Print the whole commands history.
-	up <n>
-	Redo the last <n> command issued.
-	If <n> is empty the last command is issued,
-	this is equivalent to `up 0`.
+up history
+    Print the whole commands history.
+up <n>
+    Redo the last <n> command issued.
+    If <n> is empty the last command is issued,
+    this is equivalent to `up 0`.
 
-	log <mode>
-	Set the log mode to <mode>.
-	Available log mode: [none,v,vv,vvv,all].
-	log file <file>
-	Set log file to <file>.
-	Default is `stdout`.
+log <mode>
+    Set the log mode to <mode>.
+    Available log mode: [none,v,vv,vvv,all].
+log file <file>
+    Set log file to <file>.
+    Default is `stdout`.
 
-	solve
-	solve <formula>
-	solve file <file>
-	Solve the formula, respectively, typed in stdin,
-	given as argument of this command, or read from the
-	first line of file <file> using the setlog solver.
+solve
+solve <formula>
+solve file <file>
+    Solve the formula, respectively, typed in stdin,
+    given as argument of this command, or read from the
+    first line of file <file> using the setlog solver.
 
-	quiet <mode>
-	Set the quit mode execution.
-	Available mode: [true, false]. Default is true.
-	\end{verbatim}
+quiet <mode>
+    Set the quit mode execution.
+    Available mode: [true, false]. Default is true.
+\end{verbatim}
 
 	\caption{Esempio: comando help}
 	\label{fig:example_helpcommand}
@@ -3119,16 +3291,18 @@ e la loro descrizione.
 La modalità interattiva permette una piccola configurazione del
 sistema. In particolare l'utente può scegliere
 \begin{itemize}
-	\item il livello di log che vuole visualizzare;
+	\item il livello di log da visualizzare;
 	\item il file su cui scrivere i log;
-	\item se visualizzare o meno i messaggi del solver come le
-          riscritture.
+	\item di visualizzare o meno i messaggi del solver (ad esempio, 
+	      i passaggi delle riscritture).
 \end{itemize}
 
-Configurazioni di più basso livello sono proibite o determinate a
-tempo di compilazione, l'utente non ha quindi accesso ad esse.
+Configurazioni di basso livello sul sistema o sul solver
+sono proibite o determinate a tempo di compilazione, all'utente
+non è quindi permessa la modifica.
 
-Esempio di configurazione in \ref{fig:example_confcommands}.
+Un esempio di configurazione è mostrato in figura
+\ref{fig:example_confcommands}.
 
 \begin{figure}
 	\begin{verbatim}
@@ -3179,7 +3353,8 @@ Si veda l'esempio in \ref{fig:example_solvecommands}
 	Another solution? (y/n): y
 	no!
 	log>
-	log> solve [ eq(X,1) ]           % formula come argomento del comando
+	log> solve [ eq(X,1) ]           % formula come argomento
+	                                 % del comando
 	{log} => [eq(X,1)]
 	Vars: (map)[X = 1]
 	Constraints: []
@@ -3196,7 +3371,7 @@ Si veda l'esempio in \ref{fig:example_solvecommands}
 	no!
 	log>
 	\end{verbatim}
-	\caption{Esempio: comando solve (e varianti)}
+	\caption{Esempio: comando solve (e varianti) della modalità interattiva}
 	\label{fig:example_solvecommands}
 \end{figure}
 
@@ -3243,7 +3418,7 @@ my_predicate =>
 \label{ch:conclusion}
 
 Il risultato principale di questo lavoro di tesi è stata la
-progettazione ed implementazione in Picat di un constraint solver per
+progettazione e implementazione in Picat di un constraint solver per
 formule insiemistiche, basato sul lavoro descritto in
 \cite{Dovier00}. Per ottenere questo risultato è stato necessario,
 prima di tutto, di sperimentare e capire Picat, un linguaggio logico
@@ -3276,17 +3451,15 @@ risoluzione di alcuni problemi con workaround.
 
 Per questo lavoro di tesi si sono concentrati gli sforzi nella
 realizzazione del risolutore di formule stesso, per arrivare ad avere
-un’implementazione funzionante di \lset{} in Picat, e, di fatto, sono
+un'implementazione funzionante di \lset{} in Picat, e, di fatto, sono
 stati tralasciati numerosi dettagli.  Uno dei dettagli non considerati
-è stato la rappresentazione delle formule. Nell’implementazione Picat
+è stato la rappresentazione delle formule. Nell'implementazione Picat
 di \lset{} non è stato possibile adottare la rappresentazione delle
-formule di \lset{} adottata in {log} a causa delle citate limitazioni
-di Picat rispetto al Prolog sulla forma sintattica dei termini. Si è
-quindi utilizzato per il momento una sintassi nettamente più vicina
-alla rappresentazione interna di Picat, descritta all’appendice A. Lo
-schema sottostante riassume la condizione ottimale in cui la formula
-non ha bisogno di alcuna traduzione per essere elaborata dal
-solver. La soluzione al problema è riassumibile dallo schema seguente
+formule di \lset{} adottata in \setlog{} a causa delle citate
+limitazioni di Picat rispetto al Prolog sulla forma sintattica dei
+termini.  Si è quindi utilizzato per il momento una sintassi
+nettamente più vicina alla rappresentazione interna di Picat. La
+soluzione a questo problema è riassumibile dallo schema seguente
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}
@@ -3296,27 +3469,25 @@ solver. La soluzione al problema è riassumibile dallo schema seguente
 	\node[punktchain, join] (c) {Solver};
 	\end{tikzpicture}
 \end{figure}
-che aggiunge un livello, il parsing delle formule, appunto. In questo
-modo il solver non ha bisogno di mofiche, in quanto il lavoro è
-effettuato ad un livello intermedio, manipolando la sintassi delle
-formule.
-
-Così facendo inoltre, si può decidere di non realizzare il
-preprocessor in Picat, ma in Prolog ad esempio, sfruttando il modulo
-DCG \cite{MetalevelDCG} (Definite Clause Grammar) che consente di
-effettuare il parsing di frasi dando la grammatica a clausole
-definite.
+che aggiunge un livello: il parsing delle formule \lset{}.  In questo
+modo il solver non ha bisogno di modifiche: le formule manipolate sono
+sempre rappresentate con una sintassi vicina a quella di Picat, ma
+l'utente (sia umano che non) può lavorare con formule \lset{}.  Così
+facendo, inoltre, si può decidere di realizzare questo livello
+intermedio in un linguaggio diverso da Picat. Possiamo citare Prolog,
+ad esempio, con il modulo DCG \cite{MetalevelDCG} (Definite Clause
+Grammar) che consente di effettuare il parsing di frasi dando la
+grammatica a clausole definite.
 
 Un altro aspetto sicuramente da migliorare riguarda la verifica della
 correttezza sulla risoluzione delle formule. Il testing del solver non
-era obiettivo di questo lavoro di tesi, ma si è reso ovviamente
-necessario per capire se l'implementazione rispettasse la teoria,
-almeno sui casi presi in esame. I casi esaminati non sono ovviamente
-esaustivi e non coprono nemmeno tutti i casi limite che andrebbero
-verificati.
+era obiettivo di questo lavoro di tesi, ma si è reso necessario per
+capire, almeno indicativamente, l'aderenza dell'implementazione alla
+teoria. I casi esaminati non sono ovviamente esaustivi e non coprono
+nemmeno tutti i casi limite che andrebbero verificati.
 
 Una futura espansione al solver invece potrebbe prevedere
-l'integrazione delle funzioni parziali: andando quindi a considerare
+l'integrazione delle funzioni parziali, andando quindi a considerare
 l'intero linguaggio attualmente supportato da \setlog{} e \jsetl{} e
 non un suo sottoinsieme.
 
@@ -3328,7 +3499,7 @@ non un suo sottoinsieme.
 \chapter{Ringraziamenti}
 \resetsecnumdepth
 
-Vorrei spedere qualche parola per ringraziare tutti coloro che durante
+Vorrei spendere qualche parola per ringraziare tutti coloro che durante
 questi tre duri anni mi hanno supportato e sostenuto, mi hanno spinto
 a non mollare mai, a mettercela tutta per cercare di raggiungere
 obiettivi degni di nota nel racconto di una vita.
@@ -3343,13 +3514,13 @@ Ringrazio mia mamma, che con la sua umiltà mi ha insegnato a tirare
 fuori sempre il meglio, rimanendo umile e modesto, senza la pretesa di
 essere il migliore o più importante degli altri.
 
-Mio papà, che con la sua franchezza ed i suoi (strani) motti mi ha
+Mio papà, che con la sua franchezza e i suoi (strani) motti mi ha
 sempre spronato.
 
 I miei due fratellini, che con la loro leggerezza hanno saputo farmi
 ridere anche nei momenti più bui.
 
-Le mie nonne, con la loro cura e apprensione e mio nonno, con la suà
+Le mie nonne, con la loro cura e apprensione e mio nonno, con la sua
 bontà che da lassù mi guarda ed è sempre con me.
 
 \bigskip
@@ -3359,8 +3530,13 @@ pazienza mi ha aiutato in moltissime situazioni.
 
 \bigskip
 
+Ringrazio Antonio e Silvio, per i loro preziosi consigli e
+l'accompagnamento dal punto di vista professionale e lavorativo.
+
+\bigskip
+
 Ringrazio tutti quelli che in un modo o nell'altro mi hanno dedicato
-un aiuto, un ``buona fortuna'' ad un esame o una risata,
+un aiuto, un ``buona fortuna'' a un esame o una risata,
 accompagnandomi in questo percorso.
 
 \bigskip
@@ -3373,15 +3549,15 @@ questo forse servirebbe un'altra tesi.
 \bigskip
 
 \begin{flushright}
-	Malonno, \today
+	Parma, 26 settembre 2019
 \end{flushright}
 
 
 
 %%% *******************************************************
 %%% *   List of Figures/Algorithms   **********************
-\listoffigures
-\listofalgorithms
+%\listoffigures
+%\listofalgorithms
 
 
 
