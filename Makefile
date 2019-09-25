@@ -1,22 +1,40 @@
 MAINFILE = thesis
+SRC = $(shell pwd)
 BUILD_DIR = _build
 
-.PHONY: all
-all: pdf #dvi
 
+# ***********************************************************
+# ****** MAIN
+
+.PHONY: all
+all:  # all do nothing by default
+
+pdf: pdf1  # default
+pdf1: pdflatex bib pdflatex
+pdf2: pdfdocker
+
+
+# ***********************************************************
+# ****** BUILD RECIPES
+
+# build using docker
+pdfdocker:
+	docker pull dxjoke/tectonic-docker
+	docker run --mount src=$(SRC),target=/usr/src/tex,type=bind dxjoke/tectonic-docker /bin/sh -c "tectonic --keep-intermediates --reruns 0 thesis.tex; biber thesis; tectonic thesis.tex"
+
+# build using pdflatex
 pdflatex: 
 	pdflatex $(MAINFILE)
-
-# *** build recipes
-pdf: pdflatex bib pdflatex
-	
 bib:
 	biber $(MAINFILE)
 
+# read
 read:
 	evince $(MAINFILE).pdf &
 
-# *** clean recipes
+
+# ***********************************************************
+# ****** CLEAN RECIPES
 .PHONY: clean
 clean:
 	-rm -f *.aux
