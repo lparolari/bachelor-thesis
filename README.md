@@ -8,7 +8,7 @@
 
 This repository contains the latest version of my
 [thesis](https://github.com/lparolari/bachelor-thesis/releases/latest). This
-thesis is about the desing and the implementation of a set constraint
+thesis is about the design and the implementation of a set constraint
 solver in Picat. Chapter 1 gives a background on logic programming and
 constraint logic programming; then in the Chapter 2 it describes
 Picat, the language on which *L_SET* was implemented. In the Chapter 3
